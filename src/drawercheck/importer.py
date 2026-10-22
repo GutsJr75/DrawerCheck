@@ -14,6 +14,9 @@ from typing import NoReturn
 from drawercheck import db, errors
 from drawercheck.csv_contract import CSV_HEADERS, DENOMINATIONS_CENTS
 from drawercheck.money import MAX_CENTS, parse_dollars
+from drawercheck.text_safety import has_unsafe_controls
+
+_IDENTIFIER_COLUMNS = {"cashier_id", "register_id", "shift_code", "verifier_id"}
 
 _KEY_COLUMNS = {
     "cashiers.csv": ("cashier_id",),
@@ -49,16 +52,26 @@ class _CsvRow:
             self.file_name, self.line_number, column, detail
         )
 
+    def _text(self, column: str) -> str:
+        value = self.values[column]
+        if has_unsafe_controls(value):
+            self.fail(column, errors.UNSAFE_TEXT)
+        if column in _IDENTIFIER_COLUMNS and (
+            value != value.strip() or any(character in value for character in "\n\r\t")
+        ):
+            self.fail(column, errors.INVALID_IDENTIFIER)
+        return value
+
     def required(self, column: str) -> str:
         """Read required text without silently changing its contents."""
-        value = self.values[column]
+        value = self._text(column)
         if not value.strip():
             self.fail(column, errors.REQUIRED_VALUE)
         return value
 
     def optional(self, column: str) -> str | None:
         """Represent an empty optional field as SQL NULL."""
-        value = self.values[column]
+        value = self._text(column)
         return value if value.strip() else None
 
     def money(self, column: str, *, positive: bool = False) -> int:

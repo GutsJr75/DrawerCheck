@@ -43,7 +43,7 @@ def test_worked_example(worked_shift: Shift) -> None:
     assert result.counted_cents == 49875
     assert result.variance_cents == -2000
     assert result.status == "short"
-    assert expected_deposit((result,), Config()) == 119875
+    assert expected_deposit((result,), Config(), ("R1",)) == 119875
     assert [flag.rule_code for flag in result.flags] == [
         "R01_VARIANCE",
         "R02_SINGLE_DENOMINATION",
@@ -96,7 +96,7 @@ def test_unknown_zero_open_and_tolerance(
     if status == "balanced":
         assert result.variance_cents == -75
     if status in ("incomplete", "open"):
-        assert expected_deposit((result,), Config()) is None
+        assert expected_deposit((result,), Config(), ("R1",)) is None
 
 
 def test_aggregate_arithmetic_does_not_overflow_sqlite(worked_shift: Shift) -> None:
@@ -142,7 +142,7 @@ def test_register_intervals(
             flag.evidence.get("issue") == "multiple_closings"
             for flag in results[0].flags
         )
-        assert expected_deposit(results, Config()) is None
+        assert expected_deposit(results, Config(), ("R1",)) is None
 
 
 def test_independent_registers_and_combined_daily_deposit(worked_shift: Shift) -> None:
@@ -153,7 +153,7 @@ def test_independent_registers_and_combined_daily_deposit(worked_shift: Shift) -
         not result.overlapping_codes and not result.other_closing_codes
         for result in results
     )
-    assert expected_deposit(results, Config()) == 239750
+    assert expected_deposit(results, Config(), ("R1", "R2")) == 239750
 
 
 def test_full_demo_has_exactly_the_m3_flags(demo_database: Path) -> None:
@@ -206,13 +206,12 @@ def test_repeated_runs_and_partial_replacement(demo_database: Path) -> None:
     [
         (None, "2026-09-03", 6),
         ("2026-09-29", None, 4),
-        ("2026-10-01", "2026-10-02", 0),
     ],
 )
 def test_inclusive_ranges_and_stored_date_defaults(
     demo_database: Path, start: str | None, end: str | None, count: int
 ) -> None:
-    """Missing endpoints use imported shift dates, including valid empty selections."""
+    """Missing endpoints use imported shift dates for inclusive selections."""
     run = reconcile(demo_database, Config(), start, end)
     assert len(run.shifts) == count
     assert run.from_date == (start or "2026-09-01")

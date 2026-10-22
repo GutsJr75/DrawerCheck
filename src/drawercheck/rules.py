@@ -163,6 +163,26 @@ def integrity_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
 RULES = (variance_flags, denomination_flags, verification_flags, integrity_flags)
 
 
+def missing_register_flags(
+    business_date: str,
+    expected_register_ids: tuple[str, ...],
+    present_register_ids: tuple[str, ...],
+) -> tuple[Flag, ...]:
+    """Flag an absent expected register once per business date without inventing a shift."""
+    missing = sorted(set(expected_register_ids) - set(present_register_ids))
+    return tuple(
+        Flag(
+            None,
+            business_date,
+            "R09_DATA_INTEGRITY",
+            "review",
+            f"No shift recorded for expected register {register_id}. The daily deposit is incomplete.",
+            {"issue": "missing_register_shift", "register_id": register_id},
+        )
+        for register_id in missing
+    )
+
+
 def evaluate_rules(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
     """Apply only the four rules authorized for the core reconciliation milestone."""
     return tuple(flag for rule in RULES for flag in rule(result, config))

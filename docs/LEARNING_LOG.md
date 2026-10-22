@@ -148,3 +148,44 @@ Reports remain M4 work. R04 and R08 remain M5 work, and optional rules remain
 unauthorized. No web implementation or remote CI result is claimed.
 
 Next milestone: **M4**, after the user says **next**.
+
+## M3 repair block: Review findings
+
+- Built: Regression coverage and fixes for all seven reviewed issue groups:
+  numeric config failures, bounded percentages, capped deposit lag, missing
+  expected registers, unsafe terminal text, ambiguous identifiers, and clearer
+  empty-range/database-setup errors. Added policy-version refresh handling and
+  updated the plan, README, config comments, and calculation guide.
+- Learned: A passing demo cannot cover every input boundary. Daily completeness
+  needs an explicit expected-register list; a bounded Decimal must be checked
+  before expansion; and valid multiline CSV text still needs safe terminal
+  rendering. Saved flags also need refreshing when the review policy changes.
+- Interview question: Why can a register's correct cash calculation still be
+  insufficient to claim that the whole day's expected deposit is complete?
+
+Verified on 2026-10-22 using the existing Python 3.13.5 / SQLite 3.47.1
+environment. No dependencies, generated demo inputs, or web features changed.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q tests/test_m3_fixes.py --tb=no` before the fixes | Reproduced: 94 failing and 7 passing cases across the reviewed boundaries. Three additional policy-refresh/preservation cases were added afterward. |
+| `.venv/bin/pytest -q` | PASS: 401 tests, with ResourceWarning and cleanup warnings still treated as errors. The old empty-selection success case was replaced by explicit error/preservation coverage. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 401 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: no formatting changes needed. |
+| Installed CLI subprocess reproductions in a temporary directory | PASS: clean exit-1 errors for a 5,000-digit integer, an unrepresentable exponent, huge/tiny/over-precise percentages, excessive lag, unsafe text, padded IDs, empty ranges, and a tableless database. No tracebacks or raw terminal escape codes appeared. |
+| Installed normal demo and worked explanation | PASS: 60 shifts and the same 12 expected flags; $518.75 expected, $498.75 counted, -$20.00 variance, and $1,198.75 contribution. |
+| Installed missing-register and multiline-note workflow | PASS: a missing R2 shift gives an unknown daily deposit and a date-level R09 flag. A multiline note stays in the database and prints visible escapes, without creating a fake output line. |
+| Saved results and policy refresh regressions | PASS: failed/empty requests preserve flags and markers; earlier M3 snapshots require reconciliation again, and a successful new-policy subset clears old-policy results. |
+| `PRAGMA foreign_key_check` after the repaired subprocess workflow | PASS: no broken references. |
+| `git diff --check` and source/document checks | PASS: no whitespace errors or prohibited punctuation; public functions have docstrings; instruction-file constraints are preserved. |
+
+The new limits and expected-register roster are explicit demo policies, not
+industry standards. LF/CR/tab remain valid in free-text CSV fields and are
+escaped on terminal output. M4 text reports must reuse `terminal_text`; HTML
+escaping and CSV formula protection remain required. M5 must still protect
+calendar arithmetic near the maximum supported date.
+
+After this update, run `drawercheck reconcile` without date filters to refresh
+earlier M3 results. M4 remains the next milestone, awaiting **next**. No remote
+CI or public-deployment result is claimed.

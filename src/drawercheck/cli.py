@@ -6,13 +6,14 @@ import sqlite3
 import sys
 from collections.abc import Sequence
 from pathlib import Path
-from typing import NoReturn
+from typing import NoReturn, TextIO
 
 from drawercheck import db, demo, errors, importer
 from drawercheck.config import load_config
 from drawercheck.models import ShiftExplanation
 from drawercheck.money import format_cents
 from drawercheck.reconcile import explain_shift, reconcile
+from drawercheck.text_safety import terminal_text
 
 
 class _ArgumentParser(argparse.ArgumentParser):
@@ -64,6 +65,10 @@ def _build_parser() -> _ArgumentParser:
     return parser
 
 
+def _print_line(message: object, *, file: TextIO | None = None) -> None:
+    print(terminal_text(message), file=file)
+
+
 def _money_or_unknown(cents: int | None) -> str:
     return "unknown" if cents is None else format_cents(cents)
 
@@ -71,81 +76,91 @@ def _money_or_unknown(cents: int | None) -> str:
 def _print_explanation(explanation: ShiftExplanation) -> None:
     result, config = explanation.result, explanation.config
     shift = result.shift
-    print("DEMO DATA ONLY: Demo Store #001")
-    print(
+    _print_line("DEMO DATA ONLY: Demo Store #001")
+    _print_line(
         f"Shift: {shift.shift_code} | Register: {shift.register_id} | Cashier: {shift.cashier_id}"
     )
     status = (
         "balanced within tolerance" if result.status == "balanced" else result.status
     )
-    print(f"Status: {status}")
-    print(f"Opened: {shift.opened_at} | Closed: {shift.closed_at or 'open'}")
-    print(
+    _print_line(f"Status: {status}")
+    _print_line(f"Opened: {shift.opened_at} | Closed: {shift.closed_at or 'open'}")
+    _print_line(
         "Expected drawer = opening float + cash sales + paid-ins - refunds - paid-outs - safe drops"
     )
-    print(f"  Opening float: {format_cents(shift.opening_float_cents)}")
+    _print_line(f"  Opening float: {format_cents(shift.opening_float_cents)}")
     for label, name in (
         ("Cash sales", "cash_sales_cents"),
         ("Paid-ins", "paid_ins_cents"),
         ("Cash refunds", "cash_refunds_cents"),
         ("Paid-outs", "paid_outs_cents"),
     ):
-        print(
+        _print_line(
             f"  {label}: {_money_or_unknown(getattr(shift.pos, name) if shift.pos else None)}"
         )
-    print(f"  Safe drops: {format_cents(shift.safe_drops_cents)}")
-    print(f"  Expected drawer: {_money_or_unknown(result.expected_cents)}")
-    print("Counted drawer = denomination x quantity, added together")
+    _print_line(f"  Safe drops: {format_cents(shift.safe_drops_cents)}")
+    _print_line(f"  Expected drawer: {_money_or_unknown(result.expected_cents)}")
+    _print_line("Counted drawer = denomination x quantity, added together")
     for denomination, quantity in shift.counts:
-        print(f"  {format_cents(denomination)} x {quantity}")
+        _print_line(f"  {format_cents(denomination)} x {quantity}")
     if not shift.counts:
-        print("  No cash-count rows; cash is unknown.")
-    print(f"  Counted drawer: {_money_or_unknown(result.counted_cents)}")
-    print(f"Variance = counted - expected: {_money_or_unknown(result.variance_cents)}")
-    print(f"Tolerance: {format_cents(config.within_tolerance_cents)}")
+        _print_line("  No cash-count rows; cash is unknown.")
+    _print_line(f"  Counted drawer: {_money_or_unknown(result.counted_cents)}")
+    _print_line(
+        f"Variance = counted - expected: {_money_or_unknown(result.variance_cents)}"
+    )
+    _print_line(f"Tolerance: {format_cents(config.within_tolerance_cents)}")
     threshold = (
         config.review_threshold(shift.pos.cash_sales_cents) if shift.pos else None
     )
-    print(f"Review threshold: {_money_or_unknown(threshold)}")
-    print("Thresholds are saved example policies, not industry standards.")
-    print(
+    _print_line(f"Review threshold: {_money_or_unknown(threshold)}")
+    _print_line("Thresholds are saved example policies, not industry standards.")
+    _print_line(
         f"Verifier: {shift.verifier_id or 'missing'} | Note: {shift.variance_note or 'missing'}"
     )
-    print("Deposit contribution = counted + safe drops - retained float")
-    print(
+    _print_line("Deposit contribution = counted + safe drops - retained float")
+    _print_line(
         f"  Retained float per register: {format_cents(config.retained_float_per_register_cents)}"
     )
-    print(
+    _print_line(
         f"  Shift deposit contribution: {_money_or_unknown(explanation.deposit_contribution_cents)}"
     )
-    print(
+    _print_line(
         f"  Expected daily deposit (all registers): {_money_or_unknown(explanation.daily_deposit_cents)}"
     )
-    print("Bank matching and repeated-shortage checks arrive in M5.")
-    print("Review leads, not findings about a person:")
+    _print_line("Bank matching and repeated-shortage checks arrive in M5.")
+    _print_line("Review leads, not findings about a person:")
     if not result.flags:
-        print("  No review flags for this shift.")
+        _print_line("  No review flags for this shift.")
     for flag in result.flags:
-        print(f"  [{flag.severity}] {flag.rule_code}: {flag.message}")
-        print(f"    Evidence: {json.dumps(flag.evidence, sort_keys=True)}")
+        _print_line(f"  [{flag.severity}] {flag.rule_code}: {flag.message}")
+        _print_line(f"    Evidence: {json.dumps(flag.evidence, sort_keys=True)}")
+
+    if explanation.daily_flags:
+        _print_line("Daily review leads:")
+        for flag in explanation.daily_flags:
+            _print_line(f"  [{flag.severity}] {flag.rule_code}: {flag.message}")
+            _print_line(f"    Evidence: {json.dumps(flag.evidence, sort_keys=True)}")
 
 
 def _run_command(arguments: argparse.Namespace) -> None:
     db.check_version()
     if arguments.command == "init-db":
         db.initialize(arguments.db)
-        print(errors.DATABASE_INITIALIZED.format(path=arguments.db))
+        _print_line(errors.DATABASE_INITIALIZED.format(path=arguments.db))
     elif arguments.command == "demo-data":
         counts = demo.generate_demo(arguments.out, arguments.days, arguments.seed)
-        print(errors.DEMO_CREATED.format(days=arguments.days, path=arguments.out))
+        _print_line(errors.DEMO_CREATED.format(days=arguments.days, path=arguments.out))
         for file_name, count in counts.items():
-            print(errors.FILE_GENERATED.format(file_name=file_name, rows=count))
+            _print_line(errors.FILE_GENERATED.format(file_name=file_name, rows=count))
     elif arguments.command == "import":
         for result in importer.import_directory(arguments.directory, arguments.db):
             if result.skipped:
-                print(errors.FILE_ALREADY_IMPORTED.format(file_name=result.file_name))
+                _print_line(
+                    errors.FILE_ALREADY_IMPORTED.format(file_name=result.file_name)
+                )
             else:
-                print(
+                _print_line(
                     errors.FILE_IMPORTED.format(
                         file_name=result.file_name, rows=result.rows_imported
                     )
@@ -153,14 +168,14 @@ def _run_command(arguments: argparse.Namespace) -> None:
     elif arguments.command == "reconcile":
         config, missing = load_config(arguments.config)
         if missing:
-            print(errors.CONFIG_MISSING.format(path=arguments.config))
+            _print_line(errors.CONFIG_MISSING.format(path=arguments.config))
         result = reconcile(arguments.db, config, arguments.from_date, arguments.to_date)
-        print(
+        _print_line(
             errors.RECONCILED.format(
                 shifts=len(result.shifts),
                 start=result.from_date,
                 end=result.to_date,
-                flags=sum(len(shift.flags) for shift in result.shifts),
+                flags=len(result.flags),
             )
         )
     elif arguments.command == "explain":
@@ -177,13 +192,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         _run_command(arguments)
     except errors.DrawerCheckError as error:
-        print(error, file=sys.stderr)
+        _print_line(error, file=sys.stderr)
         return 1
     except sqlite3.DatabaseError as error:
-        print(errors.database_error_message(error), file=sys.stderr)
+        _print_line(errors.database_error_message(error), file=sys.stderr)
         return 1
     except OSError as error:
-        print(
+        _print_line(
             errors.FILE_ACCESS_ERROR.format(
                 path=error.filename or "the requested path",
                 detail=error.strerror or str(error),

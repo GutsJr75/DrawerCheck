@@ -15,7 +15,7 @@ from drawercheck.models import (
     ShiftExplanation,
     ShiftResult,
 )
-from drawercheck.rules import evaluate_rules
+from drawercheck.rules import evaluate_rules, missing_register_flags
 
 
 def expected_cash(shift: Shift) -> int | None:
@@ -115,7 +115,11 @@ def calculate_shifts(
     )
 
 
-def expected_deposit(results: tuple[ShiftResult, ...], config: Config) -> int | None:
+def expected_deposit(
+    results: tuple[ShiftResult, ...],
+    config: Config,
+    expected_register_ids: tuple[str, ...],
+) -> int | None:
     """Calculate a complete day's deposit without counting the same drawer twice."""
     if not results or any(
         result.status in ("open", "incomplete") or result.other_closing_codes
@@ -123,11 +127,33 @@ def expected_deposit(results: tuple[ShiftResult, ...], config: Config) -> int | 
     ):
         return None
     registers = {result.shift.register_id for result in results}
-    if len(registers) != len(results):
+    if len(registers) != len(results) or registers != set(expected_register_ids):
         return None
     return sum(
         result.counted_cents + result.shift.safe_drops_cents for result in results
     ) - config.retained_float_per_register_cents * len(registers)
+
+
+def _daily_deposits(
+    results: tuple[ShiftResult, ...],
+    config: Config,
+    register_ids: tuple[str, ...],
+) -> tuple[DailyDeposit, ...]:
+    days: dict[str, list[ShiftResult]] = defaultdict(list)
+    for result in results:
+        days[result.shift.business_date].append(result)
+    return tuple(
+        DailyDeposit(
+            day,
+            expected_deposit(tuple(day_results), config, register_ids),
+            missing_register_flags(
+                day,
+                register_ids,
+                tuple(result.shift.register_id for result in day_results),
+            ),
+        )
+        for day, day_results in sorted(days.items())
+    )
 
 
 def parse_range_date(value: str | None, option: str) -> str | None:
@@ -166,34 +192,24 @@ def reconcile(
     _require_database(database_path)
     with closing(db.connect(database_path)) as con:
         with con:
+            db.require_import_schema(con)
             shifts = db.load_shifts(con)
             if not shifts:
                 raise errors.ReconciliationError(errors.NO_SHIFTS)
             start = start or min(shift.business_date for shift in shifts)
             end = end or max(shift.business_date for shift in shifts)
             if start > end:
-                raise errors.ReconciliationError(errors.REVERSED_RANGE)
+                raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
             selected = tuple(
                 result
                 for result in calculate_shifts(shifts, config)
                 if start <= result.shift.business_date <= end
             )
-            dates = tuple(sorted({result.shift.business_date for result in selected}))
-            deposits = tuple(
-                DailyDeposit(
-                    day,
-                    expected_deposit(
-                        tuple(
-                            result
-                            for result in selected
-                            if result.shift.business_date == day
-                        ),
-                        config,
-                    ),
-                )
-                for day in dates
-            )
-            flags = tuple(flag for result in selected for flag in result.flags)
+            if not selected:
+                raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
+            deposits = _daily_deposits(selected, config, db.load_register_ids(con))
+            dates = tuple(day.business_date for day in deposits)
+            run = ReconciliationResult(start, end, selected, deposits)
             db.save_reconciliation(
                 con,
                 start,
@@ -201,9 +217,9 @@ def reconcile(
                 config.snapshot(),
                 datetime.now(UTC).isoformat(timespec="seconds"),
                 dates,
-                flags,
+                run.flags,
             )
-    return ReconciliationResult(start, end, selected, deposits)
+    return run
 
 
 def explain_shift(database_path: str | Path, shift_code: str) -> ShiftExplanation:
@@ -211,6 +227,7 @@ def explain_shift(database_path: str | Path, shift_code: str) -> ShiftExplanatio
     _require_database(database_path)
     with closing(db.connect(database_path)) as con:
         with con:
+            db.require_import_schema(con)
             shifts = db.load_shifts(con)
             shift = next(
                 (shift for shift in shifts if shift.shift_code == shift_code), None
@@ -231,13 +248,13 @@ def explain_shift(database_path: str | Path, shift_code: str) -> ShiftExplanatio
             result = next(
                 result for result in day_results if result.shift.id == shift.id
             )
-            saved_flags = tuple(
-                flag
-                for flag in db.load_flags(con, shift.business_date, shift.business_date)
-                if flag.shift_id == shift.id
-            )
+            day_flags = db.load_flags(con, shift.business_date, shift.business_date)
+            saved_flags = tuple(flag for flag in day_flags if flag.shift_id == shift.id)
+            daily_flags = tuple(flag for flag in day_flags if flag.shift_id is None)
             result = replace(result, flags=saved_flags)
-            daily_deposit = expected_deposit(day_results, config)
+            daily_deposit = expected_deposit(
+                day_results, config, db.load_register_ids(con)
+            )
             contribution = (
                 (
                     result.counted_cents
@@ -247,4 +264,4 @@ def explain_shift(database_path: str | Path, shift_code: str) -> ShiftExplanatio
                 if daily_deposit is not None
                 else None
             )
-    return ShiftExplanation(result, config, contribution, daily_deposit)
+    return ShiftExplanation(result, config, contribution, daily_deposit, daily_flags)

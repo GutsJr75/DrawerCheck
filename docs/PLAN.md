@@ -1,6 +1,6 @@
 # DrawerCheck plan
 
-Status: M0 through M3 complete. M3 was approved and verified on 2026-10-22.
+Status: M0 through M3 complete, including the approved M3 repair block on 2026-10-22.
 Next: M4, shared report data and text, HTML, and CSV reports.
 Wait for the user's **next** before starting M4. See `docs/LEARNING_LOG.md`
 for the checks actually run.
@@ -139,9 +139,19 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 33. **Keep generated demo bytes stable across checkouts.** Write the generated CSVs with LF line endings and pin `data/demo/*.csv` to LF in `.gitattributes`. This avoids Git whitespace warnings and makes the committed-input comparison reliable across operating systems. The importer still accepts CRLF, BOMs, and the other supported spreadsheet variations; hashes always describe the actual input bytes.
 
-34. **Keep M3 policies exact and saved results explainable.** Validate settings for both file and Python callers. Partial TOML files override defaults; unknown keys/sections and invalid types are errors. Store the percentage as a canonical decimal string in a sorted JSON snapshot, without binary floats. `explain` returns shared calculation data using that saved snapshot and the saved flags; only the CLI prints it. New databases now create ten STRICT tables. Existing nine-table M2 databases gain `reconciled_dates` within the successful reconciliation transaction. Mark only selected dates containing shifts; an empty selection processes zero shifts without inventing completion dates.
+34. **Keep M3 policies exact and saved results explainable.** Validate settings for both file and Python callers. Partial TOML files override defaults; unknown keys/sections and invalid types are errors. Store the percentage as a canonical decimal string in a sorted JSON snapshot, without binary floats. `explain` returns shared calculation data using that saved snapshot and the saved flags; only the CLI prints it. New databases now create ten STRICT tables. Existing nine-table M2 databases gain `reconciled_dates` within the successful reconciliation transaction. Mark only selected dates containing shifts; empty selections report an error without changing saved results.
 
 35. **Keep closing arithmetic separate from register timing.** Open shifts have unknown closing amounts and do not require closing count/POS records yet, but their open intervals participate in overlap checks. Invalid closed intervals receive their own R09 flag and are excluded from overlap comparisons; otherwise available cash amounts remain usable. Adjacent intervals are not overlaps. Multiple closing shifts on one register/day receive R09 flags and make the daily deposit unknown. Calculate denomination products and aggregate sums in Python integers to avoid SQLite aggregate overflow. M3 calculates complete daily expected deposit amounts but performs no bank matching or repeated-shortage checks.
+
+36. **Bound policies before expensive numeric operations.** The approved M3 repair limits the review percentage to greater than 0 through 100, with at most six effective decimal places, and deposit lag to whole days from 0 through 31. Remove redundant trailing zeros without Decimal context rounding before formatting or creating fractions. Convert TOML numeric conversion failures to the shared config error. These are project limits, not standards; defaults remain unchanged. M5 must separately protect date-window arithmetic near the calendar's maximum date.
+
+37. **Treat the register input as the demo's expected daily roster.** Every register in `registers.csv` is expected on each business date present in the shift inputs. A missing shift produces one date-level R09 review flag per missing register and an unknown daily deposit. Preserve those flags in the same transaction as shift flags and include them in command totals and explanations. Never invent a shift or attach an absent register to another cashier. No operating schedule or entirely missing business date is inferred. Real inactive-register schedules remain outside the demo scope.
+
+38. **Preserve multiline free text while protecting terminal output.** Reject unsafe Unicode control/formatting characters and line separators in imported text, allowing LF, CR, and tab in free-text fields. Reject surrounding whitespace, tabs, and line breaks in ID/code columns, including references and optional verifier IDs, without silently trimming them. Use `text_safety.terminal_text` on CLI output and errors, including old database values and user-supplied paths. Render line breaks, tabs, and unsafe controls as visible escapes. M4 text reports must use the same helper; keep HTML escaping and CSV cell protection as separately required defenses.
+
+39. **Distinguish empty selections from invalid order and missing setup.** Explicit reversed endpoints remain an error. A one-sided or explicit range matching no shifts reports `No shifts match the requested date range.` and makes no result changes, including under new settings. Existing databases without the original input tables receive an import instruction before data reads; retain support for M2 databases without completion markers.
+
+40. **Do not mix the repaired review policy with old saved flags.** Settings snapshots include policy version 2. `explain` asks for reconciliation again when a snapshot predates this repair. A successful reconciliation automatically clears earlier-policy flags and markers before saving its range, even when the numeric settings match. After updating, run reconciliation without date filters to refresh all imported business dates. This is one small snapshot field, not a migration framework.
 
 ## Math and test commitments
 

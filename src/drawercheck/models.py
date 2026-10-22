@@ -70,6 +70,7 @@ class DailyDeposit:
 
     business_date: str
     expected_cents: int | None
+    flags: tuple[Flag, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -81,6 +82,13 @@ class ReconciliationResult:
     shifts: tuple[ShiftResult, ...]
     deposits: tuple[DailyDeposit, ...]
 
+    @property
+    def flags(self) -> tuple[Flag, ...]:
+        """Include both shift review leads and date-level integrity leads."""
+        return tuple(flag for result in self.shifts for flag in result.flags) + tuple(
+            flag for day in self.deposits for flag in day.flags
+        )
+
 
 @dataclass(frozen=True)
 class ShiftExplanation:
@@ -90,3 +98,4 @@ class ShiftExplanation:
     config: Config
     deposit_contribution_cents: int | None
     daily_deposit_cents: int | None
+    daily_flags: tuple[Flag, ...] = ()

@@ -123,6 +123,34 @@ def initialize(path: str | Path) -> None:
             create_schema(con)
 
 
+def require_import_schema(con: sqlite3.Connection) -> None:
+    """Give setup guidance when an existing database lacks the original input tables."""
+    tables = {
+        row["name"]
+        for row in con.execute("SELECT name FROM sqlite_schema WHERE type = 'table'")
+    }
+    required = {
+        "cashiers",
+        "registers",
+        "shifts",
+        "pos_totals",
+        "safe_drops",
+        "cash_counts",
+        "bank_deposits",
+        "flags",
+        "import_log",
+    }
+    if not required <= tables:
+        raise errors.ReconciliationError(errors.DATABASE_NOT_INITIALIZED)
+
+
+def load_register_ids(con: sqlite3.Connection) -> tuple[str, ...]:
+    """Read the roster of registers expected on each imported business date."""
+    return tuple(
+        row["id"] for row in con.execute("SELECT id FROM registers ORDER BY id")
+    )
+
+
 def load_shifts(con: sqlite3.Connection) -> tuple[Shift, ...]:
     """Read independent records without SQL sums that could overflow integer cents."""
     pos = {

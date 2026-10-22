@@ -106,11 +106,11 @@ def test_percentage_floor_rounding_and_cap(sales: int, threshold: int) -> None:
 def test_decimal_context_cannot_change_settings_or_results(tmp_path: Path) -> None:
     """Low external Decimal precision cannot round a saved percentage or its threshold."""
     path = tmp_path / "config.toml"
-    path.write_text("[tolerance]\nreview_percent_of_cash_sales = 1.23456789\n")
+    path.write_text("[tolerance]\nreview_percent_of_cash_sales = 1.234567\n")
     with localcontext() as context:
         context.prec = 2
         settings, _ = load_config(path)
-        assert settings.review_percent_of_cash_sales == Decimal("1.23456789")
+        assert settings.review_percent_of_cash_sales == Decimal("1.234567")
         assert settings.review_threshold(100000) == 1234
         assert config_from_snapshot(settings.snapshot()) == settings
     assert (

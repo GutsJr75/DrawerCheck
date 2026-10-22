@@ -79,6 +79,8 @@ negative expected cash, or multiple closing shifts on one register/day. Each
 issue has separate evidence. Adjacent shifts do not overlap. An open shift can
 overlap a later shift because its ending time is unknown. An invalid closed
 interval receives its own timestamp flag and is excluded from overlap checks.
+The daily check also flags any expected register with no shift on that date.
+That flag belongs to the date, with no invented shift or cashier.
 
 The thresholds are configurable example policies, not industry standards.
 R03, R06, and R07 are optional and remain unimplemented. R04 and R08 are M5 work.
@@ -112,10 +114,19 @@ day includes open shifts, unknown required amounts, or duplicate closing shifts,
 its expected deposit is unknown. Drawer totals are not silently added twice.
 An invalid timestamp alone preserves the available monetary calculation.
 
+For this demo, `registers.csv` lists every register expected on each business
+date present in the shift inputs. If R2 has no shift on a date, R1's amount
+cannot stand in for the whole day: the deposit and displayed contribution are
+unknown, with a date-level R09 review flag identifying R2. Real stores can have
+inactive registers; that needs an operating schedule, which is outside this
+demo. A date with no imported shifts at all is not inferred as a business day.
+
 The helper calculates expected amounts only. It does not yet compare them with
 bank entries. M5 adds simplified matching over calendar-day windows. Combined
 deposits, weekends, holidays, and ownership of equal-amount deposits will remain
 limitations of that simplified model.
+The M5 date-window calculation must also handle dates near the end of the
+supported calendar; a small lag alone does not prevent date overflow.
 
 ## Settings and repeatable runs
 
@@ -124,11 +135,19 @@ the settings present; unknown sections/keys, wrong types, negative settings,
 invalid threshold ordering, and invalid history windows are errors. A missing
 file uses defaults with one informational notice. An unreadable or malformed
 existing file does not silently fall back.
+Percentages must be greater than 0 and at most 100, with at most six decimal
+places after removing redundant trailing zeros. The stored Decimal is reduced
+before any fixed-point formatting or fraction conversion, so enormous exponents
+cannot inflate settings snapshots or calculations. Deposit lag is a whole
+number from 0 through 31 days. Numeric parsing failures use the shared config
+error. These limits are project choices, not industry standards.
 
 The `reconciled_dates` table records each selected date containing shifts,
 the effective settings, and a completion time. This makes a checked day with
 zero flags distinguishable from an unchecked day. An empty date selection
-processes zero shifts and creates no completion markers. Missing date endpoints
+reports `No shifts match the requested date range.` without changing saved
+results. Only explicitly reversed endpoints receive the reversed-range error.
+Missing date endpoints
 come from the earliest/latest imported shift dates, never today's date.
 
 Flags and markers for the inclusive selected range are replaced in one
@@ -143,6 +162,24 @@ settings and flags, rather than rereading a possibly changed config file. It
 recalculates the displayed amounts from the imported records under those saved
 settings. Existing M2 databases gain the completion table on successful
 reconciliation, without changing imported data.
+Snapshots now include review-policy version 2. Earlier M3 results need a fresh
+`reconcile` before `explain` can use them. The next successful reconciliation
+clears old-policy results even if the numeric settings are unchanged. Run it
+without date filters after updating to refresh the full imported history.
+
+## Safe text and identifiers
+
+ID and shift-code columns reject surrounding whitespace, tabs, and line breaks
+in both defining rows and references. Values are rejected rather than trimmed,
+so the importer never silently merges different records. Ordinary spaces within
+free text and quoted multiline names or notes remain valid.
+
+Text fields reject terminal controls, including escape codes, and invisible
+formatting or line-separator characters. Free-text LF, CR, and tab characters
+are kept in the database. The shared `terminal_text` helper renders them as
+visible `\n`, `\r`, and `\t` escapes on one output line. CLI errors and existing
+database text also pass through this protection. M4's text output must reuse
+the helper; HTML escaping and CSV formula protection remain separate checks.
 
 ## Try the new commands
 

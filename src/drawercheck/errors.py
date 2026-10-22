@@ -64,17 +64,34 @@ CONFIG_KEY = "Unknown config setting {section}.{name}. Check config.toml."
 CONFIG_INTEGER = (
     "Config {name} must be a nonnegative whole number within SQLite's integer range."
 )
-CONFIG_PERCENT = "Config review_percent_of_cash_sales must be a positive finite number."
+CONFIG_PERCENT = (
+    "Config review_percent_of_cash_sales must be greater than 0 and at most 100, "
+    "with at most six decimal places."
+)
+CONFIG_LAG = "Config max_lag_days must be a whole number from 0 through 31."
+UNSAFE_TEXT = "Text contains an unsafe control or formatting character."
+INVALID_IDENTIFIER = (
+    "IDs and shift codes cannot contain line breaks or tabs, "
+    "or start or end with whitespace."
+)
 CONFIG_THRESHOLDS = (
     "Config must satisfy within_tolerance_cents < warn_cents <= review_cents."
 )
 CONFIG_HISTORY = "Config repeat_short must satisfy 1 <= min_shifts <= window."
 DATABASE_NOT_FOUND = "Database {path} not found. Run 'drawercheck import' first."
+DATABASE_NOT_INITIALIZED = (
+    "Database is not initialized for DrawerCheck. "
+    "Run 'drawercheck import --dir data/demo' with the same --db path first."
+)
 NO_SHIFTS = "No shifts found. Import shift data before reconciliation."
+NO_SHIFTS_IN_RANGE = "No shifts match the requested date range."
 INVALID_RANGE_DATE = "Invalid {option} date {value!r}. Use YYYY-MM-DD."
 REVERSED_RANGE = "The --from date must be on or before the --to date."
 UNKNOWN_SHIFT = "Unknown shift code {shift_code!r}. Check the imported shift codes."
 NOT_RECONCILED = "No flags found. Run `drawercheck reconcile` first."
+RESULTS_OUTDATED = (
+    "Saved results use an earlier review policy. Run 'drawercheck reconcile' again."
+)
 RECONCILED = (
     "Reconciled {shifts} shifts from {start} to {end}; saved {flags} review flags."
 )

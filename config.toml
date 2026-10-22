@@ -3,7 +3,7 @@
 within_tolerance_cents = 100
 warn_cents = 500
 review_cents = 2000
-review_percent_of_cash_sales = 1.0
+review_percent_of_cash_sales = 1.0 # Greater than 0 through 100; at most six decimal places.
 
 [repeat_short]
 min_shifts = 3
@@ -17,4 +17,4 @@ suggest_drop_if_cash_sales_cents = 40000 # Inactive until R06 is requested.
 
 [deposits]
 retained_float_per_register_cents = 20000
-max_lag_days = 3
+max_lag_days = 3 # Whole calendar days from 0 through 31.

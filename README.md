@@ -105,10 +105,20 @@ drawercheck explain 2026-09-03-R1 --db another-demo.db
 informational notice; an invalid existing file is an error. Repeating a run
 replaces that range's results. Changing settings clears earlier results so
 different policies cannot be mixed. New imported records also clear results.
+Percentages must be greater than 0 and at most 100, with at most six decimal
+places. Deposit lag must be a whole number from 0 through 31 days. These are
+project limits. An empty date selection gives a specific error and preserves
+saved results. A database without the required tables gives import guidance.
+
+After updating from the original M3 version, run `drawercheck reconcile` again
+without date filters to refresh all saved results under the repaired policy.
 
 Missing counts remain unknown, while an actual count of zero stays zero. Open
 shifts are excluded from closing calculations. Daily expected deposit amounts
 are calculated only for complete days; bank matching is not implemented yet.
+For this demo, every register listed in `registers.csv` is expected on every
+business date present in the shift inputs. A missing register's shift makes
+the daily deposit unknown and produces a date-level R09 review flag.
 See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
 
 ## CSV import behavior
@@ -118,6 +128,10 @@ See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
   Column order may vary. Missing, extra, and duplicate headers are errors.
 - UTF-8 files may include an Excel byte-order mark. Quoted commas, quoted
   newlines, Windows line endings, and fully blank records are supported.
+- IDs and shift codes must not have surrounding whitespace, line breaks, or
+  tabs. Unsafe control and invisible formatting characters are rejected in
+  text fields. Multiline free text is preserved; terminal output displays its
+  line breaks and tabs as visible escapes, so a note cannot fake output lines.
 - Money must use exactly two decimal places. Quantities must be nonnegative
   whole numbers, and counts may use only the specified bills and coins.
 - Each validation error names the file, physical starting line, column, and
@@ -151,7 +165,9 @@ banking, compliance, or accounting expertise, and it is not accounting or legal
 advice. Configurable thresholds are examples,
 not industry standards.
 
-The supported closing model is one shift per register per business day.
+The supported closing model is one shift per listed register per imported
+business date. There is no register operating schedule or store calendar;
+a day absent from the shift inputs cannot be inferred automatically.
 Bank matching will be simplified; combined deposits and real banking calendars
 are outside the MVP. There are no real POS or bank integrations.
 
