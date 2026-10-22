@@ -6,7 +6,7 @@ from contextlib import closing
 from pathlib import Path
 
 from drawercheck import errors
-from drawercheck.models import Flag, PosTotals, Shift
+from drawercheck.models import BankDeposit, Flag, PosTotals, Shift
 
 MIN_SQLITE_VERSION = (3, 37, 0)
 _RECONCILED_DATES_SCHEMA = """CREATE TABLE IF NOT EXISTS reconciled_dates (
@@ -187,6 +187,14 @@ def load_shifts(con: sqlite3.Connection) -> tuple[Shift, ...]:
         for row in con.execute(
             "SELECT * FROM shifts ORDER BY business_date, opened_at, shift_code"
         )
+    )
+
+
+def load_bank_deposits(con: sqlite3.Connection) -> tuple[BankDeposit, ...]:
+    """Read individual bank entries in deterministic date and identity order."""
+    return tuple(
+        BankDeposit(**dict(row))
+        for row in con.execute("SELECT * FROM bank_deposits ORDER BY deposit_date, id")
     )
 
 

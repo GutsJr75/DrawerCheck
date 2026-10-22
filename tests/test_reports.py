@@ -123,9 +123,9 @@ def small_database(tmp_path: Path) -> Path:
 
 
 def test_full_month_summary_and_saved_flags(report: ReportData) -> None:
-    """The M3 core results stay exact while reports add no M5 flags."""
+    """Reports include all required M5 flags and retain the exact shift amounts."""
     assert (
-        len(report.shifts) == 60 and len(report.flags) == 12 and len(report.days) == 30
+        len(report.shifts) == 60 and len(report.flags) == 16 and len(report.days) == 30
     )
     assert sum(day.balanced for day in report.days) == 52
     assert sum(day.short for day in report.days) == 6
@@ -135,7 +135,7 @@ def test_full_month_summary_and_saved_flags(report: ReportData) -> None:
         sum(day.info for day in report.days),
         sum(day.warn for day in report.days),
         sum(day.review for day in report.days),
-    ) == (2, 5, 5)
+    ) == (2, 7, 7)
     assert (
         next(
             day for day in report.days if day.business_date == "2026-09-25"
@@ -145,7 +145,10 @@ def test_full_month_summary_and_saved_flags(report: ReportData) -> None:
     assert report.generated_at == "2026-10-22T12:00:00+00:00"
     for render in (text.render, html.render):
         output = render(report)
-        assert "DEMO DATA ONLY" in output and "M5" in output
+        assert (
+            "DEMO DATA ONLY" in output and "simplified bank-deposit matching" in output
+        )
+        assert "arrive in M5" not in output
         assert "$518.75" in output and "$498.75" in output and "-$20.00" in output
 
 
@@ -664,7 +667,13 @@ def test_missing_register_daily_flag_reaches_every_report(demo_database: Path) -
             con.execute("DELETE FROM shifts WHERE id = ?", (shift_id,))
     reconcile(demo_database, Config(), "2026-09-02", "2026-09-02")
     report = load_report(demo_database, date="2026-09-02", generated_at=_GENERATED_AT)
-    assert len(report.flags) == 1 and report.flags[0].shift_id is None
+    assert len(report.flags) == 2 and all(
+        flag.shift_id is None for flag in report.flags
+    )
+    assert {flag.rule_code for flag in report.flags} == {
+        "R08_DEPOSIT",
+        "R09_DATA_INTEGRITY",
+    }
     assert report.days[0].review == 1 and report.days[0].expected_deposit_cents is None
     for render in (text.render, html.render):
         assert "R09_DATA_INTEGRITY" in render(report) and "unknown" in render(report)

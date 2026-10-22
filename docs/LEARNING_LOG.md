@@ -304,3 +304,54 @@ and ran `git diff --check`. The Frontend Design Premium static audit in strict
 mode reported no findings; its JSON output is at
 `/private/tmp/drawercheck-design-audit.json`. This is static evidence only, not
 browser or usability verification. No new tests were added for this docs update.
+
+## M5: Repeated shortages and bank deposits
+
+- Built: R04 rolling cashier-history checks and R08 greedy deposit matching;
+  stable bank-entry records and reads; full-history evaluation before date
+  filtering; bank-only dates in saved results and reports; policy-version 3
+  refresh handling; complete demo expectations and a regenerated HTML sample.
+- Learned: A date filter selects results, not the evidence needed to calculate
+  them. Matching must consume each bank entry once, leave ambiguity visible,
+  and preserve unknown cash. An exact amount can still belong to the wrong day,
+  so a concrete greedy-matching limitation belongs in the documentation.
+- Interview question: How do you keep a single-day reconciliation consistent
+  with a full-month run when cashier history and deposit windows cross dates?
+
+Verified locally on 2026-10-22 using the existing Python 3.13.5 / SQLite 3.47.1
+environment. No dependencies, schema tables, committed input CSVs, optional
+rules, or web features were added or changed.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 542 tests, with ResourceWarning and cleanup warnings still treated as errors. |
+| `.venv/bin/pytest --collect-only -q` | PASS: 542 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: 44 files already formatted. |
+| Full-pipeline golden test and documented scenario comparison | PASS: exactly 16 flags for S1 through S8, including date, shift, rule, and severity, with no optional or extra flags. Totals are 2 info, 7 warn, and 7 review. |
+| R04 boundary/history tests | PASS: warning boundary, current-shift inclusion, short histories, custom settings, rolling expiry, other cashiers, unknown/open records, later nonshort records, same-date ordering, filtered runs, and saved explanations. |
+| R08 matching tests | PASS: exact matches, signed mismatch/review boundaries, missing/unexpected entries, inclusive lag limits, ambiguity, stable exact-match preference/ties, unknown/nonpositive daily amounts, calendar-end clipping, and the equal-amount greedy failure example. |
+| Range, policy, and bank-only tests | PASS: filtered matching cannot reuse an earlier day's entry; M4 snapshots require refreshing; dates without shifts have completion markers and exports without invented business activity or cashier records. |
+| S9 repeated-import test | PASS: every application table count, saved flags, settings, and completion timestamps remain unchanged when all seven files are skipped. Reconciliation repeats without duplicate flags. |
+| Installed CLI subprocess demo in a temporary directory | PASS: generated and imported 60 shifts, reconciled twice, exported text/HTML/CSV, and verified the worked shift plus pattern and deposit explanations. The CSV has 16 data rows; repeated import skips seven files and preserves all 30 completion dates. |
+| Refreshed `examples/sample_report.html` | PASS: actual installed CLI export; matches a fresh full-demo report except for generation time. Shows all six required rules, no scripts/external assets, an unknown September 25 expected deposit, and the matching-limit notice. |
+| `PRAGMA foreign_key_check` after the installed CLI demo | PASS: no broken references. |
+
+Final source/document checks passed: `git diff --check`, local Markdown links,
+prohibited-punctuation checks, public-function docstrings, unchanged original
+brief and demo CSVs, and instruction-file limits. The Frontend Design Premium
+strict static audit reported no findings. A final private helper-name cleanup
+was followed by all 14 pattern tests and both Ruff checks, which passed.
+
+Reports read saved flags instead of rerunning matching. Unexpected deposits are
+dated by the bank entry, so default ranges include observed bank dates after
+the last shift. No store operating calendar is inferred. Missing-deposit flags
+refer to the imported dataset, with no claim that a real-world deadline passed.
+
+Run `drawercheck reconcile` without date filters after updating from M3/M4 to
+refresh older saved results. Bank matching remains deliberately simplified;
+combined deposits, real banking calendars, and equal-amount ownership are not
+resolved. Browser appearance, remote CI, the fresh-install version matrix, and
+public deployment are not claimed as verified in this milestone.
+
+Next milestone: **M6**, after the user says **next**.

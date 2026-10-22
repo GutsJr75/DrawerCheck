@@ -6,11 +6,11 @@ counted cash with POS totals, flags differences for human review, and explains
 each shift. It exports terminal text, a self-contained HTML report, and a CSV
 of review flags.
 
-**Current milestone: M4, reports and usable demo complete.** Installation, exact
+**Current milestone: M5, patterns and deposits complete.** Installation, exact
 money handling, database tables, fake demo generation, validated imports, cash
-calculations, four review rules, shift explanations, and three report formats
-are implemented.
-Repeated-shortage checks and bank matching arrive in M5.
+calculations, six required review rules, shift explanations, and three report
+formats are implemented, including repeated-shortage checks and simplified bank
+matching. M6 core polish is next.
 
 A public browser demo is now planned after the core is complete. Visitors will
 be able to run the built-in fake-data example or upload synthetic CSVs, inspect
@@ -78,9 +78,10 @@ Start in the project folder with Python 3.12 or newer. All inputs below are fake
    ```
 
 The [committed sample report](examples/sample_report.html) contains the same
-60 shifts and 12 core flags. It works offline, with no external assets or scripts.
+60 shifts and 16 review flags. It works offline, with no external assets or scripts.
 The file includes daily summaries, review leads, cashier totals, and shift
-calculations. It explicitly labels pattern and bank-matching rules as M5 work.
+calculations, including repeated-shortage and bank-deposit review leads. It
+explains the limits of simplified bank matching.
 
 **Screenshot placeholder:** a real report screenshot will be added after a
 browser capture is available. The M4 browser preview was blocked by the tool's
@@ -114,8 +115,8 @@ drawercheck import --dir data/another-demo --db another-demo.db
 
 See the [demo scenarios](docs/DEMO_SCENARIOS.md) for the deliberately constructed
 shortages, overage, deposit inputs, and incomplete records. M2 verified the
-input conditions; M3 now checks the 12 core flags. Pattern and deposit
-flags remain pending M5.
+input conditions; M5 verifies all 16 required flags, including patterns and
+deposit exceptions, with no unexpected extras.
 
 ## Reconcile and explain a shift
 
@@ -147,12 +148,13 @@ places. Deposit lag must be a whole number from 0 through 31 days. These are
 project limits. An empty date selection gives a specific error and preserves
 saved results. A database without the required tables gives import guidance.
 
-After updating from the original M3 version, run `drawercheck reconcile` again
-without date filters to refresh all saved results under the repaired policy.
+After updating from M3/M4, run `drawercheck reconcile` again without date filters
+to refresh all saved results under M5's policy version 3.
 
 Missing counts remain unknown, while an actual count of zero stays zero. Open
 shifts are excluded from closing calculations. Daily expected deposit amounts
-are calculated only for complete days; bank matching is not implemented yet.
+are calculated only for complete days. Bank matching compares positive expected
+amounts with imported entries using the configured calendar-day lag.
 For this demo, every register listed in `registers.csv` is expected on every
 business date present in the shift inputs. A missing register's shift makes
 the daily deposit unknown and produces a date-level R09 review flag.
@@ -246,13 +248,20 @@ not industry standards.
 The supported closing model is one shift per listed register per imported
 business date. There is no register operating schedule or store calendar;
 a day absent from the shift inputs cannot be inferred automatically.
-Bank matching will be simplified; combined deposits and real banking calendars
-are outside the MVP. There are no real POS or bank integrations.
+Bank matching is deliberately simplified. It processes days in order and consumes
+each matched entry once. Equal-amount days and overlapping windows can assign an
+entry to the wrong day. For example, if September 1 and 2 each expect $100.00 and
+the only $100.00 entry is dated September 2, the earlier day takes it, even if its
+reference names September 2. The later day is then flagged as missing.
+Combined deposits, several deposits added together, and real banking calendars
+are outside the MVP. Weekends and holidays use calendar-day lag. Missing-deposit
+flags describe the imported dataset, not a real-world overdue payment. There
+are no real POS or bank integrations.
 
 See the [milestone plan](docs/PLAN.md) for scope and decisions, and the
 [learning log](docs/LEARNING_LOG.md) for completed work and verification.
 The [original project brief](docs/PROJECT_BRIEF.md) preserves the input contracts
 and scenario requirements for future work. Its original web/hosting exclusions
 were superseded by the public-frontend amendment in the current plan.
-Repeated-shortage checks and bank matching remain M5 work. The public app
-remains M7/M8 work.
+M5's required rules are complete. M6 core polish and the M7/M8 public app remain
+future work.

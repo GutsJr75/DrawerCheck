@@ -156,13 +156,14 @@ def test_independent_registers_and_combined_daily_deposit(worked_shift: Shift) -
     assert expected_deposit(results, Config(), ("R1", "R2")) == 239750
 
 
-def test_full_demo_has_exactly_the_m3_flags(demo_database: Path) -> None:
-    """S1, S2, S4, S7, and S8 match, with no premature M5 or optional flags."""
+def test_full_demo_retains_exactly_the_m3_flags(demo_database: Path) -> None:
+    """The original core flags remain unchanged when required M5 rules are added."""
     run = reconcile(demo_database, Config())
     actual = {
         (result.shift.shift_code, flag.rule_code, flag.severity)
         for result in run.shifts
         for flag in result.flags
+        if flag.rule_code != "R04_REPEAT_SHORT"
     }
     expected = {
         ("2026-09-03-R1", "R01_VARIANCE", "review"),
@@ -178,7 +179,8 @@ def test_full_demo_has_exactly_the_m3_flags(demo_database: Path) -> None:
         for day in ("05", "09", "14", "18")
     }
     assert actual == expected
-    assert sum(len(result.flags) for result in run.shifts) == 12
+    assert len(actual) == 12
+    assert len(run.flags) == 16
     assert len(run.shifts) == 60
     assert len(_saved(demo_database)[1]) == 30
     deposits = {day.business_date: day.expected_cents for day in run.deposits}

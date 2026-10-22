@@ -29,7 +29,7 @@ def _build_parser() -> _ArgumentParser:
     parser = _ArgumentParser(
         prog="drawercheck",
         description="Offline cash-drawer checks for Demo Store #001 (fake data only).",
-        epilog="Repeated-shortage checks and bank matching arrive in M5.",
+        epilog="Includes repeated-shortage checks and simplified bank-deposit matching.",
     )
     commands = parser.add_subparsers(dest="command")
     initialize = commands.add_parser(
@@ -139,7 +139,9 @@ def _print_explanation(explanation: ShiftExplanation) -> None:
     _print_line(
         f"  Expected daily deposit (all registers): {_money_or_unknown(explanation.daily_deposit_cents)}"
     )
-    _print_line("Bank matching and repeated-shortage checks arrive in M5.")
+    _print_line(
+        "Includes repeated-shortage checks and simplified bank matching. Review daily leads for deposit exceptions."
+    )
     _print_line("Review leads, not findings about a person:")
     if not result.flags:
         _print_line("  No review flags for this shift.")

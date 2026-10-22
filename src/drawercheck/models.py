@@ -65,6 +65,16 @@ class ShiftResult:
 
 
 @dataclass(frozen=True)
+class BankDeposit:
+    """One imported bank entry, identified independently of its amount or reference."""
+
+    id: int
+    deposit_date: str
+    amount_cents: int
+    reference: str | None
+
+
+@dataclass(frozen=True)
 class DailyDeposit:
     """A calculated daily amount, with None indicating incomplete inputs."""
 

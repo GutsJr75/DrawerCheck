@@ -9,7 +9,7 @@ from pathlib import Path
 from drawercheck import errors
 from drawercheck.money import MAX_CENTS
 
-_POLICY_VERSION = 2
+_POLICY_VERSION = 3
 
 _SECTIONS = {
     "tolerance": (

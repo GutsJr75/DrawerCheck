@@ -1,9 +1,9 @@
 # How DrawerCheck works
 
 DrawerCheck is a personal learning project for **Demo Store #001**, using only
-fictional records. M3 compares expected closing cash with an independent cash
-count and saves neutral leads for review. M4 adds text, HTML, and CSV reports. Repeated-shortage
-checks and bank-deposit matching arrive in M5.
+fictional records. It compares expected closing cash with an independent cash
+count and saves neutral leads for review. Reports are available as text, HTML,
+and CSV. M5 adds repeated-shortage checks and simplified bank-deposit matching.
 
 ## Follow the cash
 
@@ -53,7 +53,7 @@ R01 requests review of the $20.00 difference. R02 suggests checking for a single
 $20 bill. R05 does not appear because both a verifier and a note are present.
 These are review leads, not findings about a person.
 
-## M3 rules
+## Required rules
 
 **R01_VARIANCE:** No variance flag is generated within tolerance. Above tolerance
 but below the warning amount, the flag is info. At the warning amount it becomes
@@ -73,6 +73,15 @@ default $20.00 in either direction, requires both a verifier and a nonblank note
 Missing either produces a review flag describing what is absent. A smaller
 difference does not trigger this rule merely because those fields are blank.
 
+**R04_REPEAT_SHORT:** With the defaults, a warn lead appears when at least three
+of a cashier's last ten shifts were short by $5.00 or more. Include the current
+shift, order by business date, opening time, and shift code, and exclude later
+shifts. Use the actual window size if fewer shifts exist. Unknown/open shifts
+occupy places in the window but do not count as shortages. A later balanced,
+over, or unknown shift can still show the lead because its recent history
+qualifies. Evidence lists the window's shift codes and each qualifying shortage.
+This is a request to check counts and records, not a conclusion about a person.
+
 **R09_DATA_INTEGRITY:** Review flags identify a closed shift without count rows
 or POS totals, a closing time not after opening, overlapping register shifts,
 negative expected cash, or multiple closing shifts on one register/day. Each
@@ -83,7 +92,7 @@ The daily check also flags any expected register with no shift on that date.
 That flag belongs to the date, with no invented shift or cashier.
 
 The thresholds are configurable example policies, not industry standards.
-R03, R06, and R07 are optional and remain unimplemented. R04 and R08 are M5 work.
+R03, R06, and R07 are optional and remain unimplemented. R08 is described below.
 
 ## Missing records and open shifts
 
@@ -96,7 +105,7 @@ An open shift has status `open` and no closing arithmetic. It does not receive a
 missing-closing-count or missing-POS flag merely because it is still open.
 Other integrity checks, such as overlapping register use, still apply.
 
-## Expected deposits, before bank matching
+## Expected deposits and bank matching
 
 M3 calculates the cash expected to be prepared for deposit:
 
@@ -121,12 +130,42 @@ unknown, with a date-level R09 review flag identifying R2. Real stores can have
 inactive registers; that needs an operating schedule, which is outside this
 demo. A date with no imported shifts at all is not inferred as a business day.
 
-The helper calculates expected amounts only. It does not yet compare them with
-bank entries. M5 adds simplified matching over calendar-day windows. Combined
-deposits, weekends, holidays, and ownership of equal-amount deposits will remain
-limitations of that simplified model.
-The M5 date-window calculation must also handle dates near the end of the
-supported calendar; a small lag alone does not prevent date overflow.
+**R08_DEPOSIT:** Calculate expected amounts first, then compare them with all
+imported bank entries using this simplified algorithm:
+
+1. Process business dates in order. Skip unknown, zero, and negative expected
+   amounts. Search unmatched bank entries from that date through the configured
+   lag, inclusive. Clamp the end to December 31, 9999 to avoid calendar overflow.
+2. Prefer an exact amount match. Break ties by bank-entry date, then database ID.
+   Consume that entry once and produce no flag for the match.
+3. With exactly one nonmatching candidate, consume it and flag the signed
+   difference, recorded minus expected. Use review at or above `review_cents`
+   in absolute value, otherwise warn. Sales percentages do not set this threshold.
+4. With no candidates, produce a review flag for a missing deposit in the
+   imported records. This does not claim a real-world deadline has passed.
+5. With multiple nonmatching candidates, produce a review flag for an ambiguous
+   match and leave them available. Do not combine amounts or guess a candidate.
+6. Remaining entries produce info flags on their bank-entry dates, including
+   dates with no shifts. An incomplete day's bank entry can remain unexpected
+   because the program cannot establish a matching expected amount.
+
+Matching always uses the full imported history before selecting flags to save
+for a date range. This prevents a filtered run from reusing an entry consumed
+by an earlier day. References are retained as evidence for unexpected entries;
+they are not interpreted as authoritative matching instructions.
+
+### A concrete greedy-matching limitation
+
+Suppose September 1 and 2 each expect $100.00. There is only one $100.00 bank
+entry dated September 2, whose reference says it belongs to September 2. With
+a three-day lag, the algorithm gives it to September 1 first and flags
+September 2 as missing. A person may know the reference means September 1 was
+actually the missing day. The program does not establish that ownership.
+
+Overlapping windows can similarly pair a unique mismatch with the wrong day.
+One deposit covering two days is not handled, and multiple smaller deposits
+are not added together. Weekends and holidays use calendar-day lag only. Real
+bank reconciliation requires more context than this demo provides.
 
 ## Settings and repeatable runs
 
@@ -142,13 +181,16 @@ cannot inflate settings snapshots or calculations. Deposit lag is a whole
 number from 0 through 31 days. Numeric parsing failures use the shared config
 error. These limits are project choices, not industry standards.
 
-The `reconciled_dates` table records each selected date containing shifts,
+The `reconciled_dates` table records each selected date containing shifts or bank entries,
 the effective settings, and a completion time. This makes a checked day with
 zero flags distinguishable from an unchecked day. An empty date selection
 reports `No shifts match the requested date range.` without changing saved
 results. Only explicitly reversed endpoints receive the reversed-range error.
 Missing date endpoints
-come from the earliest/latest imported shift dates, never today's date.
+come from the earliest/latest imported shift or bank-entry dates, never today's
+date. Bank-only dates can be checked and reported with zero shifts and unknown
+expected cash. They do not create inferred business days or missing-register
+flags, and they are not counted as incomplete closing days in the HTML summary.
 
 Flags and markers for the inclusive selected range are replaced in one
 transaction. A failure restores the previous run. Repeating the same inputs and
@@ -162,7 +204,7 @@ settings and flags, rather than rereading a possibly changed config file. It
 recalculates the displayed amounts from the imported records under those saved
 settings. Existing M2 databases gain the completion table on successful
 reconciliation, without changing imported data.
-Snapshots now include review-policy version 2. Earlier M3 results need a fresh
+Snapshots now include review-policy version 3. Earlier M3/M4 results need a fresh
 `reconcile` before `explain` can use them. The next successful reconciliation
 clears old-policy results even if the numeric settings are unchanged. Run it
 without date filters after updating to refresh the full imported history.
@@ -178,8 +220,8 @@ Text fields reject terminal controls, including escape codes, and invisible
 formatting or line-separator characters. Free-text LF, CR, and tab characters
 are kept in the database. The shared `terminal_text` helper renders them as
 visible `\n`, `\r`, and `\t` escapes on one output line. CLI errors and existing
-database text also pass through this protection. M4's text output must reuse
-the helper; HTML escaping and CSV formula protection remain separate checks.
+database text also pass through this protection. Text reports reuse the helper;
+HTML escaping and CSV formula protection remain separate checks.
 
 ## Try the new commands
 
@@ -194,8 +236,8 @@ drawercheck explain 2026-09-03-R1 --db demo-m3.db
 Use `--from 2026-09-01 --to 2026-09-03` to select an inclusive range on
 `reconcile`, or `--config path/to/policy.toml` to choose settings. `explain`
 requires that the shift's business date has already been reconciled. The full
-default demo currently produces 12 M3 flags. See [demo scenarios](DEMO_SCENARIOS.md)
-for the exact current and future expectations.
+default demo produces 16 required flags. See [demo scenarios](DEMO_SCENARIOS.md)
+for the complete verified expectations.
 
 ## Reports from saved results
 
@@ -226,5 +268,7 @@ folder. A failed write preserves the previous report and cleans temporary
 output. Database paths, aliases, and SQLite sidecars are protected from being
 used as the output file. By default the selected format goes to stdout.
 
-All current reports explicitly say that R04 and R08 are M5 work. Daily deposit
-amounts in M4 are expected cash calculations, with no bank-match conclusion.
+Reports include R04 and R08 leads alongside the original rules. Daily expected
+deposits remain calculated amounts; the bank flags describe matching exceptions.
+The report notice explains that matching is greedy, uses calendar-day windows,
+and does not combine entries. Reports load saved flags without rerunning matching.

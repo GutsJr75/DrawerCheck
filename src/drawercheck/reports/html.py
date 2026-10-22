@@ -114,7 +114,9 @@ def _flags(report: ReportData) -> str:
 
 def render(report: ReportData) -> str:
     """Render an offline report with semantic tables, safe values, and light/dark styling."""
-    incomplete_days = sum(day.expected_deposit_cents is None for day in report.days)
+    incomplete_days = sum(
+        day.shifts > 0 and day.expected_deposit_cents is None for day in report.days
+    )
     daily = _table(
         "daily",
         "Completed dates; expected deposits are cash calculations, not bank matches",

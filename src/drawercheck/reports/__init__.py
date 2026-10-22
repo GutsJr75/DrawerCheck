@@ -14,9 +14,14 @@ from drawercheck import db, errors
 from drawercheck.config import Config, config_from_snapshot
 from drawercheck.models import DailyDeposit, Flag, ShiftResult
 from drawercheck.money import format_cents
-from drawercheck.reconcile import calculate_deposits, calculate_shifts, parse_range_date
+from drawercheck.reconcile import (
+    calculate_deposits,
+    calculate_shifts,
+    imported_dates,
+    parse_range_date,
+)
 
-STAGE_NOTICE = "Core checks only. Repeated-shortage checks (R04) and bank-deposit matching (R08) arrive in M5."
+STAGE_NOTICE = "Includes repeated-shortage checks (R04) and simplified bank-deposit matching (R08). Matching is greedy, does not combine deposits, and uses calendar-day windows. Expected deposits are calculated amounts; review bank flags for exceptions. Dates with zero shifts are bank-entry dates, not inferred business days."
 REVIEW_NOTICE = "Flags are leads for review, not findings about a person."
 VARIANCE_NOTICE = "Cashier totals include every known signed difference, including differences within tolerance. Unknown and open shifts are excluded from money totals."
 
@@ -171,16 +176,18 @@ def load_report(
         with con:
             db.require_import_schema(con)
             shifts = db.load_shifts(con)
-            if not shifts:
+            bank_entries = db.load_bank_deposits(con)
+            if not shifts and not bank_entries:
                 raise errors.ReconciliationError(errors.NO_SHIFTS)
-            start = start or min(shift.business_date for shift in shifts)
-            end = end or max(shift.business_date for shift in shifts)
+            all_dates = imported_dates(shifts, bank_entries)
+            start = start or all_dates[0]
+            end = end or all_dates[-1]
             selected = tuple(
                 shift for shift in shifts if start <= shift.business_date <= end
             )
-            if not selected:
+            dates = tuple(day for day in all_dates if start <= day <= end)
+            if not dates:
                 raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
-            dates = sorted({shift.business_date for shift in selected})
             snapshots = set()
             for day in dates:
                 snapshot = db.completion_snapshot(con, day)
@@ -204,7 +211,16 @@ def load_report(
                 for result in calculate_shifts(shifts, config)
                 if result.shift.id in selected_ids
             )
-            deposits = calculate_deposits(results, config, db.load_register_ids(con))
+            deposits = calculate_deposits(
+                results,
+                config,
+                db.load_register_ids(con),
+                tuple(
+                    entry
+                    for entry in bank_entries
+                    if start <= entry.deposit_date <= end
+                ),
+            )
             names = db.load_cashier_names(con)
     timestamp = generated_at if generated_at is not None else datetime.now(UTC)
     return ReportData(

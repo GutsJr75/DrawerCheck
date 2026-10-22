@@ -1,6 +1,6 @@
 """Calculate exact cash differences and atomically save neutral review leads."""
 
-from collections import defaultdict
+from collections import defaultdict, deque
 from contextlib import closing
 from dataclasses import replace
 from datetime import UTC, date, datetime
@@ -9,13 +9,14 @@ from pathlib import Path
 from drawercheck import db, errors
 from drawercheck.config import Config, config_from_snapshot
 from drawercheck.models import (
+    BankDeposit,
     DailyDeposit,
     ReconciliationResult,
     Shift,
     ShiftExplanation,
     ShiftResult,
 )
-from drawercheck.rules import evaluate_rules, missing_register_flags
+from drawercheck.rules import deposit_flags, evaluate_rules, missing_register_flags
 
 
 def expected_cash(shift: Shift) -> int | None:
@@ -45,6 +46,7 @@ def calculate_shift(
     config: Config,
     overlapping_codes: tuple[str, ...] = (),
     other_closing_codes: tuple[str, ...] = (),
+    history: tuple[ShiftResult, ...] = (),
 ) -> ShiftResult:
     """Preserve exact variance separately from the within-tolerance status."""
     expected, counted = expected_cash(shift), counted_cash(shift)
@@ -68,7 +70,7 @@ def calculate_shift(
         overlapping_codes,
         other_closing_codes,
     )
-    return replace(result, flags=evaluate_rules(result, config))
+    return replace(result, flags=evaluate_rules(result, config, history))
 
 
 def calculate_shifts(
@@ -96,8 +98,14 @@ def calculate_shifts(
                     continue
                 overlaps[left.id].append(right.shift_code)
                 overlaps[right.id].append(left.shift_code)
-    return tuple(
-        calculate_shift(
+    history: dict[str, deque[ShiftResult]] = defaultdict(
+        lambda: deque(maxlen=config.window)
+    )
+    results: dict[int, ShiftResult] = {}
+    for shift in sorted(
+        shifts, key=lambda item: (item.business_date, item.opened_at, item.shift_code)
+    ):
+        result = calculate_shift(
             shift,
             config,
             tuple(sorted(overlaps[shift.id])),
@@ -110,9 +118,11 @@ def calculate_shifts(
             )
             if shift.closed_at is not None
             else (),
+            tuple(history[shift.cashier_id]),
         )
-        for shift in shifts
-    )
+        results[shift.id] = result
+        history[shift.cashier_id].append(result)
+    return tuple(results[shift.id] for shift in shifts)
 
 
 def expected_deposit(
@@ -138,11 +148,14 @@ def calculate_deposits(
     results: tuple[ShiftResult, ...],
     config: Config,
     register_ids: tuple[str, ...],
+    bank_deposits: tuple[BankDeposit, ...] = (),
 ) -> tuple[DailyDeposit, ...]:
     """Calculate complete daily deposits and missing-register leads using one roster."""
     days: dict[str, list[ShiftResult]] = defaultdict(list)
     for result in results:
         days[result.shift.business_date].append(result)
+    for entry in bank_deposits:
+        days.setdefault(entry.deposit_date, [])
     return tuple(
         DailyDeposit(
             day,
@@ -151,9 +164,23 @@ def calculate_deposits(
                 day,
                 register_ids,
                 tuple(result.shift.register_id for result in day_results),
-            ),
+            )
+            if day_results
+            else (),
         )
         for day, day_results in sorted(days.items())
+    )
+
+
+def imported_dates(
+    shifts: tuple[Shift, ...], deposits: tuple[BankDeposit, ...]
+) -> tuple[str, ...]:
+    """List observed shift and bank-entry dates without inventing operating days."""
+    return tuple(
+        sorted(
+            {shift.business_date for shift in shifts}
+            | {entry.deposit_date for entry in deposits}
+        )
     )
 
 
@@ -195,21 +222,40 @@ def reconcile(
         with con:
             db.require_import_schema(con)
             shifts = db.load_shifts(con)
-            if not shifts:
+            bank_entries = db.load_bank_deposits(con)
+            if not shifts and not bank_entries:
                 raise errors.ReconciliationError(errors.NO_SHIFTS)
-            start = start or min(shift.business_date for shift in shifts)
-            end = end or max(shift.business_date for shift in shifts)
+            all_dates = imported_dates(shifts, bank_entries)
+            start = start or all_dates[0]
+            end = end or all_dates[-1]
             if start > end:
                 raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
+            results = calculate_shifts(shifts, config)
             selected = tuple(
                 result
-                for result in calculate_shifts(shifts, config)
+                for result in results
                 if start <= result.shift.business_date <= end
             )
-            if not selected:
+            dates = tuple(day for day in all_dates if start <= day <= end)
+            if not dates:
                 raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
-            deposits = calculate_deposits(selected, config, db.load_register_ids(con))
-            dates = tuple(day.business_date for day in deposits)
+            all_deposits = calculate_deposits(
+                results, config, db.load_register_ids(con), bank_entries
+            )
+            bank_flags = deposit_flags(all_deposits, bank_entries, config)
+            deposits = tuple(
+                replace(
+                    day,
+                    flags=day.flags
+                    + tuple(
+                        flag
+                        for flag in bank_flags
+                        if flag.business_date == day.business_date
+                    ),
+                )
+                for day in all_deposits
+                if start <= day.business_date <= end
+            )
             run = ReconciliationResult(start, end, selected, deposits)
             db.save_reconciliation(
                 con,

@@ -1,7 +1,7 @@
 # Public frontend plan
 
 Status: Scope approved on 2026-10-22; implementation is scheduled for M7/M8.
-M0 through M4 are complete. M5 is the next build milestone, awaiting `next`.
+M0 through M5 are complete. M6 is the next build milestone, awaiting `next`.
 
 ## User decision
 

@@ -4,11 +4,10 @@ These are deliberately constructed fictional records for **Demo Store #001**.
 The default command is `drawercheck demo-data --days 30 --seed 42`.
 The business dates are fixed at September 1 through September 30, 2026.
 
-M2 verified the input conditions below and repeated-import behavior. M3 now
-checks the exact set of 12 core flags, including S1, S2, S4, S7, and S8.
-In the table below, M3 rows are verified current results. M5 rows remain
-**expected future results**; repeated-shortage and bank-matching rules are not
-implemented yet. M5 will check the full expected flag set.
+M5 checks the exact set of 16 required flags: the original 12 core flags,
+two repeated-shortage flags, and two bank-deposit flags. The full pipeline test
+compares every date, shift, rule, and severity below and rejects extra flags.
+S9 also checks repeated imports after reconciliation, including saved results.
 
 ## Generated inputs
 
@@ -58,7 +57,8 @@ does not prove that a human followed blind-count practice.
   September 22 to 24 and match those earlier days.
 - **S8:** `2026-09-27-R2` opens at 08:00 and closes at 07:00 on the same date.
   The timestamp strings are well formed, so import accepts them. R09 flags
-  their ordering during reconciliation. This flag is verified in M3.
+  their ordering during reconciliation. Available cash amounts still match the
+  corresponding bank entry; the timestamp problem remains a separate review lead.
 - **S9:** Importing identical files twice leaves all table counts, the import
   log, and any saved results unchanged. This behavior is already tested in M2.
 
@@ -69,10 +69,10 @@ choices, not claims about real sales or cash-handling policies.
 
 ## Complete expected flags with default settings
 
-Each row is one expected flag after M5; the 12 M3 rows already pass exactly.
-Date-only deposit flags have no shift.
-The full-demo test in M5 must compare the complete set, including severity,
-and reject extra flags. S9 is an import check rather than a reconciliation flag.
+Each row is one verified flag under M5. The rule-milestone column records when
+the rule was introduced. Date-only deposit flags have no shift. S9 is an import
+check rather than a reconciliation flag. Tests check both the complete set and
+this table. The default totals are 2 info, 7 warn, and 7 review flags.
 
 | Scenario | Business date | Shift code | Rule code | Severity | Rule milestone |
 | --- | --- | --- | --- | --- | --- |
@@ -95,6 +95,19 @@ and reject extra flags. S9 is an import check rather than a reconciliation flag.
 
 These expectations assume the default thresholds and all required rules.
 The optional R03, R06, and R07 rules are not enabled or injected.
+
+All 28 bank entries are consumed exactly once. Twenty-seven match exactly;
+the September 21 entry is consumed as the single mismatched candidate. September
+16 produces the missing-deposit flag. September 25 has unknown expected cash,
+so it is not matched. There are no ambiguous or unexpected entries in the default
+demo; separate deposit tests cover those branches and the greedy limitations.
+
+R04 windows contain ten shifts on September 14 and September 18, with three and
+four qualifying shortages respectively. Earlier cashier shifts remain available
+when a report or reconciliation selects only one of those dates. In other
+datasets, later balanced or unknown shifts can retain the pattern lead while
+their rolling window still has enough known shortages. Unknown/open shifts
+occupy places in the window but do not count as shortages.
 
 ## Smaller runs and changed seeds
 

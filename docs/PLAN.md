@@ -1,15 +1,16 @@
 # DrawerCheck plan
 
-Status: M0 through M4 complete, including the M4 review repairs verified locally on 2026-10-22.
-Next: M5, repeated-shortage patterns and bank-deposit matching.
-Wait for the user's **next** before starting M5. See `docs/LEARNING_LOG.md`
+Status: M0 through M5 complete, verified locally on 2026-10-22.
+Next: M6, core polish and delivery.
+Wait for the user's **next** before starting M6. See `docs/LEARNING_LOG.md`
 for the checks actually run.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
 Design direction clarified on 2026-10-22: a minimal, professional interface for
 beginners, with focused views and optional explanations. The audience, wording,
 and usability decisions are recorded in `docs/WEB_PLAN.md` and `DESIGN.md`.
-This documentation update does not start M5 or web implementation.
+That design-only update did not authorize implementation; M5 was separately
+authorized afterward. Web implementation remains scheduled for M7/M8.
 
 ## Purpose and boundaries
 
@@ -155,7 +156,7 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 39. **Distinguish empty selections from invalid order and missing setup.** Explicit reversed endpoints remain an error. A one-sided or explicit range matching no shifts reports `No shifts match the requested date range.` and makes no result changes, including under new settings. Existing databases without the original input tables receive an import instruction before data reads; retain support for M2 databases without completion markers.
 
-40. **Do not mix the repaired review policy with old saved flags.** Settings snapshots include policy version 2. `explain` asks for reconciliation again when a snapshot predates this repair. A successful reconciliation automatically clears earlier-policy flags and markers before saving its range, even when the numeric settings match. After updating, run reconciliation without date filters to refresh all imported business dates. This is one small snapshot field, not a migration framework.
+40. **Do not mix the repaired review policy with old saved flags.** The M3 repair introduced policy version 2; M5 supersedes it with version 3 (decision 47). `explain` asks for reconciliation again when a snapshot predates the current policy. A successful reconciliation automatically clears earlier-policy flags and markers before saving its range, even when the numeric settings match. After updating, run reconciliation without date filters to refresh all imported dates. This is one small snapshot field, not a migration framework.
 
 41. **Name numeric config failures separately from file-format errors.** An integer too large for the parser or an exponent outside Decimal's supported range receives an out-of-range-number message, with guidance to check the integer size or exponent. Invalid UTF-8 and malformed TOML keep the existing file-format message. Test both classifications through config loading and the CLI; do not echo thousands of digits into an error.
 
@@ -168,6 +169,10 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 45. **Write complete reports without risking SQLite storage.** `--out` writes UTF-8 through a closed temporary file in the target directory and then replaces the target atomically. Clean partial output on failure and preserve the previous report. Refuse database paths, symlink/hardlink aliases, and SQLite journal/WAL/SHM paths. Parent directories must exist; translate failures with the shared report-output error. Default stdout output remains the selected format with no success-message contamination. The M4 sample was generated from all 60 fake shifts; browser preview was blocked by the tool's local-file URL policy, so visual/narrow-screen/print rendering is not claimed as verified. Keep the README screenshot placeholder explicit.
 
 46. **Close the M4 review findings before M5.** Keep the base CSS selector valid and give the demo banner a dark fallback background; check the generated stylesheet and regenerate the sample. New output files use exclusive temporary-file creation with mode `0666`, letting the OS apply the caller's umask without changing it. Existing reports retain their permission bits, applied to the closed temporary file before atomic replacement; failures preserve the old report. Retaining ownership and extended access rules is outside this guarantee. Keep the required unreconciled guidance and append the first unchecked selected date. Cache each report's shift-code lookup and share the unavailable-amount label between text and HTML, still delegating currency formatting to `money.py`.
+
+47. **Enable the required M5 rules under policy version 3.** Register R04 with the shift rules, keeping a bounded earlier-history window per cashier and including the current shift once. R08 processes all imported daily amounts and bank entries before filtering saved results, consumes exact or unique mismatch candidates once, and leaves ambiguous candidates unmatched. Clip calendar windows at `date.max`. Require a fresh reconciliation for M3/M4 saved policies so old flags cannot masquerade as M5 results. No persistent match table, optional rules, web code, or new dependencies are needed.
+
+48. **Keep bank-only dates visible without inventing business activity.** Default ranges and completion markers cover observed shift and bank-entry dates, including entries after the last shift and datasets containing only bank entries. Reports support zero-shift dates and display unknown expected cash without missing-register flags or inferred cashier records. Empty selections retain the existing central error. Bank-only dates do not count as incomplete closing days in the HTML metric. Read-only exports use saved flags; they never rerun greedy matching.
 
 ## Math and test commitments
 

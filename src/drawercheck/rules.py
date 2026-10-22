@@ -1,9 +1,10 @@
 """Pure review rules that never read files or change the database."""
 
+from datetime import date, timedelta
 from typing import Literal
 
 from drawercheck.config import Config
-from drawercheck.models import Flag, ShiftResult
+from drawercheck.models import BankDeposit, DailyDeposit, Flag, ShiftResult
 from drawercheck.money import format_cents
 
 
@@ -19,7 +20,9 @@ def _flag(
     )
 
 
-def variance_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
+def variance_flags(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
     """Classify a known variance using tolerance and exact percentage boundaries."""
     variance = result.variance_cents
     if variance is None or abs(variance) <= config.within_tolerance_cents:
@@ -47,7 +50,9 @@ def variance_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
     )
 
 
-def denomination_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
+def denomination_flags(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
     """Suggest checking one bill when its value exactly matches the difference."""
     variance = result.variance_cents
     if variance is None or abs(variance) not in (100, 500, 1000, 2000, 5000, 10000):
@@ -64,7 +69,9 @@ def denomination_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
     )
 
 
-def verification_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
+def verification_flags(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
     """Request review when a qualifying difference lacks a verifier or note."""
     variance = result.variance_cents
     if (
@@ -94,7 +101,9 @@ def verification_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
     )
 
 
-def integrity_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
+def integrity_flags(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
     """Identify missing closing inputs and inconsistent shift records."""
     shift = result.shift
     issues: list[tuple[str, dict[str, object]]] = []
@@ -160,7 +169,64 @@ def integrity_flags(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
     )
 
 
-RULES = (variance_flags, denomination_flags, verification_flags, integrity_flags)
+def repeat_short_flags(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
+    """Review qualifying shortages in this cashier's rolling window including this shift."""
+
+    def _order(item: ShiftResult) -> tuple[str, str, str]:
+        shift = item.shift
+        return shift.business_date, shift.opened_at, shift.shift_code
+
+    prior = sorted(
+        (
+            item
+            for item in history
+            if item.shift.cashier_id == result.shift.cashier_id
+            and _order(item) < _order(result)
+        ),
+        key=_order,
+    )
+    window = (*prior, result)[-config.window :]
+    shortages = tuple(
+        item
+        for item in window
+        if item.variance_cents is not None and item.variance_cents <= -config.warn_cents
+    )
+    if len(shortages) < config.min_shifts:
+        return ()
+    return (
+        _flag(
+            result,
+            "R04_REPEAT_SHORT",
+            "warn",
+            f"Short in {len(shortages)} of the last {len(window)} shifts for this cashier. "
+            "Pattern for manager review. Check counts and cash records for possible errors.",
+            {
+                "cashier_id": result.shift.cashier_id,
+                "window_shift_codes": [item.shift.shift_code for item in window],
+                "shortages": [
+                    {
+                        "shift_code": item.shift.shift_code,
+                        "variance_cents": item.variance_cents,
+                    }
+                    for item in shortages
+                ],
+                "min_shifts": config.min_shifts,
+                "window": config.window,
+                "warn_cents": config.warn_cents,
+            },
+        ),
+    )
+
+
+RULES = (
+    variance_flags,
+    denomination_flags,
+    repeat_short_flags,
+    verification_flags,
+    integrity_flags,
+)
 
 
 def missing_register_flags(
@@ -183,6 +249,100 @@ def missing_register_flags(
     )
 
 
-def evaluate_rules(result: ShiftResult, config: Config) -> tuple[Flag, ...]:
-    """Apply only the four rules authorized for the core reconciliation milestone."""
-    return tuple(flag for rule in RULES for flag in rule(result, config))
+def evaluate_rules(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
+    """Apply the required shift rules with the available earlier cashier history."""
+    return tuple(flag for rule in RULES for flag in rule(result, config, history))
+
+
+def deposit_flags(
+    days: tuple[DailyDeposit, ...], deposits: tuple[BankDeposit, ...], config: Config
+) -> tuple[Flag, ...]:
+    """Match daily amounts greedily once, retaining ambiguous entries for review."""
+    remaining = {
+        entry.id: entry
+        for entry in sorted(deposits, key=lambda entry: (entry.deposit_date, entry.id))
+    }
+    flags = []
+    for day in sorted(days, key=lambda item: item.business_date):
+        expected = day.expected_cents
+        if expected is None or expected <= 0:
+            continue
+        start = date.fromisoformat(day.business_date)
+        end = start + timedelta(days=min(config.max_lag_days, (date.max - start).days))
+        candidates = [
+            entry
+            for entry in remaining.values()
+            if day.business_date <= entry.deposit_date <= end.isoformat()
+        ]
+        exact = next(
+            (entry for entry in candidates if entry.amount_cents == expected), None
+        )
+        if exact is not None:
+            del remaining[exact.id]
+            continue
+        evidence: dict[str, object] = {
+            "expected_cents": expected,
+            "window_start": day.business_date,
+            "window_end": end.isoformat(),
+            "max_lag_days": config.max_lag_days,
+        }
+        severity: Literal["warn", "review"] = "review"
+        if len(candidates) == 1:
+            entry = candidates[0]
+            del remaining[entry.id]
+            difference = entry.amount_cents - expected
+            severity = "review" if abs(difference) >= config.review_cents else "warn"
+            evidence.update(
+                {
+                    "issue": "mismatch",
+                    "deposit_id": entry.id,
+                    "deposit_date": entry.deposit_date,
+                    "actual_cents": entry.amount_cents,
+                    "difference_cents": difference,
+                }
+            )
+            message = (
+                f"Bank deposit differs by {format_cents(difference)}: "
+                f"expected {format_cents(expected)}, recorded {format_cents(entry.amount_cents)}. "
+                "Review the imported records."
+            )
+        elif not candidates:
+            evidence["issue"] = "missing"
+            message = (
+                f"Missing deposit in imported records for expected {format_cents(expected)} "
+                f"from {day.business_date} through {end.isoformat()}. Review the records."
+            )
+        else:
+            evidence.update(
+                {
+                    "issue": "ambiguous",
+                    "candidate_deposit_ids": [entry.id for entry in candidates],
+                }
+            )
+            message = (
+                f"No unique deposit match for expected {format_cents(expected)}: "
+                f"{len(candidates)} nonmatching entries in the date window. Review the records."
+            )
+        flags.append(
+            Flag(None, day.business_date, "R08_DEPOSIT", severity, message, evidence)
+        )
+    for entry in remaining.values():
+        flags.append(
+            Flag(
+                None,
+                entry.deposit_date,
+                "R08_DEPOSIT",
+                "info",
+                f"Unexpected deposit of {format_cents(entry.amount_cents)} remains unmatched in imported records. Review the records.",
+                {
+                    "issue": "unexpected",
+                    "deposit_id": entry.id,
+                    "deposit_date": entry.deposit_date,
+                    "actual_cents": entry.amount_cents,
+                    "reference": entry.reference,
+                },
+            )
+        )
+    return tuple(flags)

@@ -99,7 +99,12 @@ def test_missing_register_creates_daily_flag_and_unknown_deposit(
         assert run.deposits[0].expected_cents is None
         with closing(db.connect(database)) as con:
             flags = db.load_flags(con, "2026-09-02", "2026-09-02")
-        daily_flags = [flag for flag in flags if flag.shift_id is None]
+        daily_flags = [
+            flag
+            for flag in flags
+            if flag.shift_id is None and flag.rule_code == "R09_DATA_INTEGRITY"
+        ]
+        assert any(flag.evidence.get("issue") == "unexpected" for flag in flags)
         assert len(daily_flags) == 1
         flag = daily_flags[0]
         assert (flag.rule_code, flag.severity) == ("R09_DATA_INTEGRITY", "review")
@@ -119,7 +124,7 @@ def test_missing_register_creates_daily_flag_and_unknown_deposit(
         )
         == 0
     )
-    assert "saved 1 review flags." in capsys.readouterr().out
+    assert "saved 2 review flags." in capsys.readouterr().out
     assert main(["explain", "2026-09-02-R1", "--db", str(database)]) == 0
     output = capsys.readouterr().out
     assert "Expected daily deposit (all registers): unknown" in output
