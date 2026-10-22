@@ -59,6 +59,10 @@ FILE_GENERATED = "{file_name}: generated {rows} rows."
 FILE_ALREADY_IMPORTED = "{file_name}: already imported; skipped."
 CONFIG_MISSING = "Config {path} not found; using built-in example defaults."
 CONFIG_INVALID = "Invalid config {path}. Use a valid UTF-8 TOML file."
+CONFIG_NUMBER_OUT_OF_RANGE = (
+    "Config {path} contains an out-of-range number. "
+    "Check the integer size or exponent against the documented config limits."
+)
 CONFIG_SECTION = "Invalid config section {section!r}. Use a documented section."
 CONFIG_KEY = "Unknown config setting {section}.{name}. Check config.toml."
 CONFIG_INTEGER = (

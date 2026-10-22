@@ -189,3 +189,21 @@ calendar arithmetic near the maximum supported date.
 After this update, run `drawercheck reconcile` without date filters to refresh
 earlier M3 results. M4 remains the next milestone, awaiting **next**. No remote
 CI or public-deployment result is claimed.
+
+## M3 follow-up: Clear numeric config errors
+
+- Built: A specific out-of-range-number message for numeric conversion failures,
+  preserving the existing format error for malformed TOML or invalid UTF-8.
+  Added four classification cases and tightened the CLI regression checks.
+- Learned: Catching an exception prevents a traceback, but the message must
+  still describe the actual cause so the user knows what to correct.
+- Interview question: How would you distinguish invalid file syntax from an
+  otherwise valid file containing a number your program cannot represent?
+
+Verified on 2026-10-22. The focused config/repair suite passed 149 tests after
+the change; the new classification tests first reproduced two failures on the
+previous code while syntax/encoding cases passed. The final full suite passed
+405 tests, both Ruff checks passed, and `git diff --check` passed. Installed CLI
+subprocesses for a 5,000-digit integer and an unrepresentable exponent returned
+exit 1 with the numeric message, without a traceback or an encoding claim.
+The runtime dependencies, policy version, and next milestone are unchanged.

@@ -153,6 +153,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 40. **Do not mix the repaired review policy with old saved flags.** Settings snapshots include policy version 2. `explain` asks for reconciliation again when a snapshot predates this repair. A successful reconciliation automatically clears earlier-policy flags and markers before saving its range, even when the numeric settings match. After updating, run reconciliation without date filters to refresh all imported business dates. This is one small snapshot field, not a migration framework.
 
+41. **Name numeric config failures separately from file-format errors.** An integer too large for the parser or an exponent outside Decimal's supported range receives an out-of-range-number message, with guidance to check the integer size or exponent. Invalid UTF-8 and malformed TOML keep the existing file-format message. Test both classifications through config loading and the CLI; do not echo thousands of digits into an error.
+
 ## Math and test commitments
 
 All monetary values below are integer cents internally:

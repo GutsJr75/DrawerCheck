@@ -123,3 +123,29 @@ def test_config_permission_failure_is_not_a_missing_file(tmp_path: Path) -> None
     """A directory supplied as a config path remains a real filesystem error."""
     with pytest.raises(OSError):
         load_config(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "kind", ["huge_integer", "invalid_exponent", "syntax", "encoding"]
+)
+def test_config_error_distinguishes_numbers_from_file_format(
+    tmp_path: Path, kind: str
+) -> None:
+    """Numeric conversion failures explain the number rather than blaming valid UTF-8 TOML."""
+    path = tmp_path / "policy.toml"
+    content = {
+        "huge_integer": ("[tolerance]\nwarn_cents = " + "9" * 5000 + "\n").encode(),
+        "invalid_exponent": b"[tolerance]\nreview_percent_of_cash_sales = 1e9999999999999999999\n",
+        "syntax": b"[tolerance\n",
+        "encoding": b"\xff",
+    }[kind]
+    path.write_bytes(content)
+    with pytest.raises(errors.ConfigError) as caught:
+        load_config(path)
+    message = str(caught.value)
+    assert str(path) in message
+    if kind in ("huge_integer", "invalid_exponent"):
+        assert "number" in message and "range" in message
+        assert "UTF-8" not in message
+    else:
+        assert message == errors.CONFIG_INVALID.format(path=path)

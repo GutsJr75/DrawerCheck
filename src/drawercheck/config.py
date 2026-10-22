@@ -93,8 +93,12 @@ def load_config(path: str | Path) -> tuple[Config, bool]:
             document = tomllib.load(stream, parse_float=Decimal)
     except FileNotFoundError:
         return Config(), True
-    except (ValueError, DecimalException) as error:
+    except (tomllib.TOMLDecodeError, UnicodeDecodeError) as error:
         raise errors.ConfigError(errors.CONFIG_INVALID.format(path=path)) from error
+    except (ValueError, DecimalException) as error:
+        raise errors.ConfigError(
+            errors.CONFIG_NUMBER_OUT_OF_RANGE.format(path=path)
+        ) from error
 
     values = {}
     for section, entries in document.items():

@@ -77,6 +77,9 @@ def test_numeric_config_failures_are_clean_cli_errors(
     assert main(["reconcile", "--config", str(policy), "--db", str(database)]) == 1
     output = capsys.readouterr()
     assert "Config" in output.err or "config" in output.err
+    if len(value) == 5000 or value == "1e9999999999999999999":
+        assert "number" in output.err and "range" in output.err
+        assert "UTF-8" not in output.err
     assert "Traceback" not in output.err
     assert not database.exists()
 
