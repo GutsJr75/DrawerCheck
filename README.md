@@ -1,13 +1,14 @@
 # DrawerCheck
 
 DrawerCheck is a personal learning project for checking end-of-shift cash drawers
-with fictional data from **Demo Store #001**. The planned tool imports CSV files,
-compares counted cash with POS totals, flags differences for human review, and
-produces text, HTML, and CSV reports.
+with fictional data from **Demo Store #001**. It imports CSV files, compares
+counted cash with POS totals, flags differences for human review, and explains
+each shift. Text, HTML, and CSV reports are planned for M4.
 
-**Current milestone: M2, database and CSV imports.** Installation, money helpers,
-database tables, fake demo generation, and validated CSV imports are implemented.
-Reconciliation, flags, and reports arrive in later milestones.
+**Current milestone: M3, core reconciliation complete.** Installation, exact
+money handling, database tables, fake demo generation, validated imports, cash
+calculations, four review rules, and shift explanations are implemented.
+Repeated-shortage checks and bank matching arrive in M5.
 
 A public browser demo is now planned after the core is complete. Visitors will
 be able to run the built-in fake-data example or upload synthetic CSVs, inspect
@@ -75,8 +76,40 @@ drawercheck import --dir data/another-demo --db another-demo.db
 ```
 
 See the [demo scenarios](docs/DEMO_SCENARIOS.md) for the deliberately constructed
-shortages, overage, deposit inputs, and incomplete records. M2 verifies the
-input conditions; later milestones will calculate and store their flags.
+shortages, overage, deposit inputs, and incomplete records. M2 verified the
+input conditions; M3 now checks the 12 core flags. Pattern and deposit
+flags remain pending M5.
+
+## Reconcile and explain a shift
+
+After importing the demo data:
+
+```sh
+drawercheck reconcile
+drawercheck explain 2026-09-03-R1
+```
+
+The worked shift shows $518.75 expected, $498.75 counted, and a -$20.00
+difference. It receives a variance review flag and a single-bill hint. Both its
+verifier and note are present, so it has no missing-verification flag.
+
+`reconcile` accepts `--from`, `--to`, `--db`, and `--config`. `explain` accepts
+`--db` and uses the settings saved during reconciliation. For example:
+
+```sh
+drawercheck reconcile --from 2026-09-01 --to 2026-09-03 --db another-demo.db
+drawercheck explain 2026-09-03-R1 --db another-demo.db
+```
+
+`config.toml` contains example policies. A missing file uses defaults with an
+informational notice; an invalid existing file is an error. Repeating a run
+replaces that range's results. Changing settings clears earlier results so
+different policies cannot be mixed. New imported records also clear results.
+
+Missing counts remain unknown, while an actual count of zero stays zero. Open
+shifts are excluded from closing calculations. Daily expected deposit amounts
+are calculated only for complete days; bank matching is not implemented yet.
+See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
 
 ## CSV import behavior
 
@@ -97,14 +130,14 @@ input conditions; later milestones will calculate and store their flags.
   only change is line endings. Existing records cannot be silently overwritten.
   Use new-record-only files or a fresh database for regenerated demo data.
 - New imported records clear old flags and any completion markers. Identical
-  skipped imports leave results unchanged. Reconciliation itself starts in M3.
+  skipped imports leave results unchanged.
 
 ## Foundation decisions
 
 - Money is stored and calculated as integer cents. `parse_dollars("0.10")`
   returns the integer `10`, and `format_cents(125075)` returns `"$1,250.75"`.
 - Dollar inputs require exactly two decimal places. The shared parser accepts
-  negative amounts; later import handlers will enforce each column's sign rule.
+  negative amounts; import handlers enforce each column's sign rule.
 - Database connections enable foreign keys and return rows accessible by column
   name. Use `contextlib.closing` to close a connection, with a separate inner
   transaction block to save or roll back changes.
@@ -113,12 +146,12 @@ input conditions; later milestones will calculate and store their flags.
 ## Scope and progress
 
 This is a learning project using fake data, not a tool for real cash control.
-Future flags will be neutral leads for human review. The project does not claim
+Flags are neutral leads for human review. The project does not claim
 banking, compliance, or accounting expertise, and it is not accounting or legal
-advice. Example thresholds in later milestones will be configurable examples,
+advice. Configurable thresholds are examples,
 not industry standards.
 
-The supported closing model will be one shift per register per business day.
+The supported closing model is one shift per register per business day.
 Bank matching will be simplified; combined deposits and real banking calendars
 are outside the MVP. There are no real POS or bank integrations.
 

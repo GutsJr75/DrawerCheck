@@ -106,3 +106,45 @@ dates. Rule-output expectations remain pending M3/M5. No network, current-day
 assumptions, web implementation, or remote CI results are part of this milestone.
 
 Next milestone: **M3**, after the user says **next**.
+
+## M3: Core reconciliation and shift explanations
+
+- Built: Validated example policies, shared immutable records, exact closing
+  and daily deposit calculations, R01/R02/R05/R09, atomic saved flags and
+  completion markers, inclusive date filters, and `reconcile`/`explain` commands.
+  Added the formulas and rule explanations in `HOW_IT_WORKS.md`.
+- Learned: Missing counts must stay unknown, while counted zero is real data.
+  A saved settings snapshot makes later explanations consistent, and a separate
+  completion marker proves that a zero-flag day was actually checked.
+- Interview question: How would you keep a repeated reconciliation safe while
+  ensuring a failed replacement cannot destroy the previous results?
+
+Verified on 2026-10-22 using Python 3.13.5 and SQLite 3.47.1, with the existing
+pytest 9.1.1 and Ruff 0.17.1 environment. No dependencies were added.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 298 tests, including the existing money, database, and import tests. ResourceWarning and cleanup warnings remain errors. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 298 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: no formatting changes needed. |
+| Installed `.venv/bin/drawercheck --help` through a subprocess | PASS: lists `reconcile` and `explain` alongside the three earlier commands. |
+| Installed CLI subprocess workflow in a temporary directory | PASS: generated and imported the full fake month, reconciled twice, and explained the worked shift. The run saved 12 core flags across 60 shifts and 30 completion dates. |
+| Installed `explain 2026-09-03-R1 --db PATH` | PASS: $518.75 expected, $498.75 counted, -$20.00 variance, and $1,198.75 deposit contribution. R01/R02 are present and R05 is absent. |
+| Repeated import after reconciliation | PASS: all seven identical files were skipped and saved flags/settings/completion markers were unchanged. |
+| Installed CLI error and incomplete-data checks | PASS: unknown shifts and invalid dates return exit 1 without tracebacks; the missing-count shift shows unknown cash and a clean completed shift explains successfully. |
+| `PRAGMA foreign_key_check` after the subprocess workflow | PASS: no broken references. |
+| `git diff --check` and source/document checks | PASS: no whitespace errors or prohibited punctuation in maintained source/docs; public functions have docstrings. |
+
+New tests exercise threshold boundaries and rounding, low Decimal precision,
+config validation and saved-setting round trips, zero versus missing counts,
+open shifts, negative expected amounts, register overlaps across date filters,
+adjacent shifts, duplicate closings, complete/incomplete deposits, and exact
+M3 demo flags. They also check same-policy range replacement, changed-policy
+invalidation, failure rollback after writes, connection closure on success and
+failure, old M2 database upgrades, and real import-result invalidation.
+
+Reports remain M4 work. R04 and R08 remain M5 work, and optional rules remain
+unauthorized. No web implementation or remote CI result is claimed.
+
+Next milestone: **M4**, after the user says **next**.

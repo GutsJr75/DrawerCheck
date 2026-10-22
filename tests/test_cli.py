@@ -37,7 +37,9 @@ def test_unknown_argument_returns_one(capsys: pytest.CaptureFixture[str]) -> Non
     assert "Traceback" not in output.err
 
 
-@pytest.mark.parametrize("command", ["init-db", "demo-data", "import"])
+@pytest.mark.parametrize(
+    "command", ["init-db", "demo-data", "import", "reconcile", "explain"]
+)
 def test_command_help(command: str, capsys: pytest.CaptureFixture[str]) -> None:
     """Each implemented subcommand offers help without running the command."""
     assert main([command, "--help"]) == 0
@@ -55,7 +57,7 @@ def test_init_db_creates_tables_at_the_requested_path(
         tables = con.execute(
             "SELECT name FROM sqlite_schema WHERE type = 'table'"
         ).fetchall()
-        assert len(tables) == 9
+        assert len(tables) == 10
 
 
 def test_default_database_path_is_local(
@@ -213,3 +215,115 @@ def test_sqlite_operational_failures_are_translated(
     assert output.out == ""
     assert output.err.strip() == expected
     assert "Traceback" not in output.err
+
+
+def test_reconcile_and_explain_workflow(
+    demo_database: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The installed command interface explains S1 with its full math and saved flags."""
+    assert main(["reconcile", "--db", str(demo_database)]) == 0
+    assert (
+        "Reconciled 60 shifts from 2026-09-01 to 2026-09-30; saved 12 review flags."
+        in capsys.readouterr().out
+    )
+    assert main(["explain", "2026-09-03-R1", "--db", str(demo_database)]) == 0
+    output = capsys.readouterr()
+    for expected in (
+        "DEMO DATA ONLY",
+        "Opening float: $200.00",
+        "Cash sales: $1,250.75",
+        "Cash refunds: $12.00",
+        "Paid-outs: $20.00",
+        "Safe drops: $900.00",
+        "Expected drawer: $518.75",
+        "Counted drawer: $498.75",
+        "Variance = counted - expected: -$20.00",
+        "Shift deposit contribution: $1,198.75",
+        "R01_VARIANCE",
+        "R02_SINGLE_DENOMINATION",
+    ):
+        assert expected in output.out
+    assert "R05_MISSING_VERIFIER_OR_NOTE" not in output.out
+    assert output.err == ""
+
+
+def test_missing_config_notice_and_saved_policy(
+    demo_database: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Defaults are announced once, and explain ignores subsequent config-file changes."""
+    path = tmp_path / "policy.toml"
+    assert main(["reconcile", "--db", str(demo_database), "--config", str(path)]) == 0
+    assert capsys.readouterr().out.count("using built-in example defaults") == 1
+    path.write_text("This is no longer valid TOML.")
+    assert main(["explain", "2026-09-03-R1", "--db", str(demo_database)]) == 0
+    output = capsys.readouterr()
+    assert "Review threshold: $12.50" in output.out
+    assert "not found" not in output.out
+
+
+@pytest.mark.parametrize(
+    ("shift_code", "text"),
+    [
+        ("2026-09-01-R1", "No review flags for this shift."),
+        ("2026-09-25-R1", "Counted drawer: unknown"),
+        ("2026-09-27-R2", "Closing time is not after opening time"),
+    ],
+)
+def test_clean_and_incomplete_explanations(
+    demo_database: Path, capsys: pytest.CaptureFixture[str], shift_code: str, text: str
+) -> None:
+    """Clean, missing-count, and invalid-time shifts all have readable explanations."""
+    assert main(["reconcile", "--db", str(demo_database)]) == 0
+    capsys.readouterr()
+    assert main(["explain", shift_code, "--db", str(demo_database)]) == 0
+    assert text in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("arguments", "expected"),
+    [
+        (["explain", "unknown-demo-shift"], "Unknown shift code"),
+        (["explain", "2026-09-03-R1"], errors.NOT_RECONCILED),
+        (["reconcile", "--from", "2026-02-30"], "Invalid --from date"),
+        (
+            ["reconcile", "--from", "2026-09-04", "--to", "2026-09-03"],
+            errors.REVERSED_RANGE,
+        ),
+    ],
+)
+def test_m3_cli_errors(
+    demo_database: Path,
+    capsys: pytest.CaptureFixture[str],
+    arguments: list[str],
+    expected: str,
+) -> None:
+    """Expected M3 failures use exit 1 and short central errors without tracebacks."""
+    assert main([*arguments, "--db", str(demo_database)]) == 1
+    output = capsys.readouterr()
+    assert expected in output.err
+    assert "Traceback" not in output.err
+
+
+def test_invalid_existing_config_fails_without_saving(
+    demo_database: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A bad config does not silently use defaults or save any results."""
+    path = tmp_path / "invalid.toml"
+    path.write_text("[tolerance]\nwarn_cents = true\n")
+    assert main(["reconcile", "--db", str(demo_database), "--config", str(path)]) == 1
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert "nonnegative whole number" in output.err
+    with closing(db.connect(demo_database)) as con:
+        assert con.execute("SELECT COUNT(*) FROM reconciled_dates").fetchone()[0] == 0
+
+
+def test_reconcile_and_explain_use_local_default_paths(
+    demo_database: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Both new commands work with the documented local database and missing config."""
+    path = tmp_path / "drawercheck.db"
+    demo_database.rename(path)
+    monkeypatch.chdir(tmp_path)
+    assert main(["reconcile"]) == 0
+    assert main(["explain", "2026-09-03-R1"]) == 0

@@ -426,9 +426,9 @@ def test_new_records_clear_old_results_atomically(
     with closing(db.connect(path)) as con:
         with con:
             con.execute(
-                "CREATE TABLE reconciled_dates (business_date TEXT PRIMARY KEY) STRICT"
+                "INSERT INTO reconciled_dates VALUES (?, ?, ?)",
+                ("2026-09-01", "{}", "2026-10-22T00:00:00+00:00"),
             )
-            con.execute("INSERT INTO reconciled_dates VALUES (?)", ("2026-09-01",))
     _write(
         csv_directory / "bank_deposits.csv",
         [{"deposit_date": "2026-10-01", "amount": "1.00", "reference": "DEMO-NEW"}],

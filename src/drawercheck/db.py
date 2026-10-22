@@ -1,12 +1,19 @@
 """Open SQLite connections with explicit ownership and safe defaults."""
 
+import json
 import sqlite3
 from contextlib import closing
 from pathlib import Path
 
 from drawercheck import errors
+from drawercheck.models import Flag, PosTotals, Shift
 
 MIN_SQLITE_VERSION = (3, 37, 0)
+_RECONCILED_DATES_SCHEMA = """CREATE TABLE IF NOT EXISTS reconciled_dates (
+    business_date TEXT PRIMARY KEY,
+    config_json TEXT NOT NULL,
+    completed_at TEXT NOT NULL
+) STRICT"""
 
 _SCHEMA = (
     """CREATE TABLE IF NOT EXISTS cashiers (
@@ -75,6 +82,7 @@ _SCHEMA = (
         rows_imported INTEGER NOT NULL,
         imported_at TEXT NOT NULL
     ) STRICT""",
+    _RECONCILED_DATES_SCHEMA,
     "CREATE INDEX IF NOT EXISTS shifts_business_date ON shifts(business_date)",
     "CREATE INDEX IF NOT EXISTS shifts_cashier_id ON shifts(cashier_id)",
 )
@@ -113,3 +121,109 @@ def initialize(path: str | Path) -> None:
     with closing(connect(path)) as con:
         with con:
             create_schema(con)
+
+
+def load_shifts(con: sqlite3.Connection) -> tuple[Shift, ...]:
+    """Read independent records without SQL sums that could overflow integer cents."""
+    pos = {
+        row["shift_id"]: PosTotals(
+            **{key: row[key] for key in row.keys() if key != "shift_id"}
+        )
+        for row in con.execute("SELECT * FROM pos_totals")
+    }
+    counts: dict[int, list[tuple[int, int]]] = {}
+    for row in con.execute(
+        "SELECT * FROM cash_counts ORDER BY denomination_cents DESC"
+    ):
+        counts.setdefault(row["shift_id"], []).append(
+            (row["denomination_cents"], row["quantity"])
+        )
+    drops: dict[int, int] = {}
+    for row in con.execute("SELECT shift_id, amount_cents FROM safe_drops ORDER BY id"):
+        drops[row["shift_id"]] = drops.get(row["shift_id"], 0) + row["amount_cents"]
+    return tuple(
+        Shift(
+            **dict(row),
+            pos=pos.get(row["id"]),
+            counts=tuple(counts.get(row["id"], ())),
+            safe_drops_cents=drops.get(row["id"], 0),
+        )
+        for row in con.execute(
+            "SELECT * FROM shifts ORDER BY business_date, opened_at, shift_code"
+        )
+    )
+
+
+def save_reconciliation(
+    con: sqlite3.Connection,
+    start: str,
+    end: str,
+    snapshot: str,
+    completed_at: str,
+    dates: tuple[str, ...],
+    flags: tuple[Flag, ...],
+) -> None:
+    """Replace a range inside the caller's transaction, keeping one effective policy."""
+    # Older M2 databases do not yet have completion markers.
+    con.execute(_RECONCILED_DATES_SCHEMA)
+    if con.execute(
+        "SELECT 1 FROM reconciled_dates WHERE config_json != ? LIMIT 1", (snapshot,)
+    ).fetchone():
+        con.execute("DELETE FROM flags")
+        con.execute("DELETE FROM reconciled_dates")
+    con.execute("DELETE FROM flags WHERE business_date BETWEEN ? AND ?", (start, end))
+    con.execute(
+        "DELETE FROM reconciled_dates WHERE business_date BETWEEN ? AND ?", (start, end)
+    )
+    con.executemany(
+        """INSERT INTO flags (shift_id, business_date, rule_code, severity, message, evidence_json)
+        VALUES (?, ?, ?, ?, ?, ?)""",
+        [
+            (
+                flag.shift_id,
+                flag.business_date,
+                flag.rule_code,
+                flag.severity,
+                flag.message,
+                json.dumps(flag.evidence, sort_keys=True),
+            )
+            for flag in flags
+        ],
+    )
+    con.executemany(
+        "INSERT INTO reconciled_dates (business_date, config_json, completed_at) VALUES (?, ?, ?)",
+        [(day, snapshot, completed_at) for day in dates],
+    )
+
+
+def completion_snapshot(con: sqlite3.Connection, business_date: str) -> str | None:
+    """Distinguish a completed zero-flag day from one that has never been checked."""
+    if not con.execute(
+        "SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = ?",
+        ("reconciled_dates",),
+    ).fetchone():
+        return None
+    row = con.execute(
+        "SELECT config_json FROM reconciled_dates WHERE business_date = ?",
+        (business_date,),
+    ).fetchone()
+    return row["config_json"] if row else None
+
+
+def load_flags(con: sqlite3.Connection, start: str, end: str) -> tuple[Flag, ...]:
+    """Read saved evidence in stable date, shift, and rule order."""
+    return tuple(
+        Flag(
+            row["shift_id"],
+            row["business_date"],
+            row["rule_code"],
+            row["severity"],
+            row["message"],
+            json.loads(row["evidence_json"]),
+        )
+        for row in con.execute(
+            """SELECT * FROM flags WHERE business_date BETWEEN ? AND ?
+            ORDER BY business_date, shift_id, rule_code, id""",
+            (start, end),
+        )
+    )

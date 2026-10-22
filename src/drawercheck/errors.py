@@ -57,6 +57,27 @@ DEMO_CREATED = "Demo data only: created {days} days for Demo Store #001 in {path
 FILE_IMPORTED = "{file_name}: imported {rows} rows."
 FILE_GENERATED = "{file_name}: generated {rows} rows."
 FILE_ALREADY_IMPORTED = "{file_name}: already imported; skipped."
+CONFIG_MISSING = "Config {path} not found; using built-in example defaults."
+CONFIG_INVALID = "Invalid config {path}. Use a valid UTF-8 TOML file."
+CONFIG_SECTION = "Invalid config section {section!r}. Use a documented section."
+CONFIG_KEY = "Unknown config setting {section}.{name}. Check config.toml."
+CONFIG_INTEGER = (
+    "Config {name} must be a nonnegative whole number within SQLite's integer range."
+)
+CONFIG_PERCENT = "Config review_percent_of_cash_sales must be a positive finite number."
+CONFIG_THRESHOLDS = (
+    "Config must satisfy within_tolerance_cents < warn_cents <= review_cents."
+)
+CONFIG_HISTORY = "Config repeat_short must satisfy 1 <= min_shifts <= window."
+DATABASE_NOT_FOUND = "Database {path} not found. Run 'drawercheck import' first."
+NO_SHIFTS = "No shifts found. Import shift data before reconciliation."
+INVALID_RANGE_DATE = "Invalid {option} date {value!r}. Use YYYY-MM-DD."
+REVERSED_RANGE = "The --from date must be on or before the --to date."
+UNKNOWN_SHIFT = "Unknown shift code {shift_code!r}. Check the imported shift codes."
+NOT_RECONCILED = "No flags found. Run `drawercheck reconcile` first."
+RECONCILED = (
+    "Reconciled {shifts} shifts from {start} to {end}; saved {flags} review flags."
+)
 
 
 class DrawerCheckError(Exception):
@@ -73,6 +94,14 @@ class DatabaseVersionError(DrawerCheckError):
 
 class UsageError(DrawerCheckError):
     """The command-line arguments are invalid."""
+
+
+class ConfigError(DrawerCheckError, ValueError):
+    """Example policies are malformed or internally inconsistent."""
+
+
+class ReconciliationError(DrawerCheckError):
+    """A calculation or explanation cannot run on the requested data."""
 
 
 class ImportValidationError(DrawerCheckError):

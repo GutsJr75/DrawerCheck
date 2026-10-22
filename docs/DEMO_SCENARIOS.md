@@ -4,10 +4,11 @@ These are deliberately constructed fictional records for **Demo Store #001**.
 The default command is `drawercheck demo-data --days 30 --seed 42`.
 The business dates are fixed at September 1 through September 30, 2026.
 
-M2 verifies the input conditions below and repeated-import behavior. The rules
-engine is not implemented in M2, so the flag table contains **expected future
-results**, not findings produced by the current commands. M3 checks the core
-rules; M5 checks the full expected flag set.
+M2 verified the input conditions below and repeated-import behavior. M3 now
+checks the exact set of 12 core flags, including S1, S2, S4, S7, and S8.
+In the table below, M3 rows are verified current results. M5 rows remain
+**expected future results**; repeated-shortage and bank-matching rules are not
+implemented yet. M5 will check the full expected flag set.
 
 ## Generated inputs
 
@@ -56,8 +57,8 @@ does not prove that a human followed blind-count practice.
   expected total is incomplete. The deposits dated September 25 belong to
   September 22 to 24 and match those earlier days.
 - **S8:** `2026-09-27-R2` opens at 08:00 and closes at 07:00 on the same date.
-  The timestamp strings are well formed, so import accepts them. R09 will
-  review their ordering during reconciliation.
+  The timestamp strings are well formed, so import accepts them. R09 flags
+  their ordering during reconciliation. This flag is verified in M3.
 - **S9:** Importing identical files twice leaves all table counts, the import
   log, and any saved results unchanged. This behavior is already tested in M2.
 
@@ -68,7 +69,8 @@ choices, not claims about real sales or cash-handling policies.
 
 ## Complete expected flags with default settings
 
-Each row is one expected flag after M5. Date-only deposit flags have no shift.
+Each row is one expected flag after M5; the 12 M3 rows already pass exactly.
+Date-only deposit flags have no shift.
 The full-demo test in M5 must compare the complete set, including severity,
 and reject extra flags. S9 is an import check rather than a reconciliation flag.
 

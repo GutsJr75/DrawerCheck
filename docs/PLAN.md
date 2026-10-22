@@ -1,8 +1,8 @@
 # DrawerCheck plan
 
-Status: M0, M1, and M2 complete. M2 was approved and verified on 2026-10-22.
-Next: M3, reconciliation calculations, core rules, and shift explanations.
-Wait for the user's **next** before starting M3. See `docs/LEARNING_LOG.md`
+Status: M0 through M3 complete. M3 was approved and verified on 2026-10-22.
+Next: M4, shared report data and text, HTML, and CSV reports.
+Wait for the user's **next** before starting M4. See `docs/LEARNING_LOG.md`
 for the checks actually run.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
@@ -138,6 +138,10 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 32. **Keep the demo inputs deliberate and the verification claims staged.** Store the generated default seven CSVs in `data/demo/`. Tests verify deterministic bytes, no changes to global random state, exact S1/S2/S3/S4 differences, S5/S6 deposit windows and amounts, and S7/S8 input conditions. `DEMO_SCENARIOS.md` records the complete expected flag table but labels rule execution as pending M3/M5. M2 does not claim to have reconciled anything. Translate SQLite database failures, including a non-database file, without tracebacks at the CLI.
 
 33. **Keep generated demo bytes stable across checkouts.** Write the generated CSVs with LF line endings and pin `data/demo/*.csv` to LF in `.gitattributes`. This avoids Git whitespace warnings and makes the committed-input comparison reliable across operating systems. The importer still accepts CRLF, BOMs, and the other supported spreadsheet variations; hashes always describe the actual input bytes.
+
+34. **Keep M3 policies exact and saved results explainable.** Validate settings for both file and Python callers. Partial TOML files override defaults; unknown keys/sections and invalid types are errors. Store the percentage as a canonical decimal string in a sorted JSON snapshot, without binary floats. `explain` returns shared calculation data using that saved snapshot and the saved flags; only the CLI prints it. New databases now create ten STRICT tables. Existing nine-table M2 databases gain `reconciled_dates` within the successful reconciliation transaction. Mark only selected dates containing shifts; an empty selection processes zero shifts without inventing completion dates.
+
+35. **Keep closing arithmetic separate from register timing.** Open shifts have unknown closing amounts and do not require closing count/POS records yet, but their open intervals participate in overlap checks. Invalid closed intervals receive their own R09 flag and are excluded from overlap comparisons; otherwise available cash amounts remain usable. Adjacent intervals are not overlaps. Multiple closing shifts on one register/day receive R09 flags and make the daily deposit unknown. Calculate denomination products and aggregate sums in Python integers to avoid SQLite aggregate overflow. M3 calculates complete daily expected deposit amounts but performs no bank matching or repeated-shortage checks.
 
 ## Math and test commitments
 

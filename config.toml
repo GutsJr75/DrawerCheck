@@ -1,0 +1,20 @@
+# Example policies for fictional demo data, not industry standards.
+[tolerance]
+within_tolerance_cents = 100
+warn_cents = 500
+review_cents = 2000
+review_percent_of_cash_sales = 1.0
+
+[repeat_short]
+min_shifts = 3
+window = 10
+
+[verification]
+require_verifier_and_note_at_or_above_cents = 2000
+
+[drops]
+suggest_drop_if_cash_sales_cents = 40000 # Inactive until R06 is requested.
+
+[deposits]
+retained_float_per_register_cents = 20000
+max_lag_days = 3

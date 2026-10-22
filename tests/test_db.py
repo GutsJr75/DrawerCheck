@@ -96,7 +96,7 @@ def test_old_sqlite_is_rejected_before_opening_a_file(
 def test_initialize_creates_strict_tables_and_date_cashier_indexes(
     tmp_path: Path,
 ) -> None:
-    """All nine application tables are STRICT and the requested indexes exist."""
+    """All ten application tables are STRICT and the requested indexes exist."""
     path = tmp_path / "demo.db"
     db.initialize(path)
     with closing(db.connect(path)) as con:
@@ -115,6 +115,7 @@ def test_initialize_creates_strict_tables_and_date_cashier_indexes(
             "bank_deposits",
             "flags",
             "import_log",
+            "reconciled_dates",
         }
         assert all(row["strict"] == 1 for row in tables.values())
         indexes = {
