@@ -42,3 +42,19 @@ scheduled for later milestones. GitHub CI and the Python version matrix are
 scheduled for M6; those checks have not been claimed as passing here.
 
 Next milestone: **M2**, after the user says **next**.
+
+## Scope update: Public frontend (2026-10-22)
+
+- Built: Updated the plan for a polished public app where visitors can upload
+  synthetic CSVs, run checks, inspect results, and download reports. Added
+  `docs/WEB_PLAN.md` and recorded the original brief's scope amendment.
+- Learned: A static report host cannot execute the Python reconciliation
+  workflow. The proposed Flask layer can reuse the core while keeping each
+  visitor's run in a separate temporary workspace.
+- Interview question: How can a command-line tool and public website share
+  calculations while keeping different visitors' data separate?
+
+This is a documentation-only scope update. M7/M8 implementation follows the
+core milestones; M2 remains the next build milestone. No web packages have been
+installed. Verification is document consistency, instruction length, and
+`git diff --check`; the application test results above remain the M1 results.

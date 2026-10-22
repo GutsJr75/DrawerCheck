@@ -3,14 +3,24 @@
 Status: M0 and M1 complete. M1 was approved and verified on 2026-10-22.
 Next: M2, database tables, demo CSVs, and import. Wait for the user's **next**
 before starting M2. See `docs/LEARNING_LOG.md` for the checks actually run.
+Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
+after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
 
 ## Purpose and boundaries
 
 DrawerCheck is a personal learning project using fictional data for **Demo Store #001**. It compares a closing drawer count with POS records, flags differences for human review, and later compares daily cash with simplified bank deposits. It must be simple enough to explain in a job interview.
 
-Build an offline Python command-line tool with SQLite, integer cents, and text, HTML, and CSV reports. Runtime dependencies are standard library only. Development tools are pytest and Ruff. Use Python 3.12-compatible code, a `src` layout, setuptools, and the `drawercheck` console command.
+Build an offline Python command-line core with SQLite, integer cents, and text, HTML, and CSV reports. The core's runtime dependencies are standard library only. Development tools are pytest and Ruff. Use Python 3.12-compatible code, a `src` layout, setuptools, and the `drawercheck` console command. Add a separately installed Python web layer for the public demo after the core is complete.
 
-Do not build a web application, integrations, accounts, cloud services, machine learning, compliance features, additional currencies, tips, payroll, or bank file formats. R03, R06, and R07 are optional and require a later request. Flags describe records, never conclusions about people. Do not claim business use, loss reduction, professional expertise, or compliance with a standard.
+Do not build POS or bank integrations, user accounts, machine learning, compliance features, additional currencies, tips, payroll, or bank file formats. Hosting the public demo is included in the revised scope. R03, R06, and R07 are optional and require a later request. Flags describe records, never conclusions about people. Do not claim business use, loss reduction, professional expertise, or compliance with a standard.
+
+### Approved scope amendment: public frontend
+
+On 2026-10-22 the user chose both a polished recruiter demo and an interface for uploading CSVs and running checks. They then explicitly chose a **public app where visitors can upload CSVs and run checks**. This supersedes the original brief's exclusions of web UI and cloud hosting for this demo, and permits optional web dependencies. The original brief stays unchanged as a historical record; this plan and the [web plan](WEB_PLAN.md) record the amendment.
+
+Use Flask to connect browser requests to the existing Python functions, with HTML, CSS, and minimal JavaScript for interaction. The browser must not recalculate money or rules. Each run uses an isolated temporary database; there is no shared visitor ledger, login system, or saved run history. Public uploads are for synthetic demo data only. Keep the command-line installation independent of web packages, and keep the downloadable HTML report self-contained and free of JavaScript.
+
+The original 10 to 20 hour estimate covered the core scope. The additional web milestones expand that scope; do not promise the original estimate still covers the whole project. Continue splitting work into blocks intended to fit within one hour. No web implementation starts during M2 through M6.
 
 ## Working agreement
 
@@ -31,10 +41,12 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M1: Skeleton | Package and help command; money and errors; connection helper and tests. | `pyproject.toml`, `.gitignore`, `LICENSE`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `src/drawercheck/{__init__,cli,money,errors,db}.py`, `tests/{test_money,test_db,test_cli}.py`, `docs/LEARNING_LOG.md` | Editable installation works; `drawercheck --help` works; money parsing rejects invalid forms; connection closes on success and failure; pytest and Ruff pass. |
 | M2: Database and imports | STRICT schema and `init-db`; deterministic demo generator; row validation and inserts; rollback, duplicate, and CSV edge tests. | `db.py`, `demo.py`, `importer.py`, `cli.py`, `errors.py`, `data/demo/*.csv`, `tests/{test_demo,test_importer}.py`, `docs/DEMO_SCENARIOS.md` | `demo-data` and `import` work; all seven files import together; any failure rolls back; identical files are skipped; malformed-CSV tests pass. Scenario expectations are documented but later rules are clearly marked pending. |
 | M3: Core reconciliation | Config, models, and formulas; R01/R02/R05; R09 and missing-data handling; saved flags and `explain`. | `config.toml`, `src/drawercheck/{config,models,reconcile,rules}.py`, updates to `db.py`, `cli.py`, `errors.py`, `tests/{test_config,test_reconcile,test_rules}.py`, `docs/HOW_IT_WORKS.md` | Worked example gives 51,875 expected cents, -2,000 variance cents, and 119,875 deposit cents. S1, S2, S4, S7, and S8 pass. Repeated reconciliation gives the same flags. |
-| M4: Reports and usable demo | Shared report data and text output; escaped HTML; safe CSV, CLI errors, and README demo. | `src/drawercheck/reports/{__init__,text,html,csv_out}.py`, `csv_safety.py`, updates to `cli.py`, `errors.py`, `tests/{test_reports,test_csv_safety}.py`, `examples/sample_report.html`, `README.md` | All three formats work; CSV protects every cell; HTML is offline and readable; README has three demo steps and a clearly marked screenshot placeholder. Sample report honestly says pattern and deposit rules arrive in M5. |
+| M4: Reports and usable demo | Shared report data and text output; polished escaped HTML with clear summaries and tables; safe CSV, CLI errors, and README demo. | `src/drawercheck/reports/{__init__,text,html,csv_out}.py`, `csv_safety.py`, updates to `cli.py`, `errors.py`, `tests/{test_reports,test_csv_safety}.py`, `examples/sample_report.html`, `README.md` | All three formats work; CSV protects every cell; HTML is offline and readable; README has three demo steps and a clearly marked screenshot placeholder. Sample report honestly says pattern and deposit rules arrive in M5. |
 | M5: Patterns and deposits | R04 and its history tests; R08 and matching edge cases; full demo expectations and refreshed sample. | Updates to `rules.py`, `reconcile.py`, reports, `tests/{test_deposits,test_golden}.py`, `docs/{DEMO_SCENARIOS,HOW_IT_WORKS}.md`, `examples/sample_report.html` | Every required rule has triggered and not-triggered tests. Full S1 to S8 expected flag set matches exactly; S9 preserves all row counts. Deposit matching limits are demonstrated. |
-| M6: Polish and delivery | README and concept docs; tested troubleshooting; CI and fresh-install verification; interview material and final checklist. | `README.md`, `docs/{HOW_IT_WORKS,TROUBLESHOOTING,INTERVIEW_NOTES,LEARNING_LOG}.md`, `.github/workflows/ci.yml`, `tests/test_troubleshooting.py` | Documentation matches actual messages and output; local checks pass; report GitHub CI status only after observing it. Deliver three resume bullet options, repository description/topics, and five interview questions with honest answers. |
-| M7: Optional | Plan and implement only the stretch rules explicitly requested later. | Relevant rule, demo, test, and documentation files | Not authorized by this plan. |
+| M6: Core polish and delivery | README and concept docs; tested troubleshooting; CI and fresh-install verification; interview material and core checklist. | `README.md`, `docs/{HOW_IT_WORKS,TROUBLESHOOTING,INTERVIEW_NOTES,LEARNING_LOG}.md`, `.github/workflows/ci.yml`, `tests/test_troubleshooting.py` | Original core checklist is verified. Career material describes only existing features; the public web app is still planned. |
+| M7: Web request handling | Optional Flask installation and shared pipeline; bounded uploads and isolated temporary runs; web error handling and in-process tests. | `src/drawercheck/web.py`, `pyproject.toml`, `errors.py`, `tests/test_web.py`, CI updates, `docs/WEB_PLAN.md` | The same demo or CSV data gives the same results through CLI and web. Failed and concurrent requests cannot leave shared data. Upload limits, cleanup, escaping, and report contents are tested. Stop before M8. |
+| M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
+| M9: Optional rules | Plan and implement only the stretch rules explicitly requested later. This replaces the original M7 stretch slot. | Relevant rule, demo, test, and documentation files | R03, R06, and R07 remain unauthorized until separately requested. |
 
 ## Intended structure
 
@@ -54,6 +66,7 @@ Keep the data flow visible: CSV files enter `importer.py`, records are stored th
 | `reports/` and `csv_safety.py` | Text, self-contained HTML, and protected CSV exports. Reuse the same calculation helpers. |
 | `tests/` | Unit tests, temporary-database tests, CLI smoke tests, and the full-demo expected-output test. |
 | `docs/` and `examples/` | The math, learning log, scenarios, troubleshooting, interview notes, and an actual generated HTML report. |
+| `web.py`, `templates/`, and `static/` | The optional Flask layer and browser screens, added in M7/M8. Call the shared Python core; never duplicate the reconciliation math in JavaScript. |
 
 ## Decisions
 
@@ -109,6 +122,12 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 25. **Catch cleanup warnings in pytest too.** Keep the required `-W error::ResourceWarning` setting and additionally treat `pytest.PytestUnraisableExceptionWarning` as an error. Python can emit a leaked connection warning during object cleanup, where it cannot raise to a normal caller; pytest reports that situation using this second warning category. Explicit connection-closure tests remain required. [pytest cleanup warning documentation](https://docs.pytest.org/en/stable/how-to/failures.html#warning-about-unraisable-exceptions-and-unhandled-thread-exceptions)
 
+26. **Add the public app after the core, using one set of calculations.** The user approved an interactive public frontend on 2026-10-22. Use an optional Flask web layer, HTML/CSS, and minimal JavaScript; use Gunicorn for the Linux hosting process. Keep all calculations, rule decisions, money formatting, import validation, and report generation in shared Python functions. Write the M2 onward core functions so callers supply paths and receive results/errors, rather than depending on CLI output. No new web packages are installed as part of this planning update. [Flask deployment documentation](https://flask.palletsprojects.com/en/stable/deploying/)
+
+27. **Public runs are temporary and independent.** Give each request its own temporary upload directory and SQLite database; close and remove them after preparing its response, including on failure. Return the report content needed for viewing/downloads without a shared on-disk results store. Set explicit upload and workload limits. Do not use the developer's default database, trust uploaded filesystem paths, log CSV contents, or expose another visitor's results. See `docs/WEB_PLAN.md` for the initial limits and verification scope.
+
+28. **Treat hosting as a verified delivery step.** Render's free web service is the initial deployment candidate, using Flask and Gunicorn. Recheck service limits, availability, and any costs during M8. Its documented sleep behavior and temporary filesystem fit a small stateless demo, with an availability tradeoff that must be explained in README. Do not rely on local SQLite files for saved public data. A static GitHub Pages site cannot execute our Python upload/reconciliation pipeline; it is suitable only for a viewable sample. [Render Flask guide](https://render.com/docs/deploy-flask), [Render free-service limits](https://render.com/docs/free), [GitHub Pages scope](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+
 ## Math and test commitments
 
 All monetary values below are integer cents internally:
@@ -147,6 +166,9 @@ The test suite must cover:
 | A documentation example is mistaken for a standard. | Attribute references and label thresholds, matching, and demo data as learning examples. |
 | Python or SQLite behavior differs by machine. | Check SQLite at startup; use the verified local interpreter; test supported Python versions in CI. |
 | CI cannot be observed locally. | Finish the workflow and local verification, report the exact remote access limitation, and do not mark remote CI as passing without a real run. |
+| Web work expands the project or duplicates calculations. | Finish M2 through M6 first. Keep a separate optional web layer and call the same tested core functions. |
+| Public uploads mix visitors' data or consume unbounded resources. | Use a fresh temporary workspace per request, fixed input filenames, explicit limits, and cleanup/isolation tests. |
+| A free host sleeps or loses local files. | Keep the app stateless, explain delayed first loads, and verify current hosting limits at deployment time. |
 
 ## Verification and milestone handoff
 
@@ -173,9 +195,11 @@ drawercheck report --from 2026-09-01 --to 2026-09-30 --format html --out example
 
 Print PASS or FAIL for each definition-of-done item, with an explanation for anything not verified. Do not describe an unrun check as passing. The checklist covers the fresh install and quality checks, demo chain, S1 explanation, complete expected flags, tested troubleshooting messages, CSV safety, and observed GitHub CI plus the finished README. Count tests with an actual collection command before using a number in career material.
 
+M6 completes the original core checklist. M7 and M8 add the checks in `docs/WEB_PLAN.md`; complete those before calling the expanded project finished. Keep core tests free of external network dependencies, use Flask's in-process client for web tests, and use a local browser for UI verification. Check the actual public deployment separately during M8.
+
 ## Reference review
 
-Reviewed on 2026-10-22. Concept references were consulted before the implementation plan. Their broader accounting, staffing, and security guidance does not expand this project's scope. The supplied brief remains the implementation contract.
+Reviewed on 2026-10-22. Concept references were consulted before the implementation plan. Their broader accounting, staffing, and security guidance does not expand this project's scope. The supplied brief, with the explicit public-frontend amendment above, is the implementation contract. Web references are recorded in `docs/WEB_PLAN.md`.
 
 ### Reconciliation concepts
 

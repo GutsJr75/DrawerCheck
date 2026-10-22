@@ -1,12 +1,16 @@
 # DrawerCheck
 
-An offline Python cash-drawer reconciliation learning project using fake data.
+An offline Python reconciliation core with a planned public demo, using fake data.
 
 ## Start every task
 
 1. Read [docs/PLAN.md](docs/PLAN.md) and [docs/LEARNING_LOG.md](docs/LEARNING_LOG.md).
    Read [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the original requirements,
    including exact CSV columns, schema, rules, and demo scenarios.
+   The user approved a public frontend on 2026-10-22. The amendment in PLAN.md
+   and [docs/WEB_PLAN.md](docs/WEB_PLAN.md) supersedes the brief's web/hosting
+   exclusions and permits optional web dependencies. The original brief stays
+   unchanged as a historical record.
 2. Check `git status --short`, recent Git commits, and the relevant files before
    deciding what is complete. Preserve any existing user changes.
 3. If asked "What is the next step?", explain the next unfinished milestone
@@ -31,8 +35,9 @@ If needed, use `python3` for the first command after confirming its version.
 
 ## Code and data conventions
 
-- Standard library only at runtime. Use `src/`, setuptools, and the `drawercheck`
-  console script. Never add network calls at runtime.
+- Standard library only for the command-line core at runtime. Use `src/`,
+  setuptools, and the `drawercheck` console script. The optional Flask web layer
+  comes after the core milestones. The core makes no outbound network calls.
 - Small functions, descriptive names, type hints, and one-line docstrings on
   public functions. Use dataclasses, frozen where practical, for domain records.
 - Store and calculate money as integer cents. Parse strict two-decimal dollar
@@ -49,6 +54,9 @@ If needed, use `python3` for the first command after confirming its version.
   data. Ignore `data/private/`, databases, and SQLite sidecar files.
 - Use `html.escape` on every dynamic HTML value. Reports must be self-contained
   and offline. Protect every CSV export cell with the shared `sanitize_cell`.
+- The public app reuses the core functions. Keep runs in separate temporary
+  workspaces; apply upload limits and close/delete resources on success/failure.
+  Bundled JavaScript may handle interactions, never reconciliation arithmetic.
 - Use neutral flag wording. Flags are leads for review, not findings about a
   person. Do not make claims about loss reduction, real use, or legal standards.
 - Do not use em dashes or middle dots. Explain changes briefly in plain English.
@@ -71,5 +79,6 @@ If needed, use `python3` for the first command after confirming its version.
 
 - [Plan and decisions](docs/PLAN.md)
 - [Original project brief](docs/PROJECT_BRIEF.md)
+- [Approved public frontend plan](docs/WEB_PLAN.md)
 - [Learning log and verification](docs/LEARNING_LOG.md)
 - [Setup and current features](README.md)

@@ -9,6 +9,11 @@ produces text, HTML, and CSV reports.
 money helpers, and database connections are implemented. CSV import,
 reconciliation, demo generation, and reports arrive in later milestones.
 
+A public browser demo is now planned after the core is complete. Visitors will
+be able to run the built-in fake-data example or upload synthetic CSVs, inspect
+the results, and download reports. This frontend is not implemented yet; see the
+[approved web plan](docs/WEB_PLAN.md).
+
 ## Why I am building it
 
 I worked two POS registers at a busy convenience store and counted cash at close.
@@ -36,8 +41,9 @@ drawercheck --help
 If your system uses `python3` for a supported Python version, use that name in
 the first command. The `[dev]` extra installs the test runner and code checker;
 the installed application has no third-party runtime dependencies. Downloading
-development tools requires internet access during initial setup. The application
-itself makes no network calls.
+development tools requires internet access during initial setup. The command-line
+core makes no network calls. The planned public web layer will be a separate
+optional installation that handles browser requests.
 
 Running `drawercheck` without arguments also prints help. An invalid argument
 prints a short error and returns exit code 1; successful help returns 0.
@@ -68,5 +74,6 @@ are outside the MVP. There are no real POS or bank integrations.
 See the [milestone plan](docs/PLAN.md) for scope and decisions, and the
 [learning log](docs/LEARNING_LOG.md) for completed work and verification.
 The [original project brief](docs/PROJECT_BRIEF.md) preserves the input contracts
-and scenario requirements for future work.
+and scenario requirements for future work. Its original web/hosting exclusions
+were superseded by the public-frontend amendment in the current plan.
 The three-step demo and sample report will be added in M4.
