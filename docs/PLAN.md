@@ -1,6 +1,8 @@
 # DrawerCheck plan
 
-Status: M0 prepared for review. Wait for the user's **go** before M1.
+Status: M0 and M1 complete. M1 was approved and verified on 2026-10-22.
+Next: M2, database tables, demo CSVs, and import. Wait for the user's **next**
+before starting M2. See `docs/LEARNING_LOG.md` for the checks actually run.
 
 ## Purpose and boundaries
 
@@ -100,6 +102,12 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 21. **Keep instruction files and delivery lightweight.** `AGENTS.md` stays under 150 lines and includes the project summary, commands, conventions, stop points, and documentation links. `CLAUDE.md` contains only `@AGENTS.md`. Ignore `.venv/`, caches, build output, `*.db` and SQLite sidecar files, and `data/private/`. Use an MIT license attributed to DrawerCheck contributors rather than inventing a personal legal name. Commit milestones locally; publishing or claiming remote CI success is a separate observable step.
 
 22. **Recheck CI versions during M6.** The supplied GitHub tutorial currently shows `actions/checkout@v6` and `actions/setup-python@v5`, while the official latest-release pages currently show v7.0.1 and v7.1.0 respectively. Follow the tutorial's structure, use supported current action releases after checking again, and document that update rather than claiming its examples are current. Test Python 3.12, 3.13, and 3.14. Add the badge once the actual repository/workflow URL is confirmed. [GitHub tutorial](https://docs.github.com/en/actions/tutorials/build-and-test-code/python), [checkout release](https://github.com/actions/checkout/releases/tag/v7.0.1), [setup-python release](https://github.com/actions/setup-python/releases/tag/v7.1.0)
+
+23. **Keep new-chat handoffs in the repository.** Preserve the user's original brief unchanged in `docs/PROJECT_BRIEF.md`, since this plan does not repeat every schema, CSV header, or scenario detail. Startup instructions read the plan, learning log, original brief, Git history, and current files before stating progress. A question about the next step does not authorize starting it.
+
+24. **Make cent conversion independent of Decimal precision.** After validating the two-decimal spelling, use `Decimal.as_integer_ratio()` and integer arithmetic to obtain exact cents. This also preserves the SQLite storage limits if another caller changes the decimal context's precision. [Decimal documentation](https://docs.python.org/3.13/library/decimal.html#decimal.Decimal.as_integer_ratio)
+
+25. **Catch cleanup warnings in pytest too.** Keep the required `-W error::ResourceWarning` setting and additionally treat `pytest.PytestUnraisableExceptionWarning` as an error. Python can emit a leaked connection warning during object cleanup, where it cannot raise to a normal caller; pytest reports that situation using this second warning category. Explicit connection-closure tests remain required. [pytest cleanup warning documentation](https://docs.pytest.org/en/stable/how-to/failures.html#warning-about-unraisable-exceptions-and-unhandled-thread-exceptions)
 
 ## Math and test commitments
 
