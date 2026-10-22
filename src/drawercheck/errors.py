@@ -96,6 +96,15 @@ NOT_RECONCILED = "No flags found. Run `drawercheck reconcile` first."
 RESULTS_OUTDATED = (
     "Saved results use an earlier review policy. Run 'drawercheck reconcile' again."
 )
+REPORT_DATE_CONFLICT = "Use --date alone, or use --from and/or --to for a report range."
+REPORT_OUTPUT_ERROR = (
+    "Cannot write report {path}: {detail}. Choose a writable file path."
+)
+REPORT_DATABASE_OUTPUT = (
+    "The report output must not replace the database or its SQLite sidecar files."
+)
+REPORT_MIXED_POLICIES = "Saved results use different settings. Run 'drawercheck reconcile' for the full range again."
+REPORT_WRITTEN = "{format} report written: {path}"
 RECONCILED = (
     "Reconciled {shifts} shifts from {start} to {end}; saved {flags} review flags."
 )

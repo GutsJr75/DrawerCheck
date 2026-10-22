@@ -2,7 +2,7 @@
 
 DrawerCheck is a personal learning project for **Demo Store #001**, using only
 fictional records. M3 compares expected closing cash with an independent cash
-count and saves neutral leads for review. Reports arrive in M4. Repeated-shortage
+count and saves neutral leads for review. M4 adds text, HTML, and CSV reports. Repeated-shortage
 checks and bank-deposit matching arrive in M5.
 
 ## Follow the cash
@@ -196,3 +196,35 @@ Use `--from 2026-09-01 --to 2026-09-03` to select an inclusive range on
 requires that the shift's business date has already been reconciled. The full
 default demo currently produces 12 M3 flags. See [demo scenarios](DEMO_SCENARIOS.md)
 for the exact current and future expectations.
+
+## Reports from saved results
+
+`report` reads the imported records and the completed dates' saved settings and
+flags in one database transaction. It reuses the closing/deposit calculation
+helpers without running reconciliation or changing results. A range containing
+an unchecked date is refused; zero flags on a completed date remain a valid
+result. Old policy versions and mixed saved settings are also refused.
+
+Text and HTML share daily status/severity counts, all saved flags, cashier
+over/short totals, and the exact per-shift amounts. Cashier money totals include
+every known signed difference, including differences within tolerance. Open
+and incomplete shifts are counted separately and excluded from those totals.
+A cashier with no known variance shows unknown totals. Daily deposit amounts
+remain unknown when the expected-register roster is incomplete.
+
+HTML escapes every dynamic value, contains inline CSS and no JavaScript or
+external assets, and labels severity in words. CSV exports only the saved flag
+rows, with date, shift code, rule, severity, and message. `sanitize_cell` protects
+every header and data cell starting with `=`, `+`, `-`, `@`, tab, or carriage
+return by prefixing one quote. The CSV module preserves commas and multiline
+cells. Text rendering uses `terminal_text` to make embedded controls visible.
+
+`--date` selects one business date and cannot combine with range arguments.
+Missing range endpoints come from imported dates; empty selections do not
+produce a report. `--out` writes the selected format atomically to an existing
+folder. A failed write preserves the previous report and cleans temporary
+output. Database paths, aliases, and SQLite sidecars are protected from being
+used as the output file. By default the selected format goes to stdout.
+
+All current reports explicitly say that R04 and R08 are M5 work. Daily deposit
+amounts in M4 are expected cash calculations, with no bank-match conclusion.

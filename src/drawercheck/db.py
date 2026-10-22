@@ -151,6 +151,14 @@ def load_register_ids(con: sqlite3.Connection) -> tuple[str, ...]:
     )
 
 
+def load_cashier_names(con: sqlite3.Connection) -> dict[str, str]:
+    """Read display names separately from stable cashier identifiers."""
+    return {
+        row["id"]: row["display_name"]
+        for row in con.execute("SELECT id, display_name FROM cashiers ORDER BY id")
+    }
+
+
 def load_shifts(con: sqlite3.Connection) -> tuple[Shift, ...]:
     """Read independent records without SQL sums that could overflow integer cents."""
     pos = {

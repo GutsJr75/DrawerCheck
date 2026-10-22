@@ -207,3 +207,43 @@ previous code while syntax/encoding cases passed. The final full suite passed
 subprocesses for a 5,000-digit integer and an unrepresentable exponent returned
 exit 1 with the numeric message, without a traceback or an encoding claim.
 The runtime dependencies, policy version, and next milestone are unchanged.
+
+## M4: Reports and usable demo
+
+- Built: Shared read-only report data; daily status/severity summaries, cashier
+  over/short totals, and exact shift amounts; terminal-safe text, escaped offline
+  HTML, and protected CSV exports; the `report` command with date selection and
+  atomic file output; a real sample HTML report, design notes, and the README's
+  three-step demo with an explicit screenshot placeholder.
+- Learned: Zero saved flags cannot prove a date was checked, so reports must
+  verify every selected completion marker. Output safety depends on the format:
+  terminal escaping, HTML escaping, and CSV cell protection solve different
+  problems. Known cash subtotals must also expose missing/open record counts.
+- Interview question: How can three export formats share the same trustworthy
+  results while each protects readers from a different kind of unsafe input?
+
+Verified locally on 2026-10-22 with the existing Python 3.13.5 / SQLite 3.47.1
+environment. No runtime or development dependencies were added.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 487 tests, retaining ResourceWarning and cleanup-warning failures. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 487 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: no formatting changes needed. |
+| Installed CLI subprocess demo with default paths in a temporary directory | PASS: `demo-data`, `import`, `reconcile`, and all three report formats work. The CSV contains 12 flag rows. Before reconciliation the report returns the required guidance with exit 1. |
+| Installed CLI worked-date and output/error checks | PASS: September 3 shows $518.75 expected, $498.75 counted, and -$20.00 variance. Invalid date-selector combinations, missing output folders, and database output paths return exit 1 without tracebacks. Database contents stay intact. |
+| Generated `examples/sample_report.html` | PASS: actual report from the full committed fake month, with 60 shifts, 30 dates, 12 core flags, an unknown September 25 deposit, and visible M5 scope notices. |
+| HTML structure/resource and static contrast checks | PASS: semantic tables/captions/column headers, viewport, written severity labels, no scripts or external assets, and light/dark/print CSS. Ten light/dark text color pairs have contrast of at least 5.91:1. This is static evidence, not a full accessibility audit. |
+| CSV and hostile-text regressions | PASS: every dangerous prefix in each exported column, protected headers, quoted commas/newlines, escaped HTML values, terminal controls, and multiline display text. |
+| Readiness, incomplete-data, and resource tests | PASS: clean completed dates, partly unchecked ranges, old/mixed settings, saved-policy reuse despite a changed config, import invalidation, missing-register daily flags, unknown/open amounts, exact within-tolerance totals, connection closure, and no report mutations. |
+| Output integrity tests | PASS: database and sidecar paths, symlink/hardlink aliases, unwritable output, atomic replacement failure, prior-output preservation, and temporary-file cleanup. |
+| `PRAGMA foreign_key_check` after the installed CLI demo | PASS: no broken references. |
+| `git diff --check` and source/document checks | PASS: no whitespace errors or prohibited punctuation, public functions have docstrings, the original brief is unchanged, and instruction-file constraints remain satisfied. |
+| Browser visual preview | BLOCKED: the browser tool rejected the local `file:` URL under its security policy. No alternate browser route was used. Browser layout, narrow-screen appearance, keyboard behavior, and print rendering remain unverified. The README keeps a screenshot placeholder. |
+
+M4 adds reports only. R04/R08 remain unimplemented M5 work, optional rules remain
+unauthorized, and M7/M8's public app remains planned. No fresh-install matrix,
+remote CI, screenshot, or public deployment is claimed.
+
+Next milestone: **M5**, after the user says **next**.

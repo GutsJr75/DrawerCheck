@@ -1,8 +1,8 @@
 # DrawerCheck plan
 
-Status: M0 through M3 complete, including the approved M3 repair block on 2026-10-22.
-Next: M4, shared report data and text, HTML, and CSV reports.
-Wait for the user's **next** before starting M4. See `docs/LEARNING_LOG.md`
+Status: M0 through M4 complete. M4 was approved and verified locally on 2026-10-22.
+Next: M5, repeated-shortage patterns and bank-deposit matching.
+Wait for the user's **next** before starting M5. See `docs/LEARNING_LOG.md`
 for the checks actually run.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
@@ -154,6 +154,14 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 40. **Do not mix the repaired review policy with old saved flags.** Settings snapshots include policy version 2. `explain` asks for reconciliation again when a snapshot predates this repair. A successful reconciliation automatically clears earlier-policy flags and markers before saving its range, even when the numeric settings match. After updating, run reconciliation without date filters to refresh all imported business dates. This is one small snapshot field, not a migration framework.
 
 41. **Name numeric config failures separately from file-format errors.** An integer too large for the parser or an exponent outside Decimal's supported range receives an out-of-range-number message, with guidance to check the integer size or exponent. Invalid UTF-8 and malformed TOML keep the existing file-format message. Test both classifications through config loading and the CLI; do not echo thousands of digits into an error.
+
+42. **Build reports from one read-only saved-result snapshot.** Load selected imported records, completion markers, saved flags, saved settings, cashier names, and the expected register roster in one owned connection/transaction. Every selected date containing shifts must be completed; zero-flag completed dates work. Refuse old policy versions and mixed settings. Reuse `calculate_shifts` and `calculate_deposits` without running reconciliation or changing results. Inject report generation time in tests. `--date` excludes range options; missing endpoints use imported dates, and empty ranges retain the existing specific error.
+
+43. **Keep exact cashier amounts separate from status counts.** Daily balanced/over/short/incomplete/open counts use the saved tolerance and preserve all known signed differences. Cashier over, short, and exact net totals include known differences within tolerance; show known/incomplete/open record counts and exclude unknown/open shifts from money sums. Display unknown totals when a cashier has no known variance. Expected deposits remain unknown on incomplete days, and date-level missing-register flags appear in every report without invented shift codes. M4 explicitly labels R04 and R08 as M5 work.
+
+44. **Use format-specific output protection.** All dynamic HTML values pass through `html.escape`; inline CSS supplies semantic tables, explicit severity labels, light/dark preference, print rules, and focusable horizontal table regions. No scripts or remote assets. `sanitize_cell` protects every CSV header and value with the six required prefixes, using the CSV module to preserve quoting/newlines. Text tables and flag lines reuse `terminal_text`; do not apply whole-message terminal escaping to structured HTML/CSV output. The report's restrained static-document style is recorded in `DESIGN.md`, with no M7/M8 application implementation.
+
+45. **Write complete reports without risking SQLite storage.** `--out` writes UTF-8 through a closed temporary file in the target directory and then replaces the target atomically. Clean partial output on failure and preserve the previous report. Refuse database paths, symlink/hardlink aliases, and SQLite journal/WAL/SHM paths. Parent directories must exist; translate failures with the shared report-output error. Default stdout output remains the selected format with no success-message contamination. The M4 sample was generated from all 60 fake shifts; browser preview was blocked by the tool's local-file URL policy, so visual/narrow-screen/print rendering is not claimed as verified. Keep the README screenshot placeholder explicit.
 
 ## Math and test commitments
 

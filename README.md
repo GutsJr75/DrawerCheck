@@ -3,11 +3,13 @@
 DrawerCheck is a personal learning project for checking end-of-shift cash drawers
 with fictional data from **Demo Store #001**. It imports CSV files, compares
 counted cash with POS totals, flags differences for human review, and explains
-each shift. Text, HTML, and CSV reports are planned for M4.
+each shift. It exports terminal text, a self-contained HTML report, and a CSV
+of review flags.
 
-**Current milestone: M3, core reconciliation complete.** Installation, exact
+**Current milestone: M4, reports and usable demo complete.** Installation, exact
 money handling, database tables, fake demo generation, validated imports, cash
-calculations, four review rules, and shift explanations are implemented.
+calculations, four review rules, shift explanations, and three report formats
+are implemented.
 Repeated-shortage checks and bank matching arrive in M5.
 
 A public browser demo is now planned after the core is complete. Visitors will
@@ -48,6 +50,41 @@ optional installation that handles browser requests.
 
 Running `drawercheck` without arguments also prints help. An invalid argument
 prints a short error and returns exit code 1; successful help returns 0.
+
+## Try it in 3 steps
+
+Start in the project folder with Python 3.12 or newer. All inputs below are fake.
+
+1. Install the command in a virtual environment:
+
+   ```sh
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -e ".[dev]"
+   ```
+
+2. Generate, import, and reconcile the demo in a fresh example database:
+
+   ```sh
+   drawercheck demo-data
+   drawercheck import --dir data/demo --db demo-m4.db
+   drawercheck reconcile --db demo-m4.db
+   ```
+
+3. Create the HTML report, then open the file in a browser:
+
+   ```sh
+   drawercheck report --db demo-m4.db --from 2026-09-01 --to 2026-09-30 --format html --out demo-report.html
+   ```
+
+The [committed sample report](examples/sample_report.html) contains the same
+60 shifts and 12 core flags. It works offline, with no external assets or scripts.
+The file includes daily summaries, review leads, cashier totals, and shift
+calculations. It explicitly labels pattern and bank-matching rules as M5 work.
+
+**Screenshot placeholder:** a real report screenshot will be added after a
+browser capture is available. The M4 browser preview was blocked by the tool's
+local-file security policy; no screenshot or visual verification is claimed.
 
 ## Generate and import demo inputs
 
@@ -121,6 +158,44 @@ business date present in the shift inputs. A missing register's shift makes
 the daily deposit unknown and produces a date-level R09 review flag.
 See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
 
+## Export reports
+
+```sh
+drawercheck report --db demo-m4.db
+drawercheck report --db demo-m4.db --date 2026-09-03
+drawercheck report --db demo-m4.db --format csv --out flags.csv
+drawercheck report --db demo-m4.db --format text --out review.txt
+```
+
+The default format is text on the terminal. `--out` writes a file; its parent
+folder must already exist. CSV contains one row per saved flag, with a blank
+shift code for a date-level flag. Every CSV cell is protected against the
+specified spreadsheet-formula prefixes, and quoted commas/newlines are retained.
+
+The text and HTML formats share one report dataset. They show daily
+balanced/over/short/incomplete/open counts and flags by severity, then all review
+leads, exact cashier totals, and individual shift amounts. Unknown cash stays
+unknown. Cashier totals include known differences within tolerance and exclude
+unknown/open shifts; the number of known records is shown alongside each total.
+
+Reports use the saved reconciliation settings, even if `config.toml` changes.
+Every selected business date containing shifts must already be reconciled. A
+clean completed date is reportable; an unchecked date produces the documented
+`Run drawercheck reconcile first` guidance. `--date` cannot combine with `--from`
+or `--to`. Reports never run reconciliation or change saved flags.
+
+Report files are written atomically, so a failed replacement preserves the
+previous file. Output paths cannot replace the database or its SQLite sidecars.
+The HTML file has inline CSS, light/dark preference, semantic tables, keyboard
+section links, and print styling. Narrow tables have labelled scroll regions.
+
+A real terminal excerpt for the worked shift's review leads:
+
+```text
+[review] 2026-09-03 2026-09-03-R1 R01_VARIANCE: Short by $20.00. Recount recommended.
+[info] 2026-09-03 2026-09-03-R1 R02_SINGLE_DENOMINATION: Variance equals one $20 bill. Check for a miscounted or misplaced bill.
+```
+
 ## CSV import behavior
 
 - Supply all seven files with the exact column names in the
@@ -157,7 +232,7 @@ See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
   transaction block to save or roll back changes.
 - Tests treat leaked-connection warnings as errors.
 
-## Scope and progress
+## Limitations and progress
 
 This is a learning project using fake data, not a tool for real cash control.
 Flags are neutral leads for human review. The project does not claim
@@ -176,4 +251,5 @@ See the [milestone plan](docs/PLAN.md) for scope and decisions, and the
 The [original project brief](docs/PROJECT_BRIEF.md) preserves the input contracts
 and scenario requirements for future work. Its original web/hosting exclusions
 were superseded by the public-frontend amendment in the current plan.
-The three-step demo and sample report will be added in M4.
+Repeated-shortage checks and bank matching remain M5 work. The public app
+remains M7/M8 work.

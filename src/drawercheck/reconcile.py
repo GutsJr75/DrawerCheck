@@ -134,11 +134,12 @@ def expected_deposit(
     ) - config.retained_float_per_register_cents * len(registers)
 
 
-def _daily_deposits(
+def calculate_deposits(
     results: tuple[ShiftResult, ...],
     config: Config,
     register_ids: tuple[str, ...],
 ) -> tuple[DailyDeposit, ...]:
+    """Calculate complete daily deposits and missing-register leads using one roster."""
     days: dict[str, list[ShiftResult]] = defaultdict(list)
     for result in results:
         days[result.shift.business_date].append(result)
@@ -207,7 +208,7 @@ def reconcile(
             )
             if not selected:
                 raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
-            deposits = _daily_deposits(selected, config, db.load_register_ids(con))
+            deposits = calculate_deposits(selected, config, db.load_register_ids(con))
             dates = tuple(day.business_date for day in deposits)
             run = ReconciliationResult(start, end, selected, deposits)
             db.save_reconciliation(

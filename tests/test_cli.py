@@ -38,7 +38,7 @@ def test_unknown_argument_returns_one(capsys: pytest.CaptureFixture[str]) -> Non
 
 
 @pytest.mark.parametrize(
-    "command", ["init-db", "demo-data", "import", "reconcile", "explain"]
+    "command", ["init-db", "demo-data", "import", "reconcile", "explain", "report"]
 )
 def test_command_help(command: str, capsys: pytest.CaptureFixture[str]) -> None:
     """Each implemented subcommand offers help without running the command."""

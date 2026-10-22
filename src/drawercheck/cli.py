@@ -13,6 +13,7 @@ from drawercheck.config import load_config
 from drawercheck.models import ShiftExplanation
 from drawercheck.money import format_cents
 from drawercheck.reconcile import explain_shift, reconcile
+from drawercheck.reports import csv_out, html, load_report, text, write_report
 from drawercheck.text_safety import terminal_text
 
 
@@ -28,7 +29,7 @@ def _build_parser() -> _ArgumentParser:
     parser = _ArgumentParser(
         prog="drawercheck",
         description="Offline cash-drawer checks for Demo Store #001 (fake data only).",
-        epilog="Reports arrive in M4; patterns and bank matching arrive in M5.",
+        epilog="Repeated-shortage checks and bank matching arrive in M5.",
     )
     commands = parser.add_subparsers(dest="command")
     initialize = commands.add_parser(
@@ -62,6 +63,16 @@ def _build_parser() -> _ArgumentParser:
     )
     explain.add_argument("shift_code")
     explain.add_argument("--db", type=Path, default=Path("drawercheck.db"))
+
+    report = commands.add_parser(
+        "report", help="Create a text, offline HTML, or protected CSV report."
+    )
+    report.add_argument("--date")
+    report.add_argument("--from", dest="from_date")
+    report.add_argument("--to", dest="to_date")
+    report.add_argument("--format", choices=("text", "html", "csv"), default="text")
+    report.add_argument("--out", type=Path)
+    report.add_argument("--db", type=Path, default=Path("drawercheck.db"))
     return parser
 
 
@@ -180,6 +191,22 @@ def _run_command(arguments: argparse.Namespace) -> None:
         )
     elif arguments.command == "explain":
         _print_explanation(explain_shift(arguments.db, arguments.shift_code))
+    elif arguments.command == "report":
+        report = load_report(
+            arguments.db, arguments.from_date, arguments.to_date, date=arguments.date
+        )
+        content = {"text": text.render, "html": html.render, "csv": csv_out.render}[
+            arguments.format
+        ](report)
+        if arguments.out is None:
+            sys.stdout.write(content)
+        else:
+            write_report(arguments.out, content, arguments.db)
+            _print_line(
+                errors.REPORT_WRITTEN.format(
+                    format=arguments.format.upper(), path=arguments.out
+                )
+            )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
