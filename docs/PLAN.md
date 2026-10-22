@@ -6,6 +6,10 @@ Wait for the user's **next** before starting M5. See `docs/LEARNING_LOG.md`
 for the checks actually run.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
+Design direction clarified on 2026-10-22: a minimal, professional interface for
+beginners, with focused views and optional explanations. The audience, wording,
+and usability decisions are recorded in `docs/WEB_PLAN.md` and `DESIGN.md`.
+This documentation update does not start M5 or web implementation.
 
 ## Purpose and boundaries
 

@@ -279,3 +279,28 @@ reconciliation policies, demo inputs, or M5 features changed.
 Browser rendering remains unverified because of the previously recorded tool
 restriction. These repairs add generated-stylesheet regressions, not a visual
 accessibility audit. M5 remains the next milestone, awaiting **next**.
+
+## Design direction update (2026-10-22)
+
+- Built: Recorded the approved beginner audience, minimal professional styling,
+  four focused views, optional explanations, accurate plain-language labels,
+  and future usability checks in `WEB_PLAN.md` and `DESIGN.md`. Linked the
+  decision from the plan without changing milestone progress.
+- Learned: Reducing clutter means showing relevant help at the right time while
+  keeping errors, missing records, and the demo-data notice visible. Simpler
+  labels must preserve the meaning of identifiers, amounts, and issue counts.
+- Interview question: How would you make a cash-checking demo understandable
+  to a first-time visitor without crowding the screen or hiding missing data?
+
+This is a documentation-only update. M0 through M4 remain complete; M5 awaits
+the user's explicit authorization. No application code, report styles, data,
+dependencies, or deployment settings changed. Browser and participant usability
+checks remain future work, not observed results.
+
+Verification for this update: `.venv/bin/pytest -q` passed all 498 tests;
+`.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` passed. Reviewed
+the documentation diff, checked local Markdown links and prohibited punctuation,
+and ran `git diff --check`. The Frontend Design Premium static audit in strict
+mode reported no findings; its JSON output is at
+`/private/tmp/drawercheck-design-audit.json`. This is static evidence only, not
+browser or usability verification. No new tests were added for this docs update.

@@ -14,6 +14,70 @@ previously excluded by the original brief. All money, database, demo-data,
 neutral-wording, and report-safety requirements still apply. The original brief
 is retained unchanged; read it together with the current plan.
 
+## Audience and design direction (approved 2026-10-22)
+
+Assume visitors may know neither coding nor cash-drawer reconciliation. Explain
+the task through ordinary words and concrete examples. The public site is a
+personal learning demo using fictional records, not a tool for real cash control.
+
+Build a minimal, professional interface: neutral backgrounds, one main accent,
+readable text, consistent spacing, familiar controls, and one primary action per
+view. Use cards, icons, and colour only when they help someone understand or act.
+Keep the example-data notice, errors, and missing-record warnings visible.
+Minimalism must not hide essential information or remove accessible labels.
+
+### Focused views and optional explanations
+
+These are task-focused views, not separate required setup steps or a commitment
+to four server routes. Keep navigation simple and preserve the temporary-run
+behaviour described below.
+
+| View | Main purpose | Information shown when needed |
+| --- | --- | --- |
+| Start | Explain the purpose briefly; make `Try the example` the main action and uploading the secondary action. | A short explanation of what the example contains. No files, coding, or compulsory tutorial required. |
+| Prepare files | Help uploaders choose the seven synthetic CSV files and see which are present or missing. | Downloadable examples/templates, preparation guidance, file limits, and specific corrections. Skip this view for the built-in example. |
+| Results | Show a short summary, review items, date/severity filters, and report downloads. | Brief definitions beside unfamiliar terms; open a record to investigate it. |
+| Drawer details | Explain one shift's expected cash, counted cash, difference, and review leads. | An expandable calculation and suggested checks in plain sentences. Provide a clear return to results with filters retained while the run remains open. |
+
+Show essentials first and let visitors open details where they are relevant.
+Place help beside its subject rather than collecting all instructions on the
+first screen. Expandable help must work by keyboard and touch, not hover alone.
+Use a normal `Choose files` button even if drag and drop is offered. Allow users
+to replace a wrong file before submitting. Explain loading, empty, no-matching-
+results, error, and success states with a clear next action. Do not invent
+percentage progress when it cannot be measured.
+
+### Plain language without changing meaning
+
+Keep the same action and concept labels across views. Explain necessary cash
+terms briefly; do not require visitors to understand rule codes or commands.
+
+| Internal term or format | Suggested public wording |
+| --- | --- |
+| Reconcile | Check drawers |
+| Variance | Cash difference |
+| R01_VARIANCE | Cash difference to check |
+| R09_DATA_INTEGRITY | Missing or inconsistent records |
+| info / warn / review | Note / Check / Needs review |
+| Exact net | Total over/short |
+| HTML / CSV / text download | Web page (.html) / Spreadsheet (.csv) / Text (.txt) |
+
+These labels describe review leads, not findings about a person or deadlines.
+Keep rule codes available as secondary details. Distinguish issue counts from
+affected-shift counts, and missing amounts from zero. Each issue should say
+what happened, what is unknown, and what the visitor can check next.
+
+During M7, add plain web error messages in `errors.py` that name the actual file,
+source line, and field where available, explain the problem, and suggest a fix.
+Preserve identifiers and physical CSV line numbers accurately; a cashier ID is
+not a cashier name, and multiline records make guessed spreadsheet row numbers
+unreliable. The website runs the pipeline itself, so do not ask visitors to run
+CLI commands. Keep the existing validation and shared calculations unchanged.
+
+This decision records future M7/M8 behaviour only. It does not implement screens,
+change the M4 report, or authorize M5. Detailed visual choices and browser checks
+remain part of the later frontend work. See [DESIGN.md](../DESIGN.md).
+
 ## Experience to build
 
 1. Open the public URL and see what DrawerCheck does, with a visible demo-data
@@ -107,6 +171,13 @@ for review. Optional rules R03, R06, and R07 move to M9 and remain opt-in.
 - Verify the actual browser flow on desktop and a narrow screen: built-in demo,
   uploads, errors, results, filtering, shift explanation, downloads, and starting
   again. Check keyboard operation and the downloadable report's offline behavior.
+- Check that the focused views keep essential warnings visible and optional
+  explanations available by keyboard and touch. Confirm that labels and counts
+  match the underlying results, with no command-line instructions in web errors.
+- Arrange a usability check with a person unfamiliar with the project: can they
+  run the example, find and explain an item needing review, and download a report
+  without coaching? Record observed difficulties and repairs; if no participant
+  is available, record the missing check rather than claiming it passed.
 - Keep the core install working without web dependencies. Run pytest and both
   Ruff checks; add web coverage to CI and report only observed CI results.
 - Verify a real public URL from a fresh browser session before marking M8 done.
