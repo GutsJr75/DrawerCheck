@@ -1,13 +1,14 @@
 """Render a terminal-safe cash review with shared daily and cashier summaries."""
 
 from drawercheck.money import format_cents
-from drawercheck.reports import REVIEW_NOTICE, STAGE_NOTICE, VARIANCE_NOTICE, ReportData
+from drawercheck.reports import (
+    REVIEW_NOTICE,
+    STAGE_NOTICE,
+    VARIANCE_NOTICE,
+    ReportData,
+    format_amount,
+)
 from drawercheck.text_safety import terminal_text
-
-
-def money(value: int | None) -> str:
-    """Label unavailable cash explicitly instead of presenting it as zero."""
-    return "unknown" if value is None else format_cents(value)
 
 
 def _table(headers: tuple[str, ...], rows: list[tuple[object, ...]]) -> str:
@@ -57,7 +58,7 @@ def render(report: ReportData) -> str:
                     day.info,
                     day.warn,
                     day.review,
-                    money(day.expected_deposit_cents),
+                    format_amount(day.expected_deposit_cents),
                 )
                 for day in report.days
             ],
@@ -96,9 +97,9 @@ def render(report: ReportData) -> str:
                         cashier.known,
                         cashier.incomplete,
                         cashier.open,
-                        money(cashier.over_cents if cashier.known else None),
-                        money(cashier.short_cents if cashier.known else None),
-                        money(cashier.net_cents if cashier.known else None),
+                        format_amount(cashier.over_cents if cashier.known else None),
+                        format_amount(cashier.short_cents if cashier.known else None),
+                        format_amount(cashier.net_cents if cashier.known else None),
                     )
                     for cashier in report.cashiers
                 ],
@@ -119,9 +120,9 @@ def render(report: ReportData) -> str:
                         result.shift.shift_code,
                         result.shift.cashier_id,
                         result.status,
-                        money(result.expected_cents),
-                        money(result.counted_cents),
-                        money(result.variance_cents),
+                        format_amount(result.expected_cents),
+                        format_amount(result.counted_cents),
+                        format_amount(result.variance_cents),
                     )
                     for result in report.shifts
                 ],

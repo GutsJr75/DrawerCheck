@@ -1,6 +1,6 @@
 # DrawerCheck plan
 
-Status: M0 through M4 complete. M4 was approved and verified locally on 2026-10-22.
+Status: M0 through M4 complete, including the M4 review repairs verified locally on 2026-10-22.
 Next: M5, repeated-shortage patterns and bank-deposit matching.
 Wait for the user's **next** before starting M5. See `docs/LEARNING_LOG.md`
 for the checks actually run.
@@ -162,6 +162,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 44. **Use format-specific output protection.** All dynamic HTML values pass through `html.escape`; inline CSS supplies semantic tables, explicit severity labels, light/dark preference, print rules, and focusable horizontal table regions. No scripts or remote assets. `sanitize_cell` protects every CSV header and value with the six required prefixes, using the CSV module to preserve quoting/newlines. Text tables and flag lines reuse `terminal_text`; do not apply whole-message terminal escaping to structured HTML/CSV output. The report's restrained static-document style is recorded in `DESIGN.md`, with no M7/M8 application implementation.
 
 45. **Write complete reports without risking SQLite storage.** `--out` writes UTF-8 through a closed temporary file in the target directory and then replaces the target atomically. Clean partial output on failure and preserve the previous report. Refuse database paths, symlink/hardlink aliases, and SQLite journal/WAL/SHM paths. Parent directories must exist; translate failures with the shared report-output error. Default stdout output remains the selected format with no success-message contamination. The M4 sample was generated from all 60 fake shifts; browser preview was blocked by the tool's local-file URL policy, so visual/narrow-screen/print rendering is not claimed as verified. Keep the README screenshot placeholder explicit.
+
+46. **Close the M4 review findings before M5.** Keep the base CSS selector valid and give the demo banner a dark fallback background; check the generated stylesheet and regenerate the sample. New output files use exclusive temporary-file creation with mode `0666`, letting the OS apply the caller's umask without changing it. Existing reports retain their permission bits, applied to the closed temporary file before atomic replacement; failures preserve the old report. Retaining ownership and extended access rules is outside this guarantee. Keep the required unreconciled guidance and append the first unchecked selected date. Cache each report's shift-code lookup and share the unavailable-amount label between text and HTML, still delegating currency formatting to `money.py`.
 
 ## Math and test commitments
 

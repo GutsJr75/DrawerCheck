@@ -3,9 +3,15 @@
 from html import escape
 
 from drawercheck.money import format_cents
-from drawercheck.reports import REVIEW_NOTICE, STAGE_NOTICE, VARIANCE_NOTICE, ReportData
+from drawercheck.reports import (
+    REVIEW_NOTICE,
+    STAGE_NOTICE,
+    VARIANCE_NOTICE,
+    ReportData,
+    format_amount,
+)
 
-_CSS = """+:root { color-scheme: light dark; --page:#edf3f5; --paper:#ffffff; --ink:#162b35;
+_CSS = """:root { color-scheme: light dark; --page:#edf3f5; --paper:#ffffff; --ink:#162b35;
   --muted:#48636f; --line:#cedce1; --accent:#076f78; --soft:#e8f4f3;
   --warn:#805000; --review:#963a32; --head:#143c4a; }
 * { box-sizing:border-box; }
@@ -13,7 +19,7 @@ body { margin:0; background:var(--page); color:var(--ink);
   font:15px/1.55 "Avenir Next", "Segoe UI", sans-serif; }
 main { max-width:1260px; margin:36px auto; background:var(--paper);
   border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-.demo { margin:0; padding:10px 36px; color:#fff; background:var(--head);
+.demo { margin:0; padding:10px 36px; color:#fff; background:var(--head, #143c4a);
   font-size:12px; font-weight:700; letter-spacing:.08em; }
 header { padding:30px 36px 24px; border-bottom:1px solid var(--line); }
 .eyebrow { color:var(--accent); font:700 13px/1.4 "Avenir Next", "Segoe UI", sans-serif;
@@ -72,10 +78,6 @@ footer { padding:22px 36px; color:var(--muted); font-size:12px; }
 
 def _e(value: object) -> str:
     return escape(str(value), quote=True)
-
-
-def _money(value: int | None) -> str:
-    return "unknown" if value is None else format_cents(value)
 
 
 def _table(
@@ -141,7 +143,7 @@ def render(report: ReportData) -> str:
                 day.info,
                 day.warn,
                 day.review,
-                _money(day.expected_deposit_cents),
+                format_amount(day.expected_deposit_cents),
             )
             for day in report.days
         ],
@@ -168,9 +170,9 @@ def render(report: ReportData) -> str:
                 cashier.known,
                 cashier.incomplete,
                 cashier.open,
-                _money(cashier.over_cents if cashier.known else None),
-                _money(cashier.short_cents if cashier.known else None),
-                _money(cashier.net_cents if cashier.known else None),
+                format_amount(cashier.over_cents if cashier.known else None),
+                format_amount(cashier.short_cents if cashier.known else None),
+                format_amount(cashier.net_cents if cashier.known else None),
             )
             for cashier in report.cashiers
         ],
@@ -186,9 +188,9 @@ def render(report: ReportData) -> str:
                 "Balanced within tolerance"
                 if result.status == "balanced"
                 else result.status,
-                _money(result.expected_cents),
-                _money(result.counted_cents),
-                _money(result.variance_cents),
+                format_amount(result.expected_cents),
+                format_amount(result.counted_cents),
+                format_amount(result.variance_cents),
             )
             for result in report.shifts
         ],

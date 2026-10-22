@@ -181,11 +181,14 @@ unknown/open shifts; the number of known records is shown alongside each total.
 Reports use the saved reconciliation settings, even if `config.toml` changes.
 Every selected business date containing shifts must already be reconciled. A
 clean completed date is reportable; an unchecked date produces the documented
-`Run drawercheck reconcile first` guidance. `--date` cannot combine with `--from`
-or `--to`. Reports never run reconciliation or change saved flags.
+`Run drawercheck reconcile first` guidance and names the first unchecked date.
+`--date` cannot combine with `--from` or `--to`. Reports never run reconciliation
+or change saved flags.
 
 Report files are written atomically, so a failed replacement preserves the
 previous file. Output paths cannot replace the database or its SQLite sidecars.
+New files respect the caller's umask; replacements keep the existing report's
+permission bits.
 The HTML file has inline CSS, light/dark preference, semantic tables, keyboard
 section links, and print styling. Narrow tables have labelled scroll regions.
 

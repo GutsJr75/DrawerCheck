@@ -32,3 +32,8 @@ On narrow screens, each table scrolls inside a labelled keyboard-focusable
 region. The document itself should fit the viewport. Internal section links
 have visible focus. Light/dark preference and printing use CSS only; there are
 no scripts, loaders, forms, or remote calls. Every dynamic HTML value is escaped.
+
+Keep the base theme in a valid top-level `:root` rule. The demo strip also has
+a dark fallback background so its white warning remains readable when the
+background variable is unavailable. Static stylesheet tests do not replace
+browser checks of light, dark, narrow-screen, and print appearance.

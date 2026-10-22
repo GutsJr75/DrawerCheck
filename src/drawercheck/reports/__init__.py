@@ -1,21 +1,29 @@
 """Read one consistent report dataset and share it across all export formats."""
 
 import os
+import stat
 from collections import Counter
 from contextlib import closing
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
+from functools import cached_property
 from pathlib import Path
-from tempfile import NamedTemporaryFile
+from secrets import token_hex
 
 from drawercheck import db, errors
 from drawercheck.config import Config, config_from_snapshot
 from drawercheck.models import DailyDeposit, Flag, ShiftResult
+from drawercheck.money import format_cents
 from drawercheck.reconcile import calculate_deposits, calculate_shifts, parse_range_date
 
 STAGE_NOTICE = "Core checks only. Repeated-shortage checks (R04) and bank-deposit matching (R08) arrive in M5."
 REVIEW_NOTICE = "Flags are leads for review, not findings about a person."
 VARIANCE_NOTICE = "Cashier totals include every known signed difference, including differences within tolerance. Unknown and open shifts are excluded from money totals."
+
+
+def format_amount(value: int | None) -> str:
+    """Label unavailable cash explicitly and delegate currency formatting to money.py."""
+    return "unknown" if value is None else format_cents(value)
 
 
 @dataclass(frozen=True)
@@ -63,16 +71,13 @@ class ReportData:
     days: tuple[DailySummary, ...]
     cashiers: tuple[CashierSummary, ...]
 
+    @cached_property
+    def _shift_codes(self) -> dict[int, str]:
+        return {result.shift.id: result.shift.shift_code for result in self.shifts}
+
     def shift_code(self, flag: Flag) -> str:
         """Return the real shift code or an empty cell for a date-level flag."""
-        return next(
-            (
-                result.shift.shift_code
-                for result in self.shifts
-                if result.shift.id == flag.shift_id
-            ),
-            "",
-        )
+        return "" if flag.shift_id is None else self._shift_codes.get(flag.shift_id, "")
 
 
 def _daily_summaries(
@@ -176,9 +181,14 @@ def load_report(
             if not selected:
                 raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
             dates = sorted({shift.business_date for shift in selected})
-            snapshots = {db.completion_snapshot(con, day) for day in dates}
-            if None in snapshots:
-                raise errors.ReconciliationError(errors.NOT_RECONCILED)
+            snapshots = set()
+            for day in dates:
+                snapshot = db.completion_snapshot(con, day)
+                if snapshot is None:
+                    raise errors.ReconciliationError(
+                        errors.REPORT_NOT_RECONCILED.format(date=day)
+                    )
+                snapshots.add(snapshot)
             if len(snapshots) != 1:
                 raise errors.ReconciliationError(errors.REPORT_MIXED_POLICIES)
             config = config_from_snapshot(snapshots.pop())
@@ -221,17 +231,19 @@ def write_report(path: str | Path, content: str, database_path: str | Path) -> N
         raise errors.UsageError(errors.REPORT_DATABASE_OUTPUT)
     temporary = None
     try:
-        with NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            newline="",
-            dir=target.parent,
-            prefix=".drawercheck-",
-            suffix=".tmp",
-            delete=False,
-        ) as stream:
-            temporary = Path(stream.name)
+        existing_mode = stat.S_IMODE(target.stat().st_mode) if target.exists() else None
+        candidate = target.parent / f".drawercheck-{token_hex(16)}.tmp"
+        # Exclusive creation prevents replacing another file; the OS applies umask.
+        descriptor = os.open(
+            candidate,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+            0o600 if existing_mode is not None else 0o666,
+        )
+        temporary = candidate
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as stream:
             stream.write(content)
+        if existing_mode is not None:
+            temporary.chmod(existing_mode)
         os.replace(temporary, target)
     except OSError as error:
         raise errors.DrawerCheckError(

@@ -97,6 +97,7 @@ RESULTS_OUTDATED = (
     "Saved results use an earlier review policy. Run 'drawercheck reconcile' again."
 )
 REPORT_DATE_CONFLICT = "Use --date alone, or use --from and/or --to for a report range."
+REPORT_NOT_RECONCILED = NOT_RECONCILED + " First unreconciled date: {date}."
 REPORT_OUTPUT_ERROR = (
     "Cannot write report {path}: {detail}. Choose a writable file path."
 )

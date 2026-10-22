@@ -234,7 +234,7 @@ environment. No runtime or development dependencies were added.
 | Installed CLI subprocess demo with default paths in a temporary directory | PASS: `demo-data`, `import`, `reconcile`, and all three report formats work. The CSV contains 12 flag rows. Before reconciliation the report returns the required guidance with exit 1. |
 | Installed CLI worked-date and output/error checks | PASS: September 3 shows $518.75 expected, $498.75 counted, and -$20.00 variance. Invalid date-selector combinations, missing output folders, and database output paths return exit 1 without tracebacks. Database contents stay intact. |
 | Generated `examples/sample_report.html` | PASS: actual report from the full committed fake month, with 60 shifts, 30 dates, 12 core flags, an unknown September 25 deposit, and visible M5 scope notices. |
-| HTML structure/resource and static contrast checks | PASS: semantic tables/captions/column headers, viewport, written severity labels, no scripts or external assets, and light/dark/print CSS. Ten light/dark text color pairs have contrast of at least 5.91:1. This is static evidence, not a full accessibility audit. |
+| HTML structure/resource and static contrast checks | PASS for semantic tables/captions/column headers, viewport, written severity labels, and no scripts or external assets. Ten declared light/dark text color pairs have contrast of at least 5.91:1. Correction from the M4 review: the malformed base selector prevented the light theme from applying, so these checks did not prove applied colors or a visible banner. See the repair entry below. |
 | CSV and hostile-text regressions | PASS: every dangerous prefix in each exported column, protected headers, quoted commas/newlines, escaped HTML values, terminal controls, and multiline display text. |
 | Readiness, incomplete-data, and resource tests | PASS: clean completed dates, partly unchecked ranges, old/mixed settings, saved-policy reuse despite a changed config, import invalidation, missing-register daily flags, unknown/open amounts, exact within-tolerance totals, connection closure, and no report mutations. |
 | Output integrity tests | PASS: database and sidecar paths, symlink/hardlink aliases, unwritable output, atomic replacement failure, prior-output preservation, and temporary-file cleanup. |
@@ -247,3 +247,35 @@ unauthorized, and M7/M8's public app remains planned. No fresh-install matrix,
 remote CI, screenshot, or public deployment is claimed.
 
 Next milestone: **M5**, after the user says **next**.
+
+## M4 repair block: Report review findings
+
+- Built: Fixed the invalid base CSS selector, added the demo banner's fallback
+  background, and regenerated the sample. Preserved existing output permission
+  bits while new files respect umask, added the first unreconciled date to report
+  errors, cached shift-code lookups, and shared the unknown-amount formatter.
+- Learned: Checking declared color contrast does not prove a CSS selector is
+  valid. Atomic replacement carries the temporary file's permissions, so those
+  need deliberate handling without changing the process-wide umask.
+- Interview question: How would you replace a generated report safely while
+  preserving its permissions and keeping a failed write from destroying it?
+
+Verified locally on 2026-10-22 in the existing environment. No dependencies,
+reconciliation policies, demo inputs, or M5 features changed.
+
+| Command or check | Result |
+| --- | --- |
+| Focused new regression cases before fixes | Reproduced: 9 failures and 2 passing cases covering CSS, banner fallback, missing-date guidance, and output permissions/failure handling. |
+| `.venv/bin/pytest -q tests/test_reports.py` | PASS: 78 report tests. |
+| `.venv/bin/pytest -q` | PASS: 498 tests, with connection/resource cleanup warnings still treated as errors. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: no formatting changes needed. |
+| Permission subprocess regressions | PASS: new files use 0644, 0600, and 0664 under umasks 022, 077, and 002; replacements retain 0640 or 0600. Umask remains unchanged, and a permission-setting failure preserves the prior report and removes the temporary file. |
+| Installed CLI subprocess demo in a temporary directory | PASS: partial reconciliation through September 10 reports the required guidance plus September 11 as the first unchecked date. Full reconciliation and all report formats still work, with 60 shifts, 30 dates, and 12 core flags. |
+| Regenerated `examples/sample_report.html` | PASS: matches a fresh full-demo export apart from generation time; only the base selector, banner fallback, and timestamp differ from the previous sample. |
+| `PRAGMA foreign_key_check` after the CLI demo | PASS: no broken references. |
+| `git diff --check` and changed-source/document checks | PASS: no whitespace errors or prohibited punctuation, public functions have docstrings, instruction-file constraints hold, and the original brief is unchanged. |
+
+Browser rendering remains unverified because of the previously recorded tool
+restriction. These repairs add generated-stylesheet regressions, not a visual
+accessibility audit. M5 remains the next milestone, awaiting **next**.

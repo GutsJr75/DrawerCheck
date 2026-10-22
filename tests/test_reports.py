@@ -2,7 +2,11 @@
 
 import csv
 import json
+import os
 import sqlite3
+import stat
+import subprocess
+import sys
 from contextlib import closing
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -230,6 +234,35 @@ def test_report_requires_every_selected_date_to_be_completed(
         load_report(demo_database)
 
 
+@pytest.mark.parametrize(
+    ("completed_to", "from_date", "missing_date"),
+    [
+        (None, None, "2026-09-01"),
+        ("2026-09-10", None, "2026-09-11"),
+        ("2026-09-10", "2026-09-15", "2026-09-15"),
+    ],
+)
+def test_unreconciled_report_names_first_missing_date(
+    demo_database: Path,
+    capsys: pytest.CaptureFixture[str],
+    completed_to: str | None,
+    from_date: str | None,
+    missing_date: str,
+) -> None:
+    """Missing-date guidance identifies the first unchecked date in the selected range."""
+    if completed_to is not None:
+        reconcile(demo_database, Config(), "2026-09-01", completed_to)
+    arguments = ["report", "--db", str(demo_database)]
+    if from_date is not None:
+        arguments.extend(["--from", from_date])
+    assert main(arguments) == 1
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert output.err.strip() == (
+        errors.NOT_RECONCILED + f" First unreconciled date: {missing_date}."
+    )
+
+
 @pytest.mark.parametrize("old", [True, False])
 def test_stale_or_mixed_snapshots_are_rejected(demo_database: Path, old: bool) -> None:
     """Reports never mix completed dates from different settings or an earlier policy."""
@@ -370,6 +403,20 @@ def test_html_is_offline_semantic_and_theme_aware(report: ReportData) -> None:
     assert "url(" not in output and "@import" not in output
 
 
+def test_generated_stylesheet_starts_with_valid_root_rule(report: ReportData) -> None:
+    """The base theme variables belong to a valid top-level root selector."""
+    stylesheet = html.render(report).split("<style>", 1)[1].split("</style>", 1)[0]
+    assert stylesheet.lstrip().startswith(":root {")
+
+
+def test_demo_banner_has_fallback_background(report: ReportData) -> None:
+    """The white demo warning retains a dark background if its variable is absent."""
+    stylesheet = html.render(report).split("<style>", 1)[1].split("</style>", 1)[0]
+    banner = stylesheet.split(".demo {", 1)[1].split("}", 1)[0]
+    assert "color:#fff" in banner
+    assert "background:var(--head, #143c4a)" in banner
+
+
 def test_text_cannot_fake_lines_or_control_terminal(report: ReportData) -> None:
     """Legacy controls and multiline display names are made visible in text exports."""
     value = "Demo\x1b[8m\nFAKE RESULT\tName"
@@ -458,7 +505,10 @@ def test_report_before_reconciliation_is_cli_error(
     """Unchecked data never produces a false clean report."""
     assert main(["report", "--db", str(demo_database)]) == 1
     output = capsys.readouterr()
-    assert output.out == "" and output.err.strip() == errors.NOT_RECONCILED
+    assert output.out == ""
+    assert output.err.strip() == (
+        errors.NOT_RECONCILED + " First unreconciled date: 2026-09-01."
+    )
 
 
 @pytest.mark.parametrize(
@@ -518,6 +568,65 @@ def test_failed_write_preserves_existing_output_and_cleans_temp(
     with pytest.raises(errors.DrawerCheckError, match="Cannot write report"):
         write_report(path, "New demo report.", demo_database)
     assert path.read_text() == "Previous demo report."
+    assert not list(tmp_path.glob(".drawercheck-*.tmp"))
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX file permission semantics")
+@pytest.mark.parametrize(
+    ("mask", "existing_mode", "expected_mode"),
+    [
+        (0o022, None, 0o644),
+        (0o077, None, 0o600),
+        (0o002, None, 0o664),
+        (0o077, 0o640, 0o640),
+        (0o022, 0o600, 0o600),
+    ],
+)
+def test_output_permissions_respect_umask_and_existing_mode(
+    tmp_path: Path, mask: int, existing_mode: int | None, expected_mode: int
+) -> None:
+    """New exports use the caller's umask while replacements keep prior permissions."""
+    path = tmp_path / "report.html"
+    if existing_mode is not None:
+        path.write_text("Previous report.")
+        path.chmod(existing_mode)
+    # Change the process-wide umask only in an isolated child process.
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import os, sys; from drawercheck.reports import write_report; "
+            "os.umask(int(sys.argv[1])); "
+            "write_report(sys.argv[2], 'Updated report.', sys.argv[3]); "
+            "assert os.umask(int(sys.argv[1])) == int(sys.argv[1])",
+            str(mask),
+            str(path),
+            str(tmp_path / "unused.db"),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert path.read_text() == "Updated report."
+    assert stat.S_IMODE(path.stat().st_mode) == expected_mode
+    assert not list(tmp_path.glob(".drawercheck-*.tmp"))
+
+
+def test_permission_failure_preserves_existing_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Failure to retain permissions must not replace an earlier complete report."""
+    path = tmp_path / "report.html"
+    path.write_text("Previous report.")
+
+    def fail(*args: object, **kwargs: object) -> None:
+        raise PermissionError("Demo permission failure.")
+
+    monkeypatch.setattr(os, "chmod", fail)
+    with pytest.raises(errors.DrawerCheckError, match="Cannot write report"):
+        write_report(path, "Updated report.", tmp_path / "unused.db")
+    assert path.read_text() == "Previous report."
     assert not list(tmp_path.glob(".drawercheck-*.tmp"))
 
 
