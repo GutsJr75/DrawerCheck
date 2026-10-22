@@ -58,3 +58,51 @@ This is a documentation-only scope update. M7/M8 implementation follows the
 core milestones; M2 remains the next build milestone. No web packages have been
 installed. Verification is document consistency, instruction length, and
 `git diff --check`; the application test results above remain the M1 results.
+
+## M2: Database, demo data, and imports
+
+- Built: The nine STRICT tables and indexes; `init-db`, `demo-data`, and `import`;
+  the committed 30-day fake inputs; source-specific validation errors; file
+  hashes and duplicate checks; and all-or-nothing imports. Documented the
+  scenarios and the distinction between current inputs and future flags.
+- Learned: A file hash answers whether the exact bytes were imported before;
+  record keys answer whether new input would duplicate an existing record.
+  Both are needed. Table creation and import-log writes also belong inside the
+  transaction so a late error cannot leave partially saved work.
+- Interview question: Why are unique shift codes not enough to make repeated
+  CSV imports safe and easy for someone to rerun?
+
+Verified on 2026-10-22 using Python 3.13.5 and SQLite 3.47.1, with the existing
+pytest 9.1.1 and Ruff 0.17.1 environment. No dependencies were added.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 160 tests, with ResourceWarning and cleanup warnings treated as errors. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 160 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: no formatting changes needed. |
+| `.venv/bin/drawercheck --help` | PASS: lists the three implemented subcommands. |
+| `.venv/bin/drawercheck demo-data` | PASS: regenerated the seven default CSVs with stable LF line endings. |
+| Installed CLI subprocess workflow using a temporary `--db` path | PASS: `init-db`, full 30-day `import`, and repeated `import` succeeded. The second import skipped all seven files and preserved every table count. |
+| `PRAGMA foreign_key_check` after the full import | PASS: no broken references. |
+| `git diff --check` and generated-file attributes | PASS: generated CSVs use LF; importer tests still cover Windows CRLF and BOM input. |
+
+Actual row counts after the full default import were cashiers 5, registers 2,
+shifts 60, POS totals 60, safe drops 60, cash counts 708, bank deposits 28,
+flags 0, and import-log entries 7. The empty flags table is expected: M2 does
+not run a reconciliation engine. The missing count and invalid closing time
+remain stored for M3's integrity rules.
+
+The suite exercises rollback after failures in each input file, rollback of a
+new schema, missing files, empty/header-only files, BOM/UTF-8, malformed headers
+and records, quoted commas/newlines, physical line numbers, duplicate keys,
+unknown references/denominations, integer limits, strict dates/times, repeated
+imports, changed-record conflicts, and invalidation of old calculated results.
+CLI tests simulate locked/read-only failures for platform independence and
+also exercise a real non-database file without overwriting it.
+
+The default demo's data conditions and deposit windows are checked with fixed
+dates. Rule-output expectations remain pending M3/M5. No network, current-day
+assumptions, web implementation, or remote CI results are part of this milestone.
+
+Next milestone: **M3**, after the user says **next**.

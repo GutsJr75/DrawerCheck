@@ -1,8 +1,9 @@
 # DrawerCheck plan
 
-Status: M0 and M1 complete. M1 was approved and verified on 2026-10-22.
-Next: M2, database tables, demo CSVs, and import. Wait for the user's **next**
-before starting M2. See `docs/LEARNING_LOG.md` for the checks actually run.
+Status: M0, M1, and M2 complete. M2 was approved and verified on 2026-10-22.
+Next: M3, reconciliation calculations, core rules, and shift explanations.
+Wait for the user's **next** before starting M3. See `docs/LEARNING_LOG.md`
+for the checks actually run.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
 
@@ -127,6 +128,16 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 27. **Public runs are temporary and independent.** Give each request its own temporary upload directory and SQLite database; close and remove them after preparing its response, including on failure. Return the report content needed for viewing/downloads without a shared on-disk results store. Set explicit upload and workload limits. Do not use the developer's default database, trust uploaded filesystem paths, log CSV contents, or expose another visitor's results. See `docs/WEB_PLAN.md` for the initial limits and verification scope.
 
 28. **Treat hosting as a verified delivery step.** Render's free web service is the initial deployment candidate, using Flask and Gunicorn. Recheck service limits, availability, and any costs during M8. Its documented sleep behavior and temporary filesystem fit a small stateless demo, with an availability tradeoff that must be explained in README. Do not rely on local SQLite files for saved public data. A static GitHub Pages site cannot execute our Python upload/reconciliation pipeline; it is suitable only for a viewable sample. [Render Flask guide](https://render.com/docs/deploy-flask), [Render free-service limits](https://render.com/docs/free), [GitHub Pages scope](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+
+29. **Share a small CSV contract, not a generic import framework.** Keep the seven header tuples and denomination list in `csv_contract.py`, used by the generator and importer. Use seven explicit import handlers with fixed parameterized SQL. The internal row dataclass carries the file/physical-line context and small value-check methods; immutable `ImportResult` records let the CLI and future web layer display outcomes without printing from the importer.
+
+30. **Hash the bytes actually parsed and keep first-import rollback complete.** Read each required file once, hash those bytes, decode with `utf-8-sig`, and check CSV headers/record widths before opening a database connection. Do record validation, table creation, inserts, and import-log writes in one transaction. A late failure also rolls back newly created tables, though SQLite may leave an empty database file. Header-only files log zero rows. Capture the physical starting line before each CSV record so quoted newlines and blank lines do not mislabel later errors. [Python CSV documentation](https://docs.python.org/3.13/library/csv.html)
+
+31. **Preserve incomplete records for the appropriate review stage.** Import validates exact date/time spelling and real calendar values, but intentionally does not enforce closing-time order, require POS/count rows for every shift, or reject overlapping shifts. M3's R09 owns those checks. New imported rows clear flags and any `reconciled_dates` table already present; M2 itself creates only the original nine tables. Exact repeats of drops/deposits, including blank optional references, are rejected as duplicates; resolving genuinely distinct identical events needs a richer input contract and is outside the MVP.
+
+32. **Keep the demo inputs deliberate and the verification claims staged.** Store the generated default seven CSVs in `data/demo/`. Tests verify deterministic bytes, no changes to global random state, exact S1/S2/S3/S4 differences, S5/S6 deposit windows and amounts, and S7/S8 input conditions. `DEMO_SCENARIOS.md` records the complete expected flag table but labels rule execution as pending M3/M5. M2 does not claim to have reconciled anything. Translate SQLite database failures, including a non-database file, without tracebacks at the CLI.
+
+33. **Keep generated demo bytes stable across checkouts.** Write the generated CSVs with LF line endings and pin `data/demo/*.csv` to LF in `.gitattributes`. This avoids Git whitespace warnings and makes the committed-input comparison reliable across operating systems. The importer still accepts CRLF, BOMs, and the other supported spreadsheet variations; hashes always describe the actual input bytes.
 
 ## Math and test commitments
 

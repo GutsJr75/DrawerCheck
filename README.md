@@ -5,9 +5,9 @@ with fictional data from **Demo Store #001**. The planned tool imports CSV files
 compares counted cash with POS totals, flags differences for human review, and
 produces text, HTML, and CSV reports.
 
-**Current milestone: M1, project foundation.** Installation, command-line help,
-money helpers, and database connections are implemented. CSV import,
-reconciliation, demo generation, and reports arrive in later milestones.
+**Current milestone: M2, database and CSV imports.** Installation, money helpers,
+database tables, fake demo generation, and validated CSV imports are implemented.
+Reconciliation, flags, and reports arrive in later milestones.
 
 A public browser demo is now planned after the core is complete. Visitors will
 be able to run the built-in fake-data example or upload synthetic CSVs, inspect
@@ -21,7 +21,7 @@ I compared the cash in my register with transaction records.
 This project lets me practice those careful checks in code and explain the work
 in a job interview.
 
-## Set up and check the foundation
+## Set up and check the project
 
 Use Python 3.12 or newer; Python 3.13 or 3.14 is recommended for development.
 The Python installation must include SQLite 3.37.0 or newer for STRICT tables,
@@ -47,6 +47,57 @@ optional installation that handles browser requests.
 
 Running `drawercheck` without arguments also prints help. An invalid argument
 prints a short error and returns exit code 1; successful help returns 0.
+
+## Generate and import demo inputs
+
+After setup, run:
+
+```sh
+drawercheck init-db
+drawercheck demo-data
+drawercheck import --dir data/demo
+```
+
+The default generator writes 30 days starting at 2026-09-01, with seed 42 and two
+registers. It writes the seven named CSVs in `data/demo`; existing files with
+those names are replaced. Unrelated files in the folder are preserved.
+`init-db` preserves existing records and is optional because `import` also
+creates tables when needed. The default database is `./drawercheck.db`.
+
+Run the import command again to see an `already imported; skipped` line for
+each file. Identical inputs add no duplicate records and do not change the log.
+
+For a separate dataset, choose a different folder and database path:
+
+```sh
+drawercheck demo-data --out data/another-demo --days 7 --seed 17
+drawercheck import --dir data/another-demo --db another-demo.db
+```
+
+See the [demo scenarios](docs/DEMO_SCENARIOS.md) for the deliberately constructed
+shortages, overage, deposit inputs, and incomplete records. M2 verifies the
+input conditions; later milestones will calculate and store their flags.
+
+## CSV import behavior
+
+- Supply all seven files with the exact column names in the
+  [input contract](docs/PROJECT_BRIEF.md#5-csv-input-contract-and-import-rules-folder-datademo).
+  Column order may vary. Missing, extra, and duplicate headers are errors.
+- UTF-8 files may include an Excel byte-order mark. Quoted commas, quoted
+  newlines, Windows line endings, and fully blank records are supported.
+- Money must use exactly two decimal places. Quantities must be nonnegative
+  whole numbers, and counts may use only the specified bills and coins.
+- Each validation error names the file, physical starting line, column, and
+  reason. Header-only files are valid and report zero imported rows; an empty
+  file is an error.
+- All files and their import-log entries are saved in one transaction. A failed
+  import leaves existing data unchanged. An unsuccessful first import may leave
+  an empty database file, with no saved tables or records.
+- File hashes compare exact bytes. A changed file is checked again, even if its
+  only change is line endings. Existing records cannot be silently overwritten.
+  Use new-record-only files or a fresh database for regenerated demo data.
+- New imported records clear old flags and any completion markers. Identical
+  skipped imports leave results unchanged. Reconciliation itself starts in M3.
 
 ## Foundation decisions
 

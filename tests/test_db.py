@@ -91,3 +91,56 @@ def test_old_sqlite_is_rejected_before_opening_a_file(
 
     assert str(caught.value) == errors.SQLITE_TOO_OLD.format(version="3.36.0")
     assert not path.exists()
+
+
+def test_initialize_creates_strict_tables_and_date_cashier_indexes(
+    tmp_path: Path,
+) -> None:
+    """All nine application tables are STRICT and the requested indexes exist."""
+    path = tmp_path / "demo.db"
+    db.initialize(path)
+    with closing(db.connect(path)) as con:
+        tables = {
+            row["name"]: row
+            for row in con.execute("PRAGMA table_list")
+            if row["name"] != "sqlite_schema" and row["schema"] == "main"
+        }
+        assert set(tables) == {
+            "cashiers",
+            "registers",
+            "shifts",
+            "pos_totals",
+            "safe_drops",
+            "cash_counts",
+            "bank_deposits",
+            "flags",
+            "import_log",
+        }
+        assert all(row["strict"] == 1 for row in tables.values())
+        indexes = {
+            row["name"]
+            for row in con.execute(
+                "SELECT name FROM sqlite_schema WHERE type = 'index'"
+            )
+        }
+        assert {"shifts_business_date", "shifts_cashier_id"} <= indexes
+
+
+def test_initialize_can_repeat_without_changing_records(tmp_path: Path) -> None:
+    """Creating tables a second time preserves existing records."""
+    path = tmp_path / "demo.db"
+    db.initialize(path)
+    with closing(db.connect(path)) as con:
+        with con:
+            con.execute(
+                "INSERT INTO cashiers (id, display_name) VALUES (?, ?)",
+                ("cashier_01", "Demo Cashier 01"),
+            )
+    db.initialize(path)
+    with closing(db.connect(path)) as con:
+        assert (
+            con.execute(
+                "SELECT display_name FROM cashiers WHERE id = ?", ("cashier_01",)
+            ).fetchone()[0]
+            == "Demo Cashier 01"
+        )

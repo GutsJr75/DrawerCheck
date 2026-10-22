@@ -1,9 +1,14 @@
-"""Check the milestone's help command and clear usage failures."""
+"""Check the implemented commands and their plain-English failures."""
+
+import sqlite3
+from contextlib import closing
+from pathlib import Path
 
 import pytest
 
-from drawercheck import errors
+from drawercheck import db, errors
 from drawercheck.cli import main
+from drawercheck.csv_contract import CSV_HEADERS
 
 
 @pytest.mark.parametrize("argv", [["--help"], []])
@@ -15,7 +20,9 @@ def test_help_returns_success(
     output = capsys.readouterr()
     assert "usage: drawercheck" in output.out
     assert "Demo Store #001" in output.out
-    assert "M1 foundation" in output.out
+    assert "init-db" in output.out
+    assert "demo-data" in output.out
+    assert "import" in output.out
     assert output.err == ""
 
 
@@ -27,4 +34,182 @@ def test_unknown_argument_returns_one(capsys: pytest.CaptureFixture[str]) -> Non
     assert output.err.strip() == errors.INVALID_ARGUMENTS.format(
         detail="unrecognized arguments: --unknown"
     )
+    assert "Traceback" not in output.err
+
+
+@pytest.mark.parametrize("command", ["init-db", "demo-data", "import"])
+def test_command_help(command: str, capsys: pytest.CaptureFixture[str]) -> None:
+    """Each implemented subcommand offers help without running the command."""
+    assert main([command, "--help"]) == 0
+    assert f"usage: drawercheck {command}" in capsys.readouterr().out
+
+
+def test_init_db_creates_tables_at_the_requested_path(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The init command creates a usable database and reports its path."""
+    path = tmp_path / "demo.db"
+    assert main(["init-db", "--db", str(path)]) == 0
+    assert errors.DATABASE_INITIALIZED.format(path=path) in capsys.readouterr().out
+    with closing(db.connect(path)) as con:
+        tables = con.execute(
+            "SELECT name FROM sqlite_schema WHERE type = 'table'"
+        ).fetchall()
+        assert len(tables) == 9
+
+
+def test_default_database_path_is_local(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Commands use drawercheck.db in the current working directory by default."""
+    monkeypatch.chdir(tmp_path)
+    assert main(["init-db"]) == 0
+    assert (tmp_path / "drawercheck.db").exists()
+
+
+def test_non_sqlite_file_is_explained_without_overwriting(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A mistaken database path reports the real failure without a traceback."""
+    path = tmp_path / "demo.db"
+    content = "Demo text file, not a SQLite database."
+    path.write_text(content)
+    assert main(["init-db", "--db", str(path)]) == 1
+    output = capsys.readouterr()
+    assert "Cannot use the database" in output.err
+    assert "not a database" in output.err
+    assert "Traceback" not in output.err
+    assert path.read_text() == content
+
+
+def test_demo_and_repeated_import_commands(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The implemented workflow generates data, imports it, then reports skips."""
+    directory, path = tmp_path / "inputs", tmp_path / "demo.db"
+    assert (
+        main(["demo-data", "--out", str(directory), "--days", "3", "--seed", "42"]) == 0
+    )
+    assert "Demo Store #001" in capsys.readouterr().out
+    arguments = ["import", "--dir", str(directory), "--db", str(path)]
+    assert main(arguments) == 0
+    assert "shifts.csv: imported 6 rows." in capsys.readouterr().out
+    assert main(arguments) == 0
+    assert capsys.readouterr().out.count("already imported; skipped.") == 7
+
+
+def test_header_only_import_is_reported(
+    csv_directory: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Zero-row imports say zero rows instead of implying a missing file."""
+    for name, headers in CSV_HEADERS.items():
+        (csv_directory / name).write_text(",".join(headers) + "\n")
+    assert (
+        main(["import", "--dir", str(csv_directory), "--db", str(tmp_path / "demo.db")])
+        == 0
+    )
+    assert capsys.readouterr().out.count("imported 0 rows.") == 7
+
+
+def test_import_failure_reports_location_without_success_messages(
+    csv_directory: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A failed transaction prints only its file/line/column error."""
+    (csv_directory / "bank_deposits.csv").write_text(
+        "deposit_date,amount,reference\n2026-09-01,1.234,DEMO-INVALID\n"
+    )
+    assert (
+        main(["import", "--dir", str(csv_directory), "--db", str(tmp_path / "demo.db")])
+        == 1
+    )
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert "bank_deposits.csv: line 2, column amount:" in output.err
+    assert "exactly two decimal places" in output.err
+    assert "Traceback" not in output.err
+
+
+def test_missing_import_file_is_explained(
+    csv_directory: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A missing file gives its path and a short error instead of a traceback."""
+    (csv_directory / "cashiers.csv").unlink()
+    assert (
+        main(["import", "--dir", str(csv_directory), "--db", str(tmp_path / "demo.db")])
+        == 1
+    )
+    output = capsys.readouterr()
+    assert "Cannot access" in output.err
+    assert "cashiers.csv" in output.err
+    assert "Traceback" not in output.err
+
+
+def test_unwritable_demo_destination_is_explained(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A regular file cannot act as a destination folder, on any platform."""
+    path = tmp_path / "not-a-directory"
+    path.write_text("Demo placeholder.")
+    assert main(["demo-data", "--out", str(path)]) == 1
+    output = capsys.readouterr()
+    assert "Cannot access" in output.err
+    assert str(path) in output.err
+    assert "Traceback" not in output.err
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [["import"], ["demo-data", "--days", "no"], ["demo-data", "--days", "0"]],
+)
+def test_bad_arguments_return_one(
+    arguments: list[str], capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Missing arguments and invalid values use the project's error exit code."""
+    assert main(arguments) == 1
+    output = capsys.readouterr()
+    assert output.err
+    assert "Traceback" not in output.err
+
+
+def test_old_sqlite_is_explained_at_command_start(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """An unsupported SQLite installation is rejected before opening a database."""
+    path = tmp_path / "demo.db"
+    monkeypatch.setattr(sqlite3, "sqlite_version_info", (3, 36, 0))
+    assert main(["init-db", "--db", str(path)]) == 1
+    assert capsys.readouterr().err.strip() == errors.SQLITE_TOO_OLD.format(
+        version="3.36.0"
+    )
+    assert not path.exists()
+
+
+@pytest.mark.parametrize(
+    ("detail", "expected"),
+    [
+        ("database is locked", errors.DATABASE_LOCKED),
+        ("attempt to write a readonly database", errors.DATABASE_READ_ONLY),
+        (
+            "unable to open database file",
+            errors.DATABASE_ERROR.format(detail="unable to open database file"),
+        ),
+    ],
+)
+def test_sqlite_operational_failures_are_translated(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    detail: str,
+    expected: str,
+) -> None:
+    """Platform-dependent SQLite failures produce stable documented messages."""
+
+    def fail(path: str | Path) -> None:
+        raise sqlite3.OperationalError(detail)
+
+    monkeypatch.setattr(db, "initialize", fail)
+    assert main(["init-db", "--db", str(tmp_path / "demo.db")]) == 1
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert output.err.strip() == expected
     assert "Traceback" not in output.err
