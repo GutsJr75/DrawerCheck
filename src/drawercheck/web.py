@@ -14,10 +14,11 @@ from drawercheck.config import Config
 from drawercheck.csv_contract import CSV_HEADERS
 from drawercheck.demo import generate_demo
 from drawercheck.importer import import_directory
-from drawercheck.models import ShiftResult
+from drawercheck.models import Flag, ShiftResult, group_flags_by_date
 from drawercheck.money import format_cents
 from drawercheck.reconcile import build_explanation, reconcile
 from drawercheck.reports import (
+    DailySummary,
     ReportData,
     csv_out,
     format_amount,
@@ -28,6 +29,11 @@ from drawercheck.reports import (
 
 MAX_REQUEST_BYTES = 2 * 1024 * 1024
 MAX_SHIFTS = 1000
+ROW_LIMITS = {
+    "shifts.csv": MAX_SHIFTS,
+    "bank_deposits.csv": 2000,
+    "safe_drops.csv": 2000,
+}
 
 
 class _UploadRequest(Request):
@@ -69,17 +75,14 @@ def _display_values(value: object) -> object:
     return value
 
 
-def _shift_data(result: ShiftResult, report: ReportData) -> dict:
-    day = next(
-        day for day in report.days if day.business_date == result.shift.business_date
-    )
-    daily_flags = tuple(
-        flag
-        for flag in report.flags
-        if flag.shift_id is None and flag.business_date == day.business_date
-    )
+def _shift_data(
+    result: ShiftResult,
+    config: Config,
+    day: DailySummary,
+    daily_flags: tuple[Flag, ...],
+) -> dict:
     explanation = build_explanation(
-        result, report.config, day.expected_deposit_cents, daily_flags
+        result, config, day.expected_deposit_cents, daily_flags
     )
     values = asdict(result)
     values["shift"]["counts"] = [
@@ -90,9 +93,9 @@ def _shift_data(result: ShiftResult, report: ReportData) -> dict:
         deposit_contribution_cents=explanation.deposit_contribution_cents,
         daily_deposit_cents=explanation.daily_deposit_cents,
         daily_flags=[asdict(flag) for flag in explanation.daily_flags],
-        retained_float_cents=report.config.retained_float_per_register_cents,
-        within_tolerance_cents=report.config.within_tolerance_cents,
-        review_threshold_cents=report.config.review_threshold(
+        retained_float_cents=config.retained_float_per_register_cents,
+        within_tolerance_cents=config.within_tolerance_cents,
+        review_threshold_cents=config.review_threshold(
             result.shift.pos.cash_sales_cents
         )
         if result.shift.pos
@@ -102,6 +105,10 @@ def _shift_data(result: ShiftResult, report: ReportData) -> dict:
 
 
 def _response_data(report: ReportData) -> dict:
+    days_by_date = {day.business_date: day for day in report.days}
+    daily_flags_by_date = group_flags_by_date(
+        tuple(flag for flag in report.flags if flag.shift_id is None)
+    )
     days = []
     for day in report.days:
         values = _display_values(asdict(day))
@@ -125,7 +132,15 @@ def _response_data(report: ReportData) -> dict:
             _display_values({**asdict(flag), "shift_code": report.shift_code(flag)})
             for flag in report.flags
         ],
-        "shifts": [_shift_data(result, report) for result in report.shifts],
+        "shifts": [
+            _shift_data(
+                result,
+                report.config,
+                days_by_date[result.shift.business_date],
+                daily_flags_by_date.get(result.shift.business_date, ()),
+            )
+            for result in report.shifts
+        ],
         "reports": {
             "text": {
                 "filename": "drawercheck.txt",
@@ -178,12 +193,7 @@ def _run_request(*, demo: bool) -> Response:
         else:
             _save_uploads(directory)
         database = directory / "run.db"
-        imported = import_directory(directory, database)
-        shifts = next(
-            item.rows_imported for item in imported if item.file_name == "shifts.csv"
-        )
-        if shifts > MAX_SHIFTS:
-            raise errors.WebInputError(errors.WEB_SHIFT_LIMIT)
+        import_directory(directory, database, row_limits=ROW_LIMITS)
         reconcile(database, Config())
         response = jsonify(_response_data(load_report(database)))
     # The response is fully buffered; no download depends on the deleted workspace.
@@ -223,15 +233,27 @@ def create_app() -> Flask:
     def invalid_csv(error: errors.ImportValidationError) -> tuple[Response, int]:
         return jsonify(
             error={
-                "message": errors.WEB_INVALID_CSV.format(
-                    file_name=error.file_name,
-                    line_number=error.line_number,
-                    column=error.column,
-                    detail=error.detail,
-                ),
+                "message": errors.web_import_message(error),
                 "file_name": error.file_name,
                 "line_number": error.line_number,
                 "column": error.column,
+            }
+        ), 400
+
+    @app.errorhandler(errors.ImportRowLimitError)
+    def row_limit(error: errors.ImportRowLimitError) -> tuple[Response, int]:
+        message = (
+            errors.WEB_SHIFT_LIMIT
+            if error.file_name == "shifts.csv"
+            else errors.WEB_ROW_LIMIT.format(
+                file_name=error.file_name, limit=error.limit
+            )
+        )
+        return jsonify(
+            error={
+                "message": message,
+                "file_name": error.file_name,
+                "limit": error.limit,
             }
         ), 400
 

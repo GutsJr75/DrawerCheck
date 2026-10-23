@@ -556,3 +556,49 @@ earlier hosted result remains M6 evidence only. No local Python 3.12/3.14 web
 test run, browser interface, usability check, or public deployment is claimed.
 
 M8 is next, awaiting **next**. The request layer exposes no browser screen yet.
+
+## M7 repair: Workload bounds and plain CSV errors
+
+- Built: Pre-database web caps for shift/deposit/drop records; full-key duplicate
+  lookup indexes for new and existing databases; grouped flag/date/shift lookups;
+  and plain web explanations for headers, malformed quoting, encoding, and long
+  values. Added regression tests and updated the request contract and decisions.
+- Learned: A small byte count can contain many records and produce much larger
+  results. Limits must reject excess records before costly work starts. An index
+  on only a shared date or shift can still scan many similar records, so the
+  full lookup key matters. CSV records can span multiple physical source lines.
+- Interview question: How would you prove that a lookup stays efficient without
+  making a test depend on the speed of the machine running it?
+
+The user authorized this focused repair after reporting that M7 had been pushed.
+This repair was verified locally on 2026-10-23 with the existing Python 3.13.5,
+SQLite 3.47.1, Flask 3.1.3, and Werkzeug 3.1.9 environment. No dependencies,
+calculation policies, generated demo inputs, or M8 implementation changed.
+
+Before the repair, an in-process reproduction with 60 example shifts and 2,000
+bank rows took 0.567 seconds and returned 2,645,808 bytes; 8,000 bank rows took
+6.365 seconds and returned 10,055,808 bytes. Query plans showed full scans for
+both duplicate checks. Exact header and unclosed-quote messages also reproduced.
+
+| Command or check | Result |
+| --- | --- |
+| New focused regression selection before the fix | Reproduced: 12 failures and 5 passes. Four duplicate lookups exceeded the database-work budget, four excessive-record uploads reached database opening, and four web errors exposed internal wording. |
+| `.venv/bin/pytest -q tests/test_workload.py tests/test_web.py tests/test_importer.py tests/test_reports.py tests/test_reconcile.py` | PASS: 260 focused cases before the final long-value wording case and stronger pre-database shift assertion were added. |
+| `.venv/bin/pytest -q` after the final code/tests | PASS: 630 tests, with resource and cleanup warnings still treated as errors. Includes the complete golden demo, web/CLI report parity, ten exact CLI troubleshooting symptoms, cleanup, and concurrency cases. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 630 tests collected. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean; 51 Python files formatted. |
+| Record boundaries and pre-database rejection | PASS: 1,999 and 2,000 bank/drop records succeed; 2,001 and 20,000 return 400 without calling db.connect. The existing 1,000/1,001 shift boundary now also checks rejection before database opening. |
+| CSV counting and web wording | PASS: BOM, CRLF, blank lines, and 2,000 quoted multiline records stay valid. Header, encoding, unclosed-quote, other malformed-quote, and overlong-value messages use the intended plain descriptions and preserve source lines. |
+| Concentrated duplicate lookups and database upgrades | PASS: lookups across 2,000 rows sharing a date/amount or shift/amount/time stay below 1,000 SQLite VM operations. Tests cover new indexes and adding them back to an existing populated database with repeated init-db. No clock-based test deadline is used. |
+| Repeated public-request performance reproduction | Observed: 2,000 bank rows still succeed in 0.218 seconds; 8,000 and 20,000 rows now return 400 in 0.007 and 0.009 seconds, respectively, with 164-byte error responses. Timings are local observations, not hosting guarantees. |
+| Uncapped core pipeline with 8,000 bank rows | PASS: import, reconcile, load, and all three report renderers completed in 0.633 seconds, with 8,040 flags across 8,030 dates and summary counts agreeing with saved flags. Web caps do not restrict the CLI. |
+| Documentation and instruction checks | PASS: git diff --check, local Markdown links, prohibited punctuation, AGENTS.md length, and the shared CLAUDE.md import. |
+
+The prevention is now executable: record caps run in the shared CSV reader before
+any connection opens, and duplicate-lookup tests cap SQLite work rather than
+elapsed time. Shared grouping preserves lead order and avoids repeated scans.
+The web displays translated messages; raw source-column tags remain structured
+metadata, and CLI error text remains unchanged.
+
+No hosted CI result is claimed for this repair commit. M8 still awaits **next**;
+its frontend, deployment timeout, and Content-Security-Policy remain later work.

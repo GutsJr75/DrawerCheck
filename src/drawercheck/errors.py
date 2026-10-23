@@ -122,7 +122,18 @@ WEB_DUPLICATE = (
 WEB_MISSING = "Missing files: {names}. Choose all seven required CSV files."
 WEB_DEMO_BODY = "The example does not need files or options. Try the example again without an upload."
 WEB_SHIFT_LIMIT = "This upload contains more than 1,000 shifts. Choose a smaller set of synthetic records."
+IMPORT_ROW_LIMIT = "{file_name} contains more than {limit:,} records."
+WEB_ROW_LIMIT = IMPORT_ROW_LIMIT + " Choose a smaller set of synthetic records."
 WEB_INVALID_CSV = "{file_name}: source line {line_number}, field {column}: {detail} Correct the file and upload all seven CSVs again."
+WEB_CSV_HEADER = "{file_name}: source line {line_number}, the first row (column names): {detail} Correct the file and upload all seven CSVs again."
+WEB_CSV_RECORD = "{file_name}: source line {line_number}: {detail} Correct the file and upload all seven CSVs again."
+WEB_UNCLOSED_QUOTE = (
+    "A quoted value is never closed. Check its opening and closing quote marks."
+)
+WEB_MALFORMED_CSV = (
+    "The CSV format could not be read. Check the quotes and commas around each value."
+)
+WEB_LONG_CSV_VALUE = "A value is too long. Shorten it and save the file again."
 WEB_EMPTY = "No shift or bank-deposit records were found. Add synthetic records to the CSVs and upload them again."
 WEB_UNAVAILABLE = "The check could not finish. Try again with the example or upload the seven CSVs again."
 WEB_BAD_REQUEST = (
@@ -166,13 +177,20 @@ class ImportValidationError(DrawerCheckError):
     """A CSV record is invalid, with its exact source location."""
 
     def __init__(
-        self, file_name: str, line_number: int, column: str, detail: str
+        self,
+        file_name: str,
+        line_number: int,
+        column: str,
+        detail: str,
+        *,
+        reason: str | None = None,
     ) -> None:
         """Store source details and build the shared validation message."""
         self.file_name = file_name
         self.line_number = line_number
         self.column = column
         self.detail = detail
+        self.reason = reason
         super().__init__(
             IMPORT_VALIDATION.format(
                 file_name=file_name,
@@ -181,6 +199,37 @@ class ImportValidationError(DrawerCheckError):
                 detail=detail,
             )
         )
+
+
+class ImportRowLimitError(DrawerCheckError):
+    """A caller's record limit was exceeded before the database was opened."""
+
+    def __init__(self, file_name: str, limit: int) -> None:
+        """Store the limited file and its maximum record count."""
+        self.file_name = file_name
+        self.limit = limit
+        super().__init__(IMPORT_ROW_LIMIT.format(file_name=file_name, limit=limit))
+
+
+def web_import_message(error: ImportValidationError) -> str:
+    """Translate source locations and parser failures into plain web instructions."""
+    details = {
+        "unclosed_quote": WEB_UNCLOSED_QUOTE,
+        "malformed_csv": WEB_MALFORMED_CSV,
+        "long_csv_value": WEB_LONG_CSV_VALUE,
+    }
+    if error.column == "<header>":
+        template = WEB_CSV_HEADER
+    elif error.column in ("<row>", "<encoding>"):
+        template = WEB_CSV_RECORD
+    else:
+        template = WEB_INVALID_CSV
+    return template.format(
+        file_name=error.file_name,
+        line_number=error.line_number,
+        column=error.column,
+        detail=details.get(error.reason, error.detail),
+    )
 
 
 def database_error_message(error: sqlite3.DatabaseError) -> str:

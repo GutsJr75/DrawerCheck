@@ -4,6 +4,7 @@ import csv
 import hashlib
 import re
 import sqlite3
+from collections.abc import Mapping
 from contextlib import closing
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -137,7 +138,9 @@ def _check_headers(file_name: str, line_number: int, headers: list[str]) -> None
     raise errors.ImportValidationError(file_name, line_number, "<header>", detail)
 
 
-def _read_rows(file_name: str, data: bytes) -> list[_CsvRow]:
+def _read_rows(
+    file_name: str, data: bytes, max_rows: int | None = None
+) -> list[_CsvRow]:
     try:
         text = data.decode("utf-8-sig")
     except UnicodeDecodeError as error:
@@ -158,11 +161,17 @@ def _read_rows(file_name: str, data: bytes) -> list[_CsvRow]:
             except StopIteration:
                 break
             except csv.Error as error:
+                reason = "malformed_csv"
+                if str(error) == "unexpected end of data":
+                    reason = "unclosed_quote"
+                elif str(error).startswith("field larger than field limit"):
+                    reason = "long_csv_value"
                 raise errors.ImportValidationError(
                     file_name,
                     line_number,
                     "<row>",
                     errors.MALFORMED_CSV.format(detail=error),
+                    reason=reason,
                 ) from error
             if not values or all(not value.strip() for value in values):
                 continue
@@ -179,6 +188,8 @@ def _read_rows(file_name: str, data: bytes) -> list[_CsvRow]:
                     ),
                 )
             else:
+                if max_rows is not None and len(rows) >= max_rows:
+                    raise errors.ImportRowLimitError(file_name, max_rows)
                 rows.append(_CsvRow(file_name, line_number, dict(zip(headers, values))))
     if headers is None:
         raise errors.ImportValidationError(file_name, 1, "<header>", errors.EMPTY_CSV)
@@ -394,14 +405,23 @@ _IMPORTERS = {
 
 
 def import_directory(
-    directory: str | Path, database_path: str | Path
+    directory: str | Path,
+    database_path: str | Path,
+    *,
+    row_limits: Mapping[str, int] | None = None,
 ) -> list[ImportResult]:
     """Import all seven CSVs atomically and return committed per-file results."""
     sources = []
     for file_name in CSV_HEADERS:
         data = (Path(directory) / file_name).read_bytes()
         sources.append(
-            (file_name, hashlib.sha256(data).hexdigest(), _read_rows(file_name, data))
+            (
+                file_name,
+                hashlib.sha256(data).hexdigest(),
+                _read_rows(
+                    file_name, data, row_limits.get(file_name) if row_limits else None
+                ),
+            )
         )
 
     results = []

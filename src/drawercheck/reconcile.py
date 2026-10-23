@@ -16,6 +16,7 @@ from drawercheck.models import (
     Shift,
     ShiftExplanation,
     ShiftResult,
+    group_flags_by_date,
 )
 from drawercheck.rules import deposit_flags, evaluate_rules, missing_register_flags
 
@@ -244,15 +245,11 @@ def reconcile(
                 results, config, db.load_register_ids(con), bank_entries
             )
             bank_flags = deposit_flags(all_deposits, bank_entries, config)
+            bank_flags_by_date = group_flags_by_date(bank_flags)
             deposits = tuple(
                 replace(
                     day,
-                    flags=day.flags
-                    + tuple(
-                        flag
-                        for flag in bank_flags
-                        if flag.business_date == day.business_date
-                    ),
+                    flags=day.flags + bank_flags_by_date.get(day.business_date, ()),
                 )
                 for day in all_deposits
                 if start <= day.business_date <= end

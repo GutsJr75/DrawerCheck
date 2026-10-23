@@ -119,11 +119,11 @@ def test_upload_preserves_bom_crlf_and_raw_bytes(
     expected = {name: (csv_directory / name).read_bytes() for name in CSV_HEADERS}
     original = web.import_directory
 
-    def inspect(directory, database):
+    def inspect(directory, database, **kwargs):
         assert {
             name: (directory / name).read_bytes() for name in CSV_HEADERS
         } == expected
-        return original(directory, database)
+        return original(directory, database, **kwargs)
 
     monkeypatch.setattr(web, "import_directory", inspect)
     with app.test_client() as client:
@@ -296,7 +296,7 @@ def test_total_request_limit_boundary(
 
 
 @pytest.mark.parametrize("extra_shift", [False, True])
-def test_shift_limit_before_calculation(
+def test_shift_limit_before_database(
     app, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, extra_shift: bool
 ) -> None:
     directory = tmp_path / "large-demo"
@@ -307,10 +307,10 @@ def test_shift_limit_before_calculation(
                 "DEMO-EXTRA,2028-01-14,R1,cashier_01,2028-01-14T08:00:00,2028-01-14T16:00:00,200.00,,\n"
             )
 
-        def forbidden(*args):
-            pytest.fail("Oversized shift set reached reconciliation")
+        def forbidden(*args, **kwargs):
+            pytest.fail("Oversized shift set opened a database")
 
-        monkeypatch.setattr(web, "reconcile", forbidden)
+        monkeypatch.setattr(db, "connect", forbidden)
     with app.test_client() as client:
         response = _upload(client, directory)
     assert response.status_code == (400 if extra_shift else 200)
@@ -367,7 +367,7 @@ def test_failures_close_connections_and_remove_workspaces(
         connections.append(connection)
         return connection
 
-    def fail(*args):
+    def fail(*args, **kwargs):
         raise RuntimeError("SECRET UPLOADED CONTENT AND PRIVATE PATH")
 
     monkeypatch.setattr(db, "connect", connect)
@@ -419,10 +419,10 @@ def test_concurrent_runs_do_not_mix_data_or_touch_local_database(
     original = web.import_directory
     paths = []
 
-    def together(directory, database):
+    def together(directory, database, **kwargs):
         paths.append(database)
         barrier.wait()
-        return original(directory, database)
+        return original(directory, database, **kwargs)
 
     monkeypatch.setattr(web, "import_directory", together)
     source = csv_directory / "cashiers.csv"
@@ -484,7 +484,7 @@ def test_bank_only_dates_do_not_invent_shifts(app, csv_directory: Path) -> None:
 def test_internal_errors_hide_paths_and_cli_instructions(
     app, monkeypatch: pytest.MonkeyPatch, exception: Exception
 ) -> None:
-    def fail(*args):
+    def fail(*args, **kwargs):
         raise exception
 
     monkeypatch.setattr(web, "import_directory", fail)
@@ -619,3 +619,113 @@ def test_partial_upload_save_failure_removes_files(
     assert response.status_code == 503
     assert len(saved) == 1 and not saved[0].exists()
     assert response.get_json()["error"]["message"] == errors.WEB_UNAVAILABLE
+
+
+def _replace_many_records(directory: Path, file_name: str, count: int) -> None:
+    with (directory / file_name).open("w", newline="") as stream:
+        writer = csv.writer(stream, lineterminator="\n")
+        writer.writerow(CSV_HEADERS[file_name])
+        for index in range(count):
+            if file_name == "bank_deposits.csv":
+                writer.writerow(("2026-10-01", "0.01", f"DEMO-{index}"))
+            else:
+                writer.writerow(
+                    ("2026-09-01-R1", "0.01", "2026-09-01T09:00:00", f"DEMO-{index}")
+                )
+
+
+@pytest.mark.parametrize("file_name", ["bank_deposits.csv", "safe_drops.csv"])
+@pytest.mark.parametrize("count", [1999, 2000, 2001, 20000])
+def test_record_caps_before_opening_database(
+    app,
+    csv_directory: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    file_name: str,
+    count: int,
+) -> None:
+    """A small upload with too many records is rejected before any database work."""
+    _replace_many_records(csv_directory, file_name, count)
+    assert (
+        sum((csv_directory / name).stat().st_size for name in CSV_HEADERS)
+        < web.MAX_REQUEST_BYTES
+    )
+    opened = []
+    if count > 2000:
+
+        def forbidden(path):
+            opened.append(path)
+            raise RuntimeError("Database must not open for an oversized record set")
+
+        monkeypatch.setattr(db, "connect", forbidden)
+    with app.test_client() as client:
+        response = _upload(client, csv_directory)
+    if count <= 2000:
+        assert response.status_code == 200
+    else:
+        assert response.status_code == 400
+        assert (
+            response.get_json()["error"]["message"]
+            == f"{file_name} contains more than 2,000 records. Choose a smaller set of synthetic records."
+        )
+        assert opened == []
+
+
+@pytest.mark.parametrize(
+    "content, location, explanation",
+    [
+        (
+            b"cashier_id\n",
+            "the first row (column names)",
+            "Missing required columns: display_name.",
+        ),
+        (
+            b'cashier_id,display_name\ncashier_01,"Demo\n',
+            "source line 2",
+            "A quoted value is never closed.",
+        ),
+        (
+            b'cashier_id,display_name\ncashier_01,"Demo"oops\n',
+            "source line 2",
+            "Check the quotes and commas around each value.",
+        ),
+        (b"cashier_id,display_name\n\xff\n", "source line 2", "Use UTF-8 encoding"),
+        (
+            b"cashier_id,display_name\ncashier_01," + b"x" * 131073 + b"\n",
+            "source line 2",
+            "A value is too long. Shorten it",
+        ),
+    ],
+)
+def test_web_csv_errors_use_plain_locations_and_explanations(
+    app, csv_directory: Path, content: bytes, location: str, explanation: str
+) -> None:
+    (csv_directory / "cashiers.csv").write_bytes(content)
+    with app.test_client() as client:
+        response = _upload(client, csv_directory)
+    assert response.status_code == 400
+    message = response.get_json()["error"]["message"]
+    assert location in message and explanation in message
+    assert all(
+        label not in message
+        for label in (
+            "<header>",
+            "<row>",
+            "<encoding>",
+            "unexpected end of data",
+            "Malformed CSV:",
+        )
+    )
+
+
+def test_record_cap_counts_csv_records_not_physical_lines(
+    app, csv_directory: Path
+) -> None:
+    source = csv_directory / "bank_deposits.csv"
+    with source.open("w", newline="") as stream:
+        stream.write("\ufeffdeposit_date,amount,reference\r\n\r\n")
+        writer = csv.writer(stream, lineterminator="\r\n")
+        for index in range(2000):
+            writer.writerow(("2026-10-01", "0.01", f"DEMO-{index}\nsecond line"))
+            stream.write("\r\n")
+    with app.test_client() as client:
+        assert _upload(client, csv_directory).status_code == 200

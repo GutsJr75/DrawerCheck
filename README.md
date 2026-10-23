@@ -82,7 +82,10 @@ The application factory is `drawercheck.web:create_app()`.
 `POST /api/demo` accepts an empty body and checks the fixed example.
 `POST /api/check` accepts the seven synthetic CSVs as repeated multipart `files`
 fields. The whole request is limited to 2 MiB, including form overhead, and a
-run may contain at most 1,000 shifts. Each request uses a separate temporary
+run may contain at most 1,000 shifts, 2,000 bank deposits, and 2,000 safe drops.
+These record limits are checked before opening the database. Blank lines do
+not count, and a quoted value spanning several lines is still one record.
+Each request uses a separate temporary
 database that is closed and deleted before the response returns.
 
 The JSON response contains summaries, shift explanations, review leads, and

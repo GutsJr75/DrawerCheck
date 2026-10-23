@@ -2,7 +2,7 @@
 
 import os
 import stat
-from collections import Counter
+from collections import Counter, defaultdict
 from contextlib import closing
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
@@ -12,7 +12,7 @@ from secrets import token_hex
 
 from drawercheck import db, errors
 from drawercheck.config import Config, config_from_snapshot
-from drawercheck.models import DailyDeposit, Flag, ShiftResult
+from drawercheck.models import DailyDeposit, Flag, ShiftResult, group_flags_by_date
 from drawercheck.money import format_cents
 from drawercheck.reconcile import (
     calculate_deposits,
@@ -97,16 +97,16 @@ def _daily_summaries(
     deposits: tuple[DailyDeposit, ...],
     flags: tuple[Flag, ...],
 ) -> tuple[DailySummary, ...]:
+    shifts_by_date: dict[str, list[ShiftResult]] = defaultdict(list)
+    for result in results:
+        shifts_by_date[result.shift.business_date].append(result)
+    flags_by_date = group_flags_by_date(flags)
     summaries = []
     for day in deposits:
-        shifts = tuple(
-            result
-            for result in results
-            if result.shift.business_date == day.business_date
-        )
+        shifts = shifts_by_date.get(day.business_date, ())
         statuses = Counter(result.status for result in shifts)
         severities = Counter(
-            flag.severity for flag in flags if flag.business_date == day.business_date
+            flag.severity for flag in flags_by_date.get(day.business_date, ())
         )
         summaries.append(
             DailySummary(
@@ -207,13 +207,14 @@ def load_report(
                 raise errors.ReconciliationError(errors.REPORT_MIXED_POLICIES)
             config = config_from_snapshot(snapshots.pop())
             flags = db.load_flags(con, start, end)
+            flags_by_shift: dict[int | None, list[Flag]] = defaultdict(list)
+            for flag in flags:
+                flags_by_shift[flag.shift_id].append(flag)
             selected_ids = {shift.id for shift in selected}
             results = tuple(
                 replace(
                     result,
-                    flags=tuple(
-                        flag for flag in flags if flag.shift_id == result.shift.id
-                    ),
+                    flags=tuple(flags_by_shift.get(result.shift.id, ())),
                 )
                 for result in calculate_shifts(shifts, config)
                 if result.shift.id in selected_ids

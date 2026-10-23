@@ -121,8 +121,10 @@ cannot prove that arbitrary uploaded names or figures are fictional.
   response, including after an error. Keep no shared visitor results database.
   The response must include the information needed to display results and
   download reports while the page is open, so downloads need no saved workspace.
-- Initial design limits: a 2 MiB total upload-request limit and at most 1,000
-  shifts per run. These are project choices, not industry standards. Confirm that
+- Workload limits: a 2 MiB total upload-request limit, at most 1,000 shifts,
+  2,000 bank deposits, and 2,000 safe drops per run. Count CSV records before
+  opening a database, excluding headers and blank lines. These are project
+  choices, not industry standards. Confirm that
   the default demo fits and test rejection at the boundaries during M7.
 - Keep all errors in `errors.py`. Escape dynamic HTML, protect CSV exports,
   reject unexpected file inputs, and do not log uploaded CSV contents. Debug
@@ -210,9 +212,13 @@ the actual bytes, including UTF-8/BOM, headers, rows, and references.
 Both routes use the core's built-in example policies, independent of local
 `config.toml`. The 2 MiB limit includes the complete multipart request. Valid
 requests exactly at the limit pass; larger ones return 413. Multipart parsing
-also has an eight-part limit and 128 KiB non-file-field limit. More than 1,000
-shifts returns 400 after validated import and before reconciliation. The fixed
-example has 60 shifts and fits comfortably within the limits.
+also has an eight-part limit and 128 KiB non-file-field limit. The per-file
+record limits are 1,000 for `shifts.csv`, 2,000 for `bank_deposits.csv`, and
+2,000 for `safe_drops.csv`. Exceeding any record limit returns 400 while the
+shared CSV reader prepares the input, before SQLite is opened or any rows are
+inserted. Headers and blank lines do not count; quoted multiline values remain
+one record. These limits apply only to web runs; CLI imports remain uncapped.
+The fixed example has 60 shifts and fits comfortably within the limits.
 
 JSON includes `notice`, `from_date`, `to_date`, `generated_at`, `days`, `cashiers`,
 `flags`, `shifts`, and `reports`. Money fields use names ending in `_amount`
@@ -237,6 +243,19 @@ Invalid input returns JSON `error.message` with status 400; CSV errors additiona
 include `file_name`, physical `line_number`, and `column`. Server failures return
 a generic message with status 503 and do not log submitted records or paths.
 HTTP routing/parser failures also return JSON, without debug pages.
+
+The interface should display `error.message`. Header errors identify
+`the first row (column names)`; whole-record and encoding errors do not invent
+a field name. An unclosed quoted value gets that specific explanation, while
+other quoting/format problems and overlong values get different instructions.
+The structured `column` metadata retains the importer's internal location tags
+for code that needs them; those tags are not part of the displayed message.
+
+The M7 repair also adds non-unique indexes covering each deposit/drop duplicate
+lookup's full record key. Existing databases acquire them on the next import or
+`init-db`; records and duplicate-rejection behaviour are preserved. Reconciliation,
+daily summaries, report loading, and web shift details group review leads once
+instead of repeatedly scanning every lead for each date or shift.
 
 Local verification and exact commands are recorded in the learning log. CI now
 tests the core before installing optional web packages, then runs the web tests

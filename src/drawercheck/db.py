@@ -85,6 +85,8 @@ _SCHEMA = (
     _RECONCILED_DATES_SCHEMA,
     "CREATE INDEX IF NOT EXISTS shifts_business_date ON shifts(business_date)",
     "CREATE INDEX IF NOT EXISTS shifts_cashier_id ON shifts(cashier_id)",
+    "CREATE INDEX IF NOT EXISTS bank_deposits_record ON bank_deposits(deposit_date, amount_cents, reference)",
+    "CREATE INDEX IF NOT EXISTS safe_drops_record ON safe_drops(shift_id, amount_cents, dropped_at, bag_number)",
 )
 
 

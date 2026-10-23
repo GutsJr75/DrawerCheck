@@ -50,6 +50,14 @@ class Flag:
     evidence: dict[str, object]
 
 
+def group_flags_by_date(flags: tuple[Flag, ...]) -> dict[str, tuple[Flag, ...]]:
+    """Collect review leads by date in one pass, preserving their original order."""
+    grouped: dict[str, list[Flag]] = {}
+    for flag in flags:
+        grouped.setdefault(flag.business_date, []).append(flag)
+    return {day: tuple(day_flags) for day, day_flags in grouped.items()}
+
+
 @dataclass(frozen=True)
 class ShiftResult:
     """Exact calculations, status, surrounding records, and saved review leads."""
