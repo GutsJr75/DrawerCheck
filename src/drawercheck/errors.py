@@ -152,6 +152,19 @@ WEB_METHOD = "This action does not accept that request method. Start a new check
 WEB_NOTICE = "DEMO DATA ONLY: Use synthetic records. Flags are leads for review, not findings about a person. Results are not saved on the server."
 WEB_HTTP_ERROR = "The request could not be completed. Start a new check."
 
+# Checks made in the browser before sending. The page fills each {placeholder}.
+WEB_CLIENT_MISSING = "Choose {name}. It has not been added yet."
+WEB_CLIENT_UNKNOWN_NAME = (
+    "{name} was not added because it is not one of the seven required files."
+)
+WEB_CLIENT_RENAME = "{name} was not added. Rename it to {expected} and choose it again."
+WEB_CLIENT_TOO_LARGE = (
+    "The seven files add up to {size}. Together they must be {limit} or smaller."
+)
+WEB_CLIENT_NETWORK = (
+    "The demo server could not be reached. Check your connection and try again."
+)
+
 
 class WebInputError(Exception):
     """A web request needs correction before the checks can run."""

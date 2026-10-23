@@ -2,8 +2,10 @@
 
 This guide covers two things: the M8 website and the existing M4 HTML report.
 M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in
-`src/drawercheck/static/app.css`; the views come in later blocks, and the full
-accessibility check is block 5. The report's styles are unchanged.
+`src/drawercheck/static/app.css`. Block 2 added the Start view with the example
+tape and the Prepare files view with its checklist. Results and Drawer details
+come in block 3, and the full accessibility check is block 5. The report's
+styles are unchanged.
 
 Read this file for how the website should **look**. Read
 [WEB_PLAN.md](docs/WEB_PLAN.md) for how it should **behave**: views, wording,
@@ -133,9 +135,9 @@ from the stylesheet, so a token change that breaks contrast fails the tests.
 
 | Component | Rule |
 | --- | --- |
-| Main button | `accent` fill with `on-accent` text, 44 px tall. One per view. |
+| Main button | `accent` fill with `on-accent` text, 44 px tall. One per view. On hover it turns to `text` with `surface` lettering. |
 | Secondary button | `surface` with a `control` border and `accent` text. |
-| Status label | Short word on its tinted background: Note, Check, Needs review, Ready, Missing, Problem. |
+| Status label | Short word on its tinted background: Note, Check, Needs review, Ready, Missing, Problem. "Waiting" uses `muted` text with a `line` outline. |
 | File chooser | A normal labelled "Choose files" button; dragging files onto the list is optional extra help. |
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |
@@ -169,6 +171,10 @@ line separates the inputs from the result, and the result line is emphasised.
 
 - Build it as a table with row headers, so screen readers read each line as
   "Minus cash refunds, $12.00". The `+` and `-` symbols are visual only.
+- The paper is a `surface` panel whose bottom edge is torn like a till roll,
+  drawn with a CSS gradient in the same colour. Rules are dashed `control`
+  lines. This edge is the site's one decorative flourish; nothing else on the
+  page gets one.
 - Each label can open a one-sentence definition ("A safe drop is cash moved
   from the drawer to the safe during the shift").
 - A missing input shows "unknown" with the reason, and the expected line says

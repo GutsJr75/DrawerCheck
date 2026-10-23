@@ -205,6 +205,30 @@ def test_labels_cover_every_rule_severity_and_status() -> None:
     )
 
 
+def test_example_files_match_the_built_in_demo(app) -> None:
+    """Each download is the committed demo CSV, so it uploads as the example."""
+    demo_inputs = Path(__file__).parent.parent / "data" / "demo"
+    with app.test_client() as client:
+        for name in CSV_HEADERS:
+            response = client.get(f"/examples/{name}")
+            assert response.status_code == 200
+            assert response.mimetype == "text/csv"
+            assert response.headers["Content-Disposition"] == (
+                f'attachment; filename="{name}"'
+            )
+            assert response.get_data() == (demo_inputs / name).read_bytes()
+
+
+@pytest.mark.parametrize(
+    "path", ["/examples/other.csv", "/examples/SHIFTS.csv", "/examples/..%2Frun.db"]
+)
+def test_example_files_reject_other_names(path: str) -> None:
+    with web.create_app().test_client() as client:
+        response = client.get(path)
+    assert response.status_code == 404
+    assert response.get_json()["error"]["message"] == errors.WEB_NOT_FOUND
+
+
 def test_upload_preserves_bom_crlf_and_raw_bytes(
     app, csv_directory: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

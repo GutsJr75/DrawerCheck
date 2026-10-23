@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 
+from drawercheck.csv_contract import CSV_HEADERS
+
 pytest.importorskip("flask")
 web = importlib.import_module("drawercheck.web")
 PACKAGE = Path(web.__file__).parent
@@ -28,12 +30,44 @@ class _Page(HTMLParser):
         super().__init__()
         self.tags: list[tuple[str, dict[str, str | None]]] = []
         self.text: list[str] = []
+        self.open_views: list[str | None] = []
+        self.heading_views: list[str | None] = []
+        self.tape_line: str | None = None
+        self.capturing: tuple[str, str] | None = None
+        self.captured: dict[tuple[str, str], str] = {}
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        self.tags.append((tag, dict(attrs)))
+        attributes = dict(attrs)
+        self.tags.append((tag, attributes))
+        if tag == "section":
+            self.open_views.append(attributes.get("id"))
+        elif tag == "h1":
+            self.heading_views.append(self.open_views[-1] if self.open_views else None)
+        elif tag == "tr":
+            self.tape_line = attributes.get("data-line")
+        elif tag == "td" and self.tape_line:
+            self.capturing = ("tape", self.tape_line)
+        if "data-message" in attributes:
+            self.capturing = ("message", attributes["data-message"])
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "section":
+            self.open_views.pop()
+        elif tag in ("td", "p"):
+            self.capturing = None
 
     def handle_data(self, data: str) -> None:
         self.text.append(data)
+        if self.capturing:
+            self.captured[self.capturing] = self.captured.get(self.capturing, "") + data
+
+    def found(self, kind: str) -> dict[str, str]:
+        """Return captured text of one kind, with whitespace collapsed."""
+        return {
+            key: " ".join(text.split())
+            for (found_kind, key), text in self.captured.items()
+            if found_kind == kind
+        }
 
 
 @pytest.fixture
@@ -55,7 +89,15 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
     page, text = _page(client)
     tags = [tag for tag, _ in page.tags]
     assert ("html", {"lang": "en"}) in page.tags
-    assert tags.count("h1") == 1 and tags.count("main") == 1
+    # One h1 per view; only Start is visible before any script runs.
+    assert page.heading_views == ["view-start", "view-prepare", "view-results"]
+    views = {attrs["id"]: attrs for tag, attrs in page.tags if tag == "section"}
+    assert "hidden" not in views["view-start"]
+    assert "hidden" in views["view-prepare"] and "hidden" in views["view-results"]
+    assert all(
+        attrs["data-title"].endswith(" | DrawerCheck") for attrs in views.values()
+    )
+    assert tags.count("main") == 1
     assert tags.count("header") == tags.count("footer") == 1
     first_link = next(attrs for tag, attrs in page.tags if tag == "a")
     assert first_link == {"class": "skip-link", "href": "#main"}
@@ -80,9 +122,80 @@ def test_page_has_no_inline_code_or_remote_assets(client) -> None:
             assert attrs.get("src", "").startswith("/static/")
         if tag == "link":
             assert attrs["href"].startswith("/static/")
-        if tag == "a" and not attrs["href"].startswith("#"):
+        if tag == "a" and not attrs["href"].startswith(("#", "/examples/")):
             # Outbound links are ordinary navigation, never loaded resources.
             assert attrs["href"].startswith(REPOSITORY)
+
+
+def test_start_tape_matches_the_demo_calculation(client) -> None:
+    """The Start view's example tape shows the server's own numbers for S1."""
+    page, text = _page(client)
+    with client.post("/api/demo") as response:
+        payload = response.get_json()
+    shift = next(
+        item
+        for item in payload["shifts"]
+        if item["shift"]["shift_code"] == "2026-09-03-R1"
+    )
+    record, pos = shift["shift"], shift["shift"]["pos"]
+    labels = payload["labels"]
+    worst = max(
+        (flag["severity"] for flag in shift["flags"]),
+        key=["info", "warn", "review"].index,
+    )
+    assert page.found("tape") == {
+        "opening_float": record["opening_float_amount"],
+        "cash_sales": pos["cash_sales_amount"],
+        "paid_ins": pos["paid_ins_amount"],
+        "cash_refunds": pos["cash_refunds_amount"],
+        "paid_outs": pos["paid_outs_amount"],
+        "safe_drops": record["safe_drops_amount"],
+        "expected": shift["expected_amount"],
+        "counted": shift["counted_amount"],
+        "difference": shift["variance_amount"],
+        "result": f"{labels['statuses'][shift['status']]} "
+        f"{labels['severities'][worst]}",
+    }
+    registers = {item["shift"]["register_id"] for item in payload["shifts"]}
+    sentence = f"{payload['summary']['drawers_checked']} drawers on two registers"
+    assert sentence in text and len(registers) == 2
+
+
+def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:
+    page, text = _page(client)
+    rows = [attrs for tag, attrs in page.tags if "data-file" in attrs]
+    assert [row["data-file"] for row in rows] == list(CSV_HEADERS)
+    assert [row["id"] for row in rows] == [
+        f"file-{name.removesuffix('.csv')}" for name in CSV_HEADERS
+    ]
+    examples = [attrs for tag, attrs in page.tags if tag == "a" and "download" in attrs]
+    assert [link["href"] for link in examples] == [
+        f"/examples/{name}" for name in CSV_HEADERS
+    ]
+    assert page.found("message") == web.CLIENT_MESSAGES
+    assert (
+        "Use example data only. Files are checked and then deleted; nothing is saved."
+        in text
+    )
+    assert "There is a problem with your files" in text
+    assert "Up to 1,000 shifts, 2,000 safe drops, and 2,000 bank deposits." in text
+    assert "up to 2 MiB (2,097,152 bytes)" in text
+
+
+def test_script_never_inserts_markup_or_runs_strings() -> None:
+    """Server text reaches the page only through textContent."""
+    script = (STATIC / "app.js").read_text(encoding="utf-8")
+    for forbidden in (
+        "innerHTML",
+        "outerHTML",
+        "insertAdjacentHTML",
+        "document.write",
+        "eval(",
+        "new Function",
+        "parseFloat",
+    ):
+        assert forbidden not in script, forbidden
+    assert "textContent" in script
 
 
 @pytest.mark.parametrize(

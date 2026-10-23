@@ -6,9 +6,9 @@
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
-- **M8, screens and public demo: in progress, built in seven blocks.** Block 1
-  (the screen data from Python and the page layout) is done and waits for the
-  user's review. Blocks 2 to 7 each need the user's go-ahead.
+- **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
+  and 2 are done; block 2 (Start and Prepare files) waits for the user's
+  review. Blocks 3 to 7 each need the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
@@ -16,7 +16,7 @@
 | M8 block | What gets built | Status |
 | --- | --- | --- |
 | 1 | Summary, count line totals, and labels in the JSON; page layout, colour tokens, IBM Plex fonts, demo notice, footer, and security headers | Done |
-| 2 | Start and Prepare files: "Try the example", the example tape, and the file checklist with its error summary | Not started |
+| 2 | Start and Prepare files: "Try the example", the example tape, and the file checklist with its error summary | Done |
 | 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Not started |
 | 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Not started |
 | 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Not started |
@@ -154,6 +154,23 @@ buttons, refresh, and copied links behave the way people expect:
   CSV errors to find that row.
 - Beside the chooser, say plainly: "Use example data only. Files are checked
   and then deleted; nothing is saved."
+
+Built in M8 block 2 (2026-10-23):
+
+- Each checklist row has a "Download example" link to `GET /examples/<file>`,
+  which runs the same demo generator as "Try the example" in a temporary
+  folder and returns that one CSV. Only the seven names are accepted.
+- A file whose name differs only in capital letters gets a rename hint; any
+  other name is reported as not one of the seven. Neither is added.
+- The browser's own messages live in `errors.py` with the server's, and reach
+  the page through the template, so the script contains no message wording.
+- A file the server reports a problem with stays chosen but is not counted as
+  ready, so "6 of 7 files ready" agrees with the rows.
+- Buttons switch views directly for now, and a busy button changes its text and
+  ignores further presses. Block 4 replaces both with addresses, Cancel, the
+  slow-start message, and the 90-second limit. Results show one sentence until
+  block 3 builds the real view.
+- Drag and drop is not built; the plan treats it as optional.
 
 ### Loading and slow starts
 
@@ -385,6 +402,7 @@ implemented at this milestone.
 | --- | --- | --- |
 | `POST /api/demo` | Empty body, no URL options | The fixed 30-day example's full results. |
 | `POST /api/check` | Multipart upload with seven repeated `files` fields | The uploaded records' full results. |
+| `GET /examples/<file>` | One of the seven CSV names (added in M8 block 2) | That file from the built-in example, as a download. |
 
 Filenames must exactly match the seven names in the CSV contract. No archive,
 folder path, extra field, policy override, or database path is accepted. MIME

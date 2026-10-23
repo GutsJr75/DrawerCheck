@@ -270,6 +270,415 @@ main {
   font-size: 1.125rem;
 }
 
+.hint {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.money {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Buttons: one primary per view; 44px tall. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    color 150ms;
+}
+
+.button-primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.button-primary:hover {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--surface);
+}
+
+.button-secondary {
+  border-color: var(--control);
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.button-secondary:hover {
+  border-color: var(--accent);
+  background: var(--page);
+}
+
+.button[aria-disabled="true"] {
+  cursor: progress;
+}
+
+.link-button {
+  min-height: 1.5rem;
+  padding: var(--space-1) 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  text-decoration-thickness: 2px;
+}
+
+.back-link {
+  margin-bottom: var(--space-5);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+}
+
+.inline-error {
+  padding-left: var(--space-3);
+  border-left: 4px solid var(--review);
+  color: var(--review);
+  font-weight: 600;
+}
+
+.inline-error:empty {
+  display: none;
+}
+
+/* Status labels always carry a word; the colour only repeats it. */
+.status {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.status-note {
+  background: var(--note-bg);
+  color: var(--note);
+}
+
+.status-check {
+  background: var(--check-bg);
+  color: var(--check);
+}
+
+.status-review,
+.status-problem {
+  background: var(--review-bg);
+  color: var(--review);
+}
+
+.status-ready {
+  background: var(--ready-bg);
+  color: var(--ready);
+}
+
+.status-waiting {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+/* Optional explanations, opened by click, tap, or keyboard. */
+.help {
+  margin-top: var(--space-5);
+}
+
+.help summary {
+  padding-block: var(--space-1);
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.help summary:hover {
+  text-decoration: underline;
+}
+
+.help[open] summary {
+  margin-bottom: var(--space-3);
+}
+
+.help ul {
+  max-width: 68ch;
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-5);
+}
+
+.help li + li {
+  margin-top: var(--space-2);
+}
+
+.definitions dt {
+  font-weight: 600;
+}
+
+.definitions dd {
+  margin: 0 0 var(--space-3);
+}
+
+/* Start view: words and actions first, the example tape beside them on wide screens. */
+.start-grid {
+  display: grid;
+  gap: var(--space-7);
+}
+
+@media (min-width: 64em) {
+  .start-grid {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    align-items: start;
+    gap: var(--space-8);
+  }
+}
+
+/* The drawer tape: an adding-machine receipt with a torn bottom edge. */
+.tape-figure {
+  max-width: 24rem;
+  margin: 0;
+}
+
+.tape-paper {
+  position: relative;
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  background: var(--surface);
+}
+
+.tape-paper::after {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 8px;
+  background: conic-gradient(from -45deg at bottom, var(--surface) 90deg, transparent 0)
+    50% / 16px 100%;
+  content: "";
+}
+
+.tape {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tape caption {
+  padding-bottom: var(--space-3);
+  font-weight: 600;
+  text-align: left;
+}
+
+.tape-code {
+  display: block;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.tape th,
+.tape td {
+  padding: var(--space-1) 0;
+  vertical-align: baseline;
+}
+
+.tape th {
+  font-weight: 400;
+  text-align: left;
+}
+
+.tape td {
+  padding-left: var(--space-4);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tape-op {
+  display: inline-block;
+  width: 1.25rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.tape-rule > * {
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--control);
+}
+
+.tape-total > * {
+  font-weight: 600;
+}
+
+.tape .tape-result td {
+  padding-top: var(--space-2);
+}
+
+.tape-figure figcaption {
+  margin-top: var(--space-5);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Prepare files view */
+.view-narrow {
+  max-width: 48rem;
+}
+
+.chooser {
+  position: relative;
+  margin: var(--space-5) 0 var(--space-6);
+}
+
+.chooser .hint {
+  margin: var(--space-3) 0 0;
+}
+
+.file-input:focus + .button {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.chooser-notes p {
+  margin: var(--space-3) 0 0;
+  color: var(--review);
+  font-weight: 600;
+}
+
+.file-list {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  list-style: none;
+}
+
+.file-row {
+  display: grid;
+  grid-template-areas:
+    "name state"
+    "about about"
+    "problem problem"
+    "example example";
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+}
+
+.file-row + .file-row {
+  border-top: 1px solid var(--line);
+}
+
+/* Error summary links focus a row; show where focus landed. */
+.file-row[tabindex]:focus {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.file-name {
+  grid-area: name;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.file-state {
+  display: flex;
+  flex-wrap: wrap;
+  grid-area: state;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.file-size {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.file-about {
+  grid-area: about;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.file-problem {
+  grid-area: problem;
+  max-width: none;
+  margin: var(--space-2) 0 0;
+  color: var(--review);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.file-example {
+  grid-area: example;
+  justify-self: start;
+  padding-block: var(--space-1);
+  font-size: 0.875rem;
+}
+
+.error-summary {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 3px solid var(--review);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+
+.error-summary h2 {
+  margin-bottom: var(--space-3);
+  font-size: 1.25rem;
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.error-summary a {
+  color: var(--review);
+  font-weight: 600;
+}
+
 .site-footer {
   border-top: 1px solid var(--line);
   padding-block: var(--space-5) var(--space-6);

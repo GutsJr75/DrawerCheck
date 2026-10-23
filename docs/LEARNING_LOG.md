@@ -732,3 +732,50 @@ and Firefox's built-in headless screenshot was used instead of Playwright. That
 was a visual look only. Keyboard, zoom, screen-reader, and automated
 accessibility checks have not been run and remain block 5. No hosted CI or
 deployment result is claimed. Block 2 waits for **next**.
+
+## M8 block 2: Start and Prepare files
+
+- Built: The Start view with "Try the example" and the example drawer tape,
+  and the Prepare files view with a seven-file checklist, rename hints, an
+  error summary that links to the problem row, and example downloads produced
+  by the demo generator. Browser messages joined the server's in `errors.py`.
+- Learned: A page can show calculated numbers without calculating them, if a
+  test compares every number on the page with the server's own result. A status
+  list must describe the latest attempt: a file the server reported needs to
+  stop counting as ready, and go back to ready when it is sent again.
+- Interview question: How do you keep a browser's file checklist honest when
+  only the server is allowed to judge what is inside the files?
+
+The user authorized block 2 on 2026-10-23. Verified locally with the same
+Python 3.13.5, Flask 3.1.3, Gunicorn 26.2.0, pytest 9.1.1, and Ruff 0.17.1
+environment, plus Firefox 158.0.1 and Node 22.22.0 for browser checks.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 681 tests, 7 of them new, with resource and cleanup warnings still treated as errors. See the note on slow exits below. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean; 52 Python files formatted. |
+| `node --check src/drawercheck/static/app.js` | PASS: the script parses. |
+| Start tape against the server | PASS: all nine amounts and the "Short / Needs review" line equal the `/api/demo` values for `2026-09-03-R1`, and the "60 drawers on two registers" sentence matches the demo. |
+| Prepare checklist and example downloads | PASS: rows follow the seven CSV names; each `/examples/<file>` download is byte-identical to the committed demo CSV; other names, wrong capitals, and an encoded path return the JSON 404. Browser messages on the page equal their `errors.py` constants. |
+| Script safety | PASS: `app.js` contains no `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval(`, `new Function`, or `parseFloat`. |
+| Budgets | PASS: CSS 13,466 bytes and JavaScript 8,734 bytes (22,200 together) against 60 KB. |
+| Headless Firefox through WebDriver BiDi, local Gunicorn, light and dark | Observed: the example run changes the button to "Checking the example...", then shows Results with focus on its heading. A wrongly capitalised file gets the rename hint and an unknown file is refused. Missing files produce the linked error summary, and the link focuses the row. A bad amount on source line 3 of `bank_deposits.csv` marks that row Problem with "6 of 7 files ready". A cross-file problem fixed in another file returns the row to Ready. No sideways scrolling at 320 px. All requests stayed on the local site; the only miss was the browser's automatic `/favicon.ico` request (404, as the site has no icon yet). |
+
+**Slow exits, cause not found.** In 4 of the first 7 full runs during this
+block, every test passed in about 10.5 seconds, but the process took about 909
+seconds of wall time to end, with only about 9 seconds of CPU time. A
+60-second stack-dump timer armed before the tests never fired, so the wait was
+outside the test code: either before the timer was armed or late in Python's
+shutdown. Eleven later runs did not stall. Ten of them recorded timestamps at
+start, after pytest returned, and in the last exit handler, five with pytest's
+cache plugin and five without; each ended within 0.1 seconds of pytest
+returning, with only the main thread alive. No server or headless browser
+from these checks was left running. The steady ~900-second figure looks like
+a timeout in the local environment, not in DrawerCheck, but that is unproven.
+The CI workflow's 10-minute job limit would expose the stall if it ever
+happens there.
+
+These browser checks used scripted clicks and file selection, not a person's
+keyboard or a screen reader. Focus order, zoom, screen-reader announcements,
+and an automated accessibility scan remain block 5. No hosted CI or deployment
+result is claimed. Block 3 waits for **next**.

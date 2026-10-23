@@ -9,8 +9,9 @@
   <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-Regular-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-SemiBold-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </head>
-<body>
+<body data-max-upload-bytes="{{ max_upload_bytes }}">
   <a class="skip-link" href="#main">Skip to main content</a>
   <div class="notice">
     <div class="wrap">
@@ -23,9 +24,141 @@
     </div>
   </header>
   <main id="main" class="wrap" tabindex="-1">
-    <section aria-labelledby="start-heading">
-      <h1 id="start-heading">Check a cash drawer against its records</h1>
-      <p class="lead">At the end of a shift, a cashier counts the cash in the drawer. DrawerCheck compares that count with the register's records and lists anything worth a second look.</p>
+    <noscript>
+      <p class="inline-error">This demo needs JavaScript to run checks. Turn it on and reload the page.</p>
+    </noscript>
+
+    <section id="view-start" class="view" aria-labelledby="start-heading" data-title="Check a cash drawer | DrawerCheck">
+      <div class="start-grid">
+        <div>
+          <h1 id="start-heading" tabindex="-1">Check a cash drawer against its records</h1>
+          <p class="lead">At the end of a shift, a cashier counts the cash in the drawer. DrawerCheck compares that count with the register's records and lists anything worth a second look.</p>
+          <p>Try it with a made-up month from Demo Store #001: 60 drawers on two registers, with a few records set up to need review.</p>
+          <div class="actions">
+            <button type="button" class="button button-primary" id="try-example" data-busy-text="Checking the example...">Try the example</button>
+            <button type="button" class="button button-secondary" data-go="prepare">Use your own files</button>
+          </div>
+          <p class="inline-error" id="start-error" role="alert"></p>
+          <p class="hint">This free demo server sleeps when nobody is using it. If the page or a check is slow to start, the server is waking up, which usually takes about a minute.</p>
+        </div>
+
+        <div>
+          <figure class="tape-figure">
+            <div class="tape-paper">
+              <table class="tape">
+                <caption>Register R1, September 3, 2026<span class="tape-code">Shift 2026-09-03-R1</span></caption>
+                <tbody>
+                  <tr data-line="opening_float"><th scope="row"><span class="tape-op" aria-hidden="true"></span>Opening float</th><td class="money">$200.00</td></tr>
+                  <tr data-line="cash_sales"><th scope="row"><span class="tape-op" aria-hidden="true">+</span><span class="visually-hidden">Plus </span>Cash sales</th><td class="money">$1,250.75</td></tr>
+                  <tr data-line="paid_ins"><th scope="row"><span class="tape-op" aria-hidden="true">+</span><span class="visually-hidden">Plus </span>Paid-ins</th><td class="money">$0.00</td></tr>
+                  <tr data-line="cash_refunds"><th scope="row"><span class="tape-op" aria-hidden="true">-</span><span class="visually-hidden">Minus </span>Cash refunds</th><td class="money">$12.00</td></tr>
+                  <tr data-line="paid_outs"><th scope="row"><span class="tape-op" aria-hidden="true">-</span><span class="visually-hidden">Minus </span>Paid-outs</th><td class="money">$20.00</td></tr>
+                  <tr data-line="safe_drops"><th scope="row"><span class="tape-op" aria-hidden="true">-</span><span class="visually-hidden">Minus </span>Safe drops</th><td class="money">$900.00</td></tr>
+                  <tr data-line="expected" class="tape-rule tape-total"><th scope="row"><span class="tape-op" aria-hidden="true">=</span><span class="visually-hidden">Equals </span>Expected cash</th><td class="money">$518.75</td></tr>
+                  <tr data-line="counted"><th scope="row"><span class="tape-op" aria-hidden="true"></span>Counted cash</th><td class="money">$498.75</td></tr>
+                  <tr data-line="difference" class="tape-rule tape-total"><th scope="row"><span class="tape-op" aria-hidden="true"></span>Difference</th><td class="money">-$20.00</td></tr>
+                  <tr data-line="result" class="tape-result"><td colspan="2">Short <span class="status status-review">Needs review</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <figcaption>Example from the built-in demo</figcaption>
+          </figure>
+          <details class="help">
+            <summary>What do these lines mean?</summary>
+            <dl class="definitions">
+              <dt>Opening float</dt>
+              <dd>Cash put in the drawer at the start of the shift, so the cashier can give change.</dd>
+              <dt>Cash sales</dt>
+              <dd>Sales paid in cash, as recorded by the register.</dd>
+              <dt>Paid-ins</dt>
+              <dd>Cash added to the drawer that did not come from a sale.</dd>
+              <dt>Cash refunds</dt>
+              <dd>Cash given back to customers for returns.</dd>
+              <dt>Paid-outs</dt>
+              <dd>Cash taken from the drawer to pay for something, such as supplies.</dd>
+              <dt>Safe drops</dt>
+              <dd>Cash moved from the drawer to the safe during the shift.</dd>
+              <dt>Expected cash</dt>
+              <dd>What the drawer should hold, worked out from the lines above.</dd>
+              <dt>Counted cash</dt>
+              <dd>What was actually counted in the drawer at closing.</dd>
+              <dt>Difference</dt>
+              <dd>Counted cash minus expected cash. Below zero means the drawer is short.</dd>
+              <dt>Needs review</dt>
+              <dd>The difference is large enough that a person should recount and check the records. It is a lead to check, not a finding about anyone.</dd>
+            </dl>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-prepare" class="view view-narrow" aria-labelledby="prepare-heading" data-title="Prepare your files | DrawerCheck" hidden>
+      <button type="button" class="link-button back-link" data-go="start">Back to start</button>
+
+      <div class="error-summary" id="error-summary" tabindex="-1" hidden>
+        <div role="alert">
+          <h2>There is a problem with your files</h2>
+          <ul id="error-list"></ul>
+        </div>
+      </div>
+
+      <h1 id="prepare-heading" tabindex="-1">Prepare your files</h1>
+      <p class="lead">DrawerCheck needs seven CSV files, one for each kind of record. Download the example of any file below to see what it should contain.</p>
+
+      <div class="chooser">
+        <input type="file" id="file-input" class="visually-hidden file-input" multiple accept=".csv,text/csv" aria-describedby="chooser-hint chooser-privacy">
+        <label for="file-input" class="button button-secondary">Choose files</label>
+        <p class="hint" id="chooser-hint">You can choose all seven at once. Choosing a file with the same name again replaces it.</p>
+        <p class="hint" id="chooser-privacy">Use example data only. Files are checked and then deleted; nothing is saved.</p>
+        <div class="chooser-notes" id="chooser-notes" aria-live="polite"></div>
+      </div>
+
+      <h2 id="files-heading">Required files</h2>
+      <p class="hint" id="files-progress" aria-live="polite" data-template="{ready} of {total} files ready.">0 of {{ files|length }} files ready.</p>
+      <ul class="file-list" aria-labelledby="files-heading">
+        {% for name, about in files.items() %}
+        <li class="file-row" id="file-{{ name[:-4] }}" data-file="{{ name }}" tabindex="-1">
+          <span class="file-name">{{ name }}</span>
+          <span class="file-state"><span class="status status-waiting" data-role="status">Waiting</span><span class="file-size" data-role="size"></span></span>
+          <span class="file-about">{{ about }}</span>
+          <p class="file-problem" data-role="problem" hidden></p>
+          <a class="file-example" href="{{ url_for('example_file', file_name=name) }}" download>Download example<span class="visually-hidden"> {{ name }}</span></a>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="actions">
+        <button type="button" class="button button-primary" id="check-files" data-busy-text="Checking your files...">Check my files</button>
+      </div>
+
+      <details class="help">
+        <summary>How to prepare your files</summary>
+        <ul>
+          <li>Keep each file name exactly as listed, and keep the column names in the first row.</li>
+          <li>Write money with two decimal places and no dollar sign or commas, such as 1250.75.</li>
+          <li>Write dates as 2026-09-03 and times as 2026-09-03T08:00:00.</li>
+          <li>Use the same IDs in every file. For example, each shift's cashier_id must also appear in cashiers.csv.</li>
+          <li>Save from your spreadsheet as CSV UTF-8.</li>
+        </ul>
+      </details>
+      <details class="help">
+        <summary>Limits for this demo</summary>
+        <ul>
+          <li>All seven files together: up to {{ max_upload_bytes // 1048576 }} MiB ({{ "{:,}".format(max_upload_bytes) }} bytes), including a little space the browser adds when sending.</li>
+          <li>Up to {{ "{:,}".format(row_limits["registers.csv"]) }} registers and {{ "{:,}".format(row_limits["cashiers.csv"]) }} people.</li>
+          <li>Up to {{ "{:,}".format(row_limits["shifts.csv"]) }} shifts, {{ "{:,}".format(row_limits["safe_drops.csv"]) }} safe drops, and {{ "{:,}".format(row_limits["bank_deposits.csv"]) }} bank deposits.</li>
+          <li>Each value: up to {{ max_field_characters }} characters.</li>
+        </ul>
+        <p>These limits keep the free demo responsive. They are not rules for real stores.</p>
+      </details>
+    </section>
+
+    <section id="view-results" class="view" aria-labelledby="results-heading" data-title="Results | DrawerCheck" hidden>
+      <h1 id="results-heading" tabindex="-1">Results</h1>
+      <p id="results-ready" data-template="Results are ready: {drawers} drawers checked from {from} to {to}."></p>
+      <div class="actions">
+        <button type="button" class="button button-secondary" data-go="start">Start a new check</button>
+      </div>
     </section>
   </main>
   <footer class="site-footer">
@@ -38,5 +171,11 @@
       </ul>
     </div>
   </footer>
+  <div hidden>
+    {% for key, text in messages.items() %}
+    <p data-message="{{ key }}">{{ text }}</p>
+    {% endfor %}
+  </div>
+  <p class="visually-hidden" id="announcer" aria-live="polite"></p>
 </body>
 </html>

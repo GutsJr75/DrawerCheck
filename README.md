@@ -24,7 +24,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
 | Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | In progress (milestone M8, block 1 of 7 done: screen data and page layout) |
+| Website screens and public hosting | In progress (milestone M8, blocks 1 and 2 of 7 done: page layout, Start, and Prepare files) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
 **Automated checks:** the hosted run for the final web request code,
@@ -204,9 +204,9 @@ messages, with checks and fixes.
 ## Web request layer (for developers)
 
 The server side of the planned website is built; the screens are milestone M8,
-built in blocks. So far the site has its page layout, colours, and fonts, but
-not its buttons or results screens yet. Install the optional packages and run
-the web tests:
+built in blocks. So far the site has its layout, the Start view with the
+example button, and the Prepare files view for uploads; the results screens
+come next. Install the optional packages and run the web tests:
 
 ```sh
 pip install -e ".[dev,web]"
@@ -225,6 +225,7 @@ The app is created by `drawercheck.web:create_app()`.
 | `GET /` | Nothing | The website page, with its local styles and fonts |
 | `POST /api/demo` | Nothing | Full results for the built-in example |
 | `POST /api/check` | The seven CSV files | Full results for those files |
+| `GET /examples/<file>` | Nothing | One of the seven example CSVs, to download |
 
 Results come back as one JSON response containing summaries, shift
 explanations, review leads, and all three reports. Money is already formatted,

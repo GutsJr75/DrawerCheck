@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 from typing import IO
 
 from flask import Flask, Request, Response, jsonify, render_template, request
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, NotFound
 
 from drawercheck import errors
 from drawercheck.config import Config
@@ -64,6 +64,24 @@ STATUS_LABELS = {
     "short": "Short",
     "incomplete": "Missing records",
     "open": "Still open",
+}
+FILE_DESCRIPTIONS = {
+    "cashiers.csv": "Cashiers and managers, each with an ID and a name",
+    "registers.csv": "The registers in the store",
+    "shifts.csv": "Who worked each register, when, and the cash it started with",
+    "pos_totals.csv": "Sales and other totals recorded by each register",
+    "safe_drops.csv": "Cash moved from a drawer to the safe during a shift",
+    "cash_counts.csv": "The closing count of each bill and coin",
+    "bank_deposits.csv": "Cash deposits recorded by the bank",
+}
+# The page reads these from the template, so browser messages stay in errors.py.
+CLIENT_MESSAGES = {
+    "missing": errors.WEB_CLIENT_MISSING,
+    "unknown_name": errors.WEB_CLIENT_UNKNOWN_NAME,
+    "rename": errors.WEB_CLIENT_RENAME,
+    "too_large": errors.WEB_CLIENT_TOO_LARGE,
+    "network": errors.WEB_CLIENT_NETWORK,
+    "unavailable": errors.WEB_UNAVAILABLE,
 }
 
 
@@ -303,7 +321,28 @@ def create_app() -> Flask:
 
     @app.get("/")
     def page() -> str:
-        return render_template("index.html")
+        return render_template(
+            "index.html",
+            files=FILE_DESCRIPTIONS,
+            messages=CLIENT_MESSAGES,
+            row_limits=ROW_LIMITS,
+            max_field_characters=MAX_FIELD_CHARACTERS,
+            max_upload_bytes=MAX_REQUEST_BYTES,
+        )
+
+    @app.get("/examples/<file_name>")
+    def example_file(file_name: str) -> Response:
+        # The same generator as "Try the example", so downloads cannot drift from it.
+        if file_name not in CSV_HEADERS:
+            raise NotFound()
+        with TemporaryDirectory(prefix="drawercheck-example-") as temporary:
+            generate_demo(temporary)
+            content = (Path(temporary) / file_name).read_bytes()
+        return Response(
+            content,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="{file_name}"'},
+        )
 
     @app.post("/api/demo")
     def demo() -> Response:
