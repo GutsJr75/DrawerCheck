@@ -4,28 +4,39 @@
 "use strict";
 
 (() => {
-  const maxUploadBytes = Number(document.body.dataset.maxUploadBytes);
+  const body = document.body;
+  const maxUploadBytes = Number(body.dataset.maxUploadBytes);
   const views = {
     start: document.getElementById("view-start"),
     prepare: document.getElementById("view-prepare"),
     results: document.getElementById("view-results"),
     drawer: document.getElementById("view-drawer"),
+    missing: document.getElementById("view-missing"),
   };
   const announcer = document.getElementById("announcer");
+  const notSaved = document.getElementById("not-saved");
   const startError = document.getElementById("start-error");
+  const startCancel = document.getElementById("start-cancel");
+  const startSlow = document.getElementById("start-slow");
   const tryExample = document.getElementById("try-example");
   const fileInput = document.getElementById("file-input");
   const chooserNotes = document.getElementById("chooser-notes");
   const filesProgress = document.getElementById("files-progress");
   const checkFiles = document.getElementById("check-files");
+  const prepareError = document.getElementById("prepare-error");
+  const prepareCancel = document.getElementById("prepare-cancel");
+  const prepareSlow = document.getElementById("prepare-slow");
   const errorSummary = document.getElementById("error-summary");
   const errorList = document.getElementById("error-list");
   const resultsRange = document.getElementById("results-range");
   const severityChips = document.getElementById("severity-chips");
+  const filters = document.getElementById("filters");
+  const dateSelect = document.getElementById("filter-date");
+  const filterLevel = document.getElementById("filter-level");
+  const filterStatus = document.getElementById("filter-status");
   const leadList = document.getElementById("lead-list");
   const noLeads = document.getElementById("no-leads");
-  const dayDetails = document.getElementById("day-details");
-  const cashierDetails = document.getElementById("cashier-details");
+  const noMatches = document.getElementById("no-matches");
   const drawerHeading = document.getElementById("drawer-heading");
   const drawerAbout = document.getElementById("drawer-about");
   const drawerGrid = document.getElementById("drawer-grid");
@@ -39,12 +50,19 @@
   const dayLeads = document.getElementById("day-leads");
   const limitsText = document.getElementById("limits-text");
   const depositText = document.getElementById("deposit-text");
+  const missingCode = document.getElementById("missing-code");
   const severityOrder = ["review", "warn", "info"];
   const severityClass = { review: "status-review", warn: "status-check", info: "status-note" };
+  // Address words for the level filter, and the severity each one shows.
+  const showSeverity = { all: null, review: "review", check: "warn", note: "info" };
   // Business dates are calendar days; formatting in UTC keeps them from shifting.
   const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "UTC" });
   let results = null;
+  let sortedLeads = [];
+  let leadDates = new Set();
   let shiftsByCode = new Map();
+  let shiftsByDate = new Map();
+  let request = null;
   const rows = new Map(
     [...document.querySelectorAll("[data-file]")].map((row) => [row.dataset.file, row]),
   );
@@ -55,7 +73,6 @@
     ready: ["Ready", "status-ready"],
     problem: ["Problem", "status-problem"],
   };
-  let busy = false;
 
   function fill(template, values) {
     return template.replace(/\{(\w+)\}/g, (placeholder, key) =>
@@ -76,16 +93,25 @@
     }, 50);
   }
 
-  function showView(name) {
-    for (const [key, view] of Object.entries(views)) {
-      view.hidden = key !== name;
+  function element(tag, className = "", text = undefined) {
+    const node = document.createElement(tag);
+    if (className) {
+      node.className = className;
     }
-    if (name === "start") {
-      // An old example failure should not greet a visitor who comes back later.
-      startError.textContent = "";
+    if (text !== undefined) {
+      node.textContent = text;
     }
-    document.title = views[name].dataset.title;
-    views[name].querySelector("h1").focus();
+    return node;
+  }
+
+  function link(text, href, className = "") {
+    const anchor = element("a", className, text);
+    anchor.href = href;
+    return anchor;
+  }
+
+  function formatDate(isoDate) {
+    return dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
   }
 
   function formatSize(bytes) {
@@ -98,11 +124,122 @@
     return `${(bytes / 1000000).toFixed(2)} MB`;
   }
 
-  async function send(url, body) {
+  // Addresses: #/, #/prepare, #/results?date=&show=, and #/drawer/<code>.
+
+  function drawerAddress(code) {
+    return `#/drawer/${encodeURIComponent(code)}`;
+  }
+
+  function resultsAddress(date, show) {
+    const query = new URLSearchParams();
+    if (date) {
+      query.set("date", date);
+    }
+    if (show !== "all") {
+      query.set("show", show);
+    }
+    const text = query.toString();
+    return text ? `#/results?${text}` : "#/results";
+  }
+
+  function parseAddress(hash) {
+    if (hash === "" || hash === "#") {
+      return { view: "start" };
+    }
+    if (!hash.startsWith("#/")) {
+      // Other hashes, such as the skip link's #main, are not views.
+      return null;
+    }
+    const [path, query = ""] = hash.slice(2).split("?");
+    if (path === "") {
+      return { view: "start" };
+    }
+    if (path === "prepare") {
+      return { view: "prepare" };
+    }
+    if (path === "results") {
+      return { view: "results", params: new URLSearchParams(query) };
+    }
+    if (path.startsWith("drawer/")) {
+      try {
+        return { view: "drawer", code: decodeURIComponent(path.slice("drawer/".length)) };
+      } catch {
+        return { view: "start", unknown: true };
+      }
+    }
+    return { view: "start", unknown: true };
+  }
+
+  function navigate(hash) {
+    // Moving to a view adds a history entry; the hashchange handler shows it.
+    if (location.hash === hash) {
+      route();
+    } else {
+      location.hash = hash;
+    }
+  }
+
+  function showView(name, { focus = true } = {}) {
+    for (const [key, view] of Object.entries(views)) {
+      view.hidden = key !== name;
+    }
+    if (name === "start") {
+      // An old example failure should not greet a visitor who comes back later.
+      clearRequestError(startError);
+    }
+    document.title = views[name].dataset.title;
+    if (focus) {
+      views[name].querySelector("h1").focus();
+    }
+  }
+
+  function route({ initial = false } = {}) {
+    const address = parseAddress(location.hash);
+    if (!address) {
+      if (initial) {
+        showView("start", { focus: false });
+      }
+      return;
+    }
+    if (request && request.view !== address.view) {
+      // Leaving the view stops waiting; a late answer is ignored.
+      stopWaiting(request, "left");
+    }
+    notSaved.hidden = true;
+    if (address.unknown) {
+      history.replaceState(null, "", "#/");
+    }
+    if ((address.view === "results" || address.view === "drawer") && !results) {
+      // Results live only in this page, so a refresh or copied link cannot show them.
+      history.replaceState(null, "", "#/");
+      notSaved.hidden = false;
+      showView("start", { focus: !initial });
+      return;
+    }
+    if (address.view === "results") {
+      applyFilters(address.params);
+    } else if (address.view === "drawer") {
+      const item = shiftsByCode.get(address.code);
+      if (!item) {
+        missingCode.textContent = fill(missingCode.dataset.template, { code: address.code });
+        showView("missing", { focus: !initial });
+        return;
+      }
+      renderDrawer(item);
+      views.drawer.dataset.title = fill(views.drawer.dataset.titleTemplate, {
+        code: address.code,
+      });
+    }
+    showView(address.view, { focus: !initial });
+  }
+
+  // Requests, with Cancel, the slow-start notice, and the time limit.
+
+  async function send(url, requestBody, signal) {
     // Resolves to {payload} on success, or {error, status} for anything else.
     let response;
     try {
-      response = await fetch(url, { method: "POST", body });
+      response = await fetch(url, { method: "POST", body: requestBody, signal });
     } catch {
       return { error: { message: message("network") }, status: 0 };
     }
@@ -122,43 +259,80 @@
     return { error, status: response.status };
   }
 
-  async function run(button, url, body) {
+  function stopWaiting(current, reason) {
+    if (current.stopped) {
+      return;
+    }
+    current.stopped = reason;
+    current.controller.abort();
+    current.finish({ stopped: reason });
+  }
+
+  async function run({ button, cancel, slow, view, url, requestBody }) {
     // aria-disabled keeps keyboard focus on the button while it is busy.
-    busy = true;
+    let finish;
+    const stoppedEarly = new Promise((resolve) => {
+      finish = resolve;
+    });
+    const current = { controller: new AbortController(), view, stopped: "", finish };
+    request = current;
     const idleText = button.textContent;
     button.textContent = button.dataset.busyText;
     button.setAttribute("aria-disabled", "true");
+    cancel.hidden = false;
     announce(button.dataset.busyText);
+    const slowTimer = window.setTimeout(() => {
+      slow.hidden = false;
+      announce(slow.textContent);
+    }, Number(body.dataset.slowNoticeMs));
+    const giveUpTimer = window.setTimeout(
+      () => stopWaiting(current, "timeout"),
+      Number(body.dataset.giveUpMs),
+    );
     try {
-      return await send(url, body);
+      // Cancel, leaving the view, or the time limit ends the wait at once. This only
+      // stops the browser waiting; an answer that arrives later is ignored.
+      const outcome = await Promise.race([
+        send(url, requestBody, current.controller.signal),
+        stoppedEarly,
+      ]);
+      return current.stopped ? { stopped: current.stopped } : outcome;
     } finally {
-      busy = false;
+      window.clearTimeout(slowTimer);
+      window.clearTimeout(giveUpTimer);
+      if (request === current) {
+        request = null;
+      }
       button.textContent = idleText;
       button.removeAttribute("aria-disabled");
+      cancel.hidden = true;
+      slow.hidden = true;
     }
   }
 
-  function element(tag, className = "", text = undefined) {
-    const node = document.createElement(tag);
-    if (className) {
-      node.className = className;
-    }
-    if (text !== undefined) {
-      node.textContent = text;
-    }
-    return node;
+  function clearRequestError(box) {
+    box.replaceChildren();
   }
 
-  function formatDate(isoDate) {
-    return dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
+  function showRequestError(box, text, retry) {
+    const again = element("button", "button button-secondary", box.dataset.retry);
+    again.type = "button";
+    again.addEventListener("click", retry);
+    box.replaceChildren(element("p", "", text), again);
   }
 
-  function clockTime(timestamp, businessDate) {
-    // Show only the time, plus the date when a shift crosses midnight.
-    const time = timestamp.slice(11, 16);
-    const day = timestamp.slice(0, 10);
-    return day === businessDate ? time : `${formatDate(day)} ${time}`;
+  function handledStop(outcome, button, box, retry) {
+    // True when the request stopped early and there is nothing more to show.
+    if (outcome.stopped === "cancel") {
+      announce(announcer.dataset.stopped);
+      button.focus();
+    } else if (outcome.stopped === "timeout") {
+      showRequestError(box, message("timeout"), retry);
+    }
+    return Boolean(outcome.stopped);
   }
+
+  // Results.
 
   function amountCell(value) {
     // Amounts arrive formatted from Python; "unknown" and other words stay in the body font.
@@ -187,11 +361,11 @@
     const item = element("li", "lead-item");
     const level = element("div", "lead-level");
     level.append(levelLabel(flag.severity));
-    const body = element("div", "lead-body");
+    const leadBody = element("div", "lead-body");
     const place = shiftCode
       ? fill(leadList.dataset.drawerTemplate, { code: shiftCode })
       : leadList.dataset.wholeDay;
-    body.append(
+    leadBody.append(
       element("h3", "lead-title", results.labels.rules[flag.rule_code] ?? flag.rule_code),
       element("p", "lead-message", flag.message),
       element(
@@ -200,12 +374,21 @@
         `${formatDate(flag.business_date)}. ${place}. ${fill(leadList.dataset.ruleTemplate, { code: flag.rule_code })}.`,
       ),
     );
-    item.append(level, body);
+    const sameDay = shiftsByDate.get(flag.business_date) ?? [];
+    if (openable && !shiftCode && sameDay.length > 0) {
+      // Whole-day leads link to the drawers on that date; bank-only dates have none.
+      const drawers = element(
+        "p",
+        "lead-drawers",
+        `${fill(leadList.dataset.dayDrawers, { date: formatDate(flag.business_date) })} `,
+      );
+      drawers.append(...sameDay.map((code) => link(code, drawerAddress(code))));
+      leadBody.append(drawers);
+    }
+    item.append(level, leadBody);
     if (openable && shiftCode && shiftsByCode.has(shiftCode)) {
-      const open = element("button", "link-button lead-open", leadList.dataset.openText);
-      open.type = "button";
+      const open = link(leadList.dataset.openText, drawerAddress(shiftCode), "lead-open");
       open.append(element("span", "visually-hidden", ` ${shiftCode}`));
-      open.addEventListener("click", () => openDrawer(shiftCode));
       item.append(open);
     }
     return item;
@@ -232,6 +415,74 @@
         return chip;
       }),
     );
+  }
+
+  function buildFilters() {
+    dateSelect.replaceChildren(
+      new Option(dateSelect.dataset.all, ""),
+      ...[...leadDates].sort().map((date) => new Option(formatDate(date), date)),
+    );
+    filterLevel.replaceChildren(
+      ...Object.keys(showSeverity).map((show) => {
+        const choice = element("label", "choice");
+        const input = element("input");
+        input.type = "radio";
+        input.name = "show";
+        input.value = show;
+        input.addEventListener("change", changeFilters);
+        const words =
+          show === "all" ? filterLevel.dataset.all : results.labels.severities[showSeverity[show]];
+        choice.append(input, ` ${words}`);
+        return choice;
+      }),
+    );
+  }
+
+  function selectedShow() {
+    return filterLevel.querySelector("input:checked")?.value ?? "all";
+  }
+
+  function changeFilters() {
+    // Changing a filter replaces the address, so Back does not step through filters.
+    const address = resultsAddress(dateSelect.value, selectedShow());
+    history.replaceState(null, "", address);
+    applyFilters(new URLSearchParams(address.split("?")[1] ?? ""));
+  }
+
+  function applyFilters(params) {
+    let date = params.get("date") ?? "";
+    let show = params.get("show") ?? "all";
+    if (!(show in showSeverity)) {
+      show = "all";
+    }
+    if (date && !leadDates.has(date)) {
+      date = "";
+    }
+    const address = resultsAddress(date, show);
+    if (location.hash !== address) {
+      history.replaceState(null, "", address);
+    }
+    for (const back of document.querySelectorAll('[data-role="back-to-results"]')) {
+      back.href = address;
+    }
+    dateSelect.value = date;
+    for (const input of filterLevel.querySelectorAll("input")) {
+      input.checked = input.value === show;
+    }
+    const severity = showSeverity[show];
+    const shown = sortedLeads.filter(
+      (flag) => (!date || flag.business_date === date) && (!severity || flag.severity === severity),
+    );
+    leadList.replaceChildren(...shown.map((flag) => leadItem(flag, flag.shift_code, true)));
+    const noneAtAll = sortedLeads.length === 0;
+    filters.hidden = noneAtAll;
+    leadList.hidden = shown.length === 0;
+    noLeads.hidden = !noneAtAll;
+    noMatches.hidden = noneAtAll || shown.length > 0;
+    const words = { level: severity ? results.labels.severities[severity] : "" };
+    words.date = date ? formatDate(date) : "";
+    const key = date && severity ? "both" : date ? "date" : severity ? "level" : "all";
+    filterStatus.textContent = noneAtAll ? "" : fill(filterStatus.dataset[key], words);
   }
 
   function fillDayTable() {
@@ -278,26 +529,81 @@
     );
   }
 
+  function fillDrawerTable() {
+    const table = document.getElementById("drawer-table");
+    table.tBodies[0].replaceChildren(
+      ...results.shifts.map((item) => {
+        const row = element("tr");
+        const code = element("th");
+        code.scope = "row";
+        code.append(link(item.shift.shift_code, drawerAddress(item.shift.shift_code)));
+        row.append(
+          code,
+          element("td", "", formatDate(item.shift.business_date)),
+          element("td", "", item.shift.register_id),
+          element("td", "", item.shift.cashier_id),
+          element("td", "", results.labels.statuses[item.status]),
+          amountCell(item.variance_amount),
+        );
+        return row;
+      }),
+    );
+  }
+
+  // The day, cashier, and drawer tables fill when first opened, so large uploads show quickly.
+  const lazyTables = [
+    [document.getElementById("day-details"), fillDayTable],
+    [document.getElementById("cashier-details"), fillCashierTable],
+    [document.getElementById("drawer-list-details"), fillDrawerTable],
+  ];
+
   function showResults(payload) {
     results = payload;
+    sortedLeads = sortLeads(payload.flags);
+    leadDates = new Set(payload.flags.map((flag) => flag.business_date));
     shiftsByCode = new Map(payload.shifts.map((item) => [item.shift.shift_code, item]));
+    shiftsByDate = new Map();
+    for (const item of payload.shifts) {
+      const codes = shiftsByDate.get(item.shift.business_date) ?? [];
+      codes.push(item.shift.shift_code);
+      shiftsByDate.set(item.shift.business_date, codes);
+    }
     resultsRange.textContent = fill(resultsRange.dataset.template, {
       from: formatDate(payload.from_date),
       to: formatDate(payload.to_date),
     });
     renderFacts();
-    const leads = sortLeads(payload.flags);
-    leadList.replaceChildren(...leads.map((flag) => leadItem(flag, flag.shift_code, true)));
-    leadList.hidden = leads.length === 0;
-    noLeads.hidden = leads.length > 0;
-    // The day and cashier tables fill when first opened, so large uploads show quickly.
-    for (const details of [dayDetails, cashierDetails]) {
+    buildFilters();
+    for (const [details] of lazyTables) {
       details.open = false;
       details.dataset.filled = "";
       details.querySelector("tbody").replaceChildren();
     }
-    showView("results");
     announce(views.results.dataset.announce);
+    navigate("#/results");
+  }
+
+  function downloadReport(name) {
+    // The report text is already in the page, so the server keeps no files.
+    const report = results.reports[name];
+    const url = URL.createObjectURL(
+      new Blob([report.content], { type: `${report.media_type};charset=utf-8` }),
+    );
+    const anchor = link("", url);
+    anchor.download = report.filename;
+    body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // Drawer details.
+
+  function clockTime(timestamp, businessDate) {
+    // Show only the time, plus the date when a shift crosses midnight.
+    const time = timestamp.slice(11, 16);
+    const day = timestamp.slice(0, 10);
+    return day === businessDate ? time : `${formatDate(day)} ${time}`;
   }
 
   function renderDrawer(item) {
@@ -420,11 +726,7 @@
     });
   }
 
-  function openDrawer(shiftCode) {
-    renderDrawer(shiftsByCode.get(shiftCode));
-    views.drawer.dataset.title = fill(views.drawer.dataset.titleTemplate, { code: shiftCode });
-    showView("drawer");
-  }
+  // Prepare files.
 
   function setRow(name, state, detail = "") {
     const row = rows.get(name);
@@ -456,20 +758,14 @@
   function showErrorSummary(problems) {
     errorList.replaceChildren(
       ...problems.map(({ text, target }) => {
-        const item = document.createElement("li");
-        if (!target) {
-          item.textContent = text;
-          return item;
-        }
-        const link = document.createElement("a");
-        link.href = `#${target.id}`;
-        link.textContent = text;
-        link.addEventListener("click", (event) => {
+        const item = element("li");
+        const anchor = link(text, `#${target.id}`);
+        anchor.addEventListener("click", (event) => {
           // Move focus without changing the address, which belongs to views.
           event.preventDefault();
           target.focus();
         });
-        item.append(link);
+        item.append(anchor);
         return item;
       }),
     );
@@ -488,57 +784,42 @@
         continue;
       }
       const expected = names.find((name) => name.toLowerCase() === file.name.toLowerCase());
-      const note = document.createElement("p");
-      note.textContent = expected
-        ? message("rename", { name: file.name, expected })
-        : message("unknown_name", { name: file.name });
-      chooserNotes.append(note);
+      chooserNotes.append(
+        element(
+          "p",
+          "",
+          expected
+            ? message("rename", { name: file.name, expected })
+            : message("unknown_name", { name: file.name }),
+        ),
+      );
     }
   }
 
-  for (const button of document.querySelectorAll("[data-go]")) {
-    button.addEventListener("click", () => {
-      if (!busy) {
-        showView(button.dataset.go);
-      }
-    });
-  }
-
-  dayDetails.addEventListener("toggle", () => {
-    if (dayDetails.open && !dayDetails.dataset.filled) {
-      fillDayTable();
-      dayDetails.dataset.filled = "yes";
-    }
-  });
-
-  cashierDetails.addEventListener("toggle", () => {
-    if (cashierDetails.open && !cashierDetails.dataset.filled) {
-      fillCashierTable();
-      cashierDetails.dataset.filled = "yes";
-    }
-  });
-
-  tryExample.addEventListener("click", async () => {
-    if (busy) {
+  async function checkExample() {
+    if (request) {
       return;
     }
-    startError.textContent = "";
-    const outcome = await run(tryExample, "/api/demo");
+    clearRequestError(startError);
+    const outcome = await run({
+      button: tryExample,
+      cancel: startCancel,
+      slow: startSlow,
+      view: "start",
+      url: "/api/demo",
+    });
+    if (handledStop(outcome, tryExample, startError, checkExample)) {
+      return;
+    }
     if (outcome.payload) {
       showResults(outcome.payload);
     } else {
-      startError.textContent = outcome.error.message;
+      showRequestError(startError, outcome.error.message, checkExample);
     }
-  });
+  }
 
-  fileInput.addEventListener("change", () => {
-    addFiles([...fileInput.files]);
-    // Clearing the input lets the same file be chosen again after it is edited.
-    fileInput.value = "";
-  });
-
-  checkFiles.addEventListener("click", async () => {
-    if (busy) {
+  async function checkMyFiles() {
+    if (request) {
       return;
     }
     // The browser checks only names, the number of files, and their total size.
@@ -561,6 +842,7 @@
         target: fileInput,
       });
     }
+    clearRequestError(prepareError);
     if (problems.length > 0) {
       showErrorSummary(problems);
       return;
@@ -574,18 +856,71 @@
     for (const name of rows.keys()) {
       form.append("files", chosen.get(name), name);
     }
-    const outcome = await run(checkFiles, "/api/check", form);
+    const outcome = await run({
+      button: checkFiles,
+      cancel: prepareCancel,
+      slow: prepareSlow,
+      view: "prepare",
+      url: "/api/check",
+      requestBody: form,
+    });
+    if (handledStop(outcome, checkFiles, prepareError, checkMyFiles)) {
+      return;
+    }
     if (outcome.payload) {
       showResults(outcome.payload);
       return;
     }
     const { error, status } = outcome;
+    if (status !== 400 && status !== 413) {
+      // Not a file problem: the server or connection failed, so offer Try again.
+      showRequestError(prepareError, error.message, checkMyFiles);
+      return;
+    }
     const row = error.file_name ? rows.get(error.file_name) : undefined;
     if (row) {
       setRow(error.file_name, "problem", error.message);
     }
-    // Input problems point at the file or the chooser; server outages point nowhere.
-    const target = row ?? (status === 400 || status === 413 ? fileInput : null);
-    showErrorSummary([{ text: error.message, target }]);
+    showErrorSummary([{ text: error.message, target: row ?? fileInput }]);
+  }
+
+  for (const [details, fillTable] of lazyTables) {
+    details.addEventListener("toggle", () => {
+      if (details.open && !details.dataset.filled) {
+        fillTable();
+        details.dataset.filled = "yes";
+      }
+    });
+  }
+
+  for (const cancel of [startCancel, prepareCancel]) {
+    cancel.addEventListener("click", () => {
+      if (request) {
+        stopWaiting(request, "cancel");
+      }
+    });
+  }
+
+  for (const button of document.querySelectorAll("[data-report]")) {
+    button.addEventListener("click", () => downloadReport(button.dataset.report));
+  }
+
+  document.querySelector('[data-role="clear-filters"]').addEventListener("click", (event) => {
+    // Clearing filters replaces the address like any other filter change.
+    event.preventDefault();
+    history.replaceState(null, "", "#/results");
+    applyFilters(new URLSearchParams());
+    dateSelect.focus();
   });
+
+  dateSelect.addEventListener("change", changeFilters);
+  tryExample.addEventListener("click", checkExample);
+  checkFiles.addEventListener("click", checkMyFiles);
+  fileInput.addEventListener("change", () => {
+    addFiles([...fileInput.files]);
+    // Clearing the input lets the same file be chosen again after it is edited.
+    fileInput.value = "";
+  });
+  window.addEventListener("hashchange", () => route());
+  route({ initial: true });
 })();

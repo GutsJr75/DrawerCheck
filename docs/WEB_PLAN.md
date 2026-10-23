@@ -7,8 +7,8 @@
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
 - **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
-  to 3 are done; block 3 (Results and Drawer details) waits for the user's
-  review. Blocks 4 to 7 each need the user's go-ahead.
+  to 4 are done; block 4 (navigation and states) waits for the user's review.
+  Blocks 5 to 7 each need the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
@@ -18,7 +18,7 @@
 | 1 | Summary, count line totals, and labels in the JSON; page layout, colour tokens, IBM Plex fonts, demo notice, footer, and security headers | Done |
 | 2 | Start and Prepare files: "Try the example", the example tape, and the file checklist with its error summary | Done |
 | 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Done |
-| 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Not started |
+| 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Done |
 | 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Not started |
 | 6 | Hosting: Render setup and a check of the live public site | Not started |
 | 7 | Wrap-up: README screenshots and interview notes | Not started |
@@ -134,6 +134,22 @@ buttons, refresh, and copied links behave the way people expect:
   is not in the current results" with a link back to Results.
 - Do not block leaving the page with a browser warning. The demo notice already
   says results disappear when the page closes.
+
+Built in M8 block 4 (2026-10-23):
+
+- Every view link is a real `#/` link, so it can be opened, copied, or read by
+  a screen reader as a link. "Back to results" keeps the current filters.
+- Filters are a date list (only dates that have leads) and a level choice.
+  They apply as soon as they change and replace the address. An unknown date
+  or level in an address falls back to all leads. Because the browser does not
+  count leads, the line under the filters describes them in words ("Showing
+  leads marked Needs review on September 16, 2026") rather than as a number.
+- An empty, unknown, or non-view hash: no hash shows Start, `#/unknown` becomes
+  `#/`, and other hashes such as `#main` leave the current view alone.
+- Leaving a view while a check is waiting stops waiting, like Cancel.
+- Server and connection failures on Prepare files now show beside the button
+  with "Try again", instead of in the error summary, whose title is about the
+  files.
 - The "Skip to main content" link uses `#main`. The block 4 router must treat
   only addresses starting with `#/` as views and leave other hashes alone, so
   the skip link keeps working.
@@ -184,9 +200,9 @@ Built in M8 block 3 (2026-10-23):
   deposit. Every amount is Python's string; unknown amounts say why.
 - Both tapes come from one list of lines in `web.py` (`TAPE_LINES`), so the
   Start example and Drawer details share labels, signs, and definitions.
-- Only drawers with their own leads can be opened from Results for now. Block
-  4's `#/drawer/<code>` addresses make every drawer reachable, including
-  those with only whole-day leads.
+- Only drawers with their own leads could be opened from Results in block 3.
+  Block 4 added `#/drawer/<code>` addresses, drawer links on whole-day leads,
+  and the All drawers section, so every drawer is reachable.
 - Results renders every lead at once. A very large upload (thousands of
   leads) may be slow to draw; block 4's filters are the first remedy.
 
@@ -235,6 +251,11 @@ There are two different waits, and only the second one is ours to design:
 - After 90 seconds with no response, stop waiting in the same way and show a
   short error with "Try again".
 - No percentage bars, shimmering placeholders, or spinners without words.
+
+Built in M8 block 4: both timings come from `web.py` (`SLOW_NOTICE_MS` and
+`GIVE_UP_MS`) through the page, so the docs, page, and tests agree. Cancel, the
+time limit, and leaving the view end the wait at once, even if the network has
+not let go yet; a late answer is ignored rather than shown.
 
 ### Data the screens need from Python
 

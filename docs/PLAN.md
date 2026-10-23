@@ -11,9 +11,9 @@
 - **In progress:** M8, the website screens and public demo, in seven blocks
   (listed in `docs/WEB_PLAN.md`). Blocks 1 to 3 (screen data and layout, Start
   and Prepare files, and Results and Drawer details) were each authorized and
-  built on 2026-10-23 (decisions 60, 61, and 63), and block 3 was repaired
-  after an outside review (decision 64). Wait for the user's **next** before
-  block 4.
+  built on 2026-10-23 (decisions 60, 61, and 63), block 3 was repaired after
+  an outside review (decision 64), and block 4 added navigation and states
+  (decision 65). Wait for the user's **next** before block 5.
 - **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
 
 How the scope grew:
@@ -218,6 +218,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 63. **Build M8 block 3: Results and Drawer details (authorized 2026-10-23).** Results shows the plain-facts line from Python's `summary`, the leads by level, and every lead ordered "Needs review" first, then by date and drawer; the browser sorts codes but never counts or calculates. The day and cashier tables listed in this plan's experience section are included as closed sections that fill when opened, so large uploads stay quick to show. Drawer details shows the tape, the count sheet, this drawer's leads apart from whole-day leads, and plain sentences on the limits and the bank-deposit contribution, all from Python's strings. Both tapes now come from one `TAPE_LINES` list in `web.py`; the Start example's amounts moved there too, still checked against `/api/demo`. Only drawers with their own leads can be opened until block 4 adds addresses. Wording avoided deadlines ("soon") and claims about causes; cashier totals say they describe records, not people.
 
 64. **Repair block 3 after an outside review (authorized 2026-10-23).** The user brought a review of blocks 1 to 3; each claim was checked against the code and measured in Firefox before any change. Confirmed and fixed: the deposit sentence blamed a missing count even for counted drawers on incomplete days (three reasons now, in order: open, no count, day incomplete; no calculation change); drawer `2026-09-27-R2` widened the page to 362 px at 320 px because the tape's status line could not wrap; tape labels and error links were 22 px tall against DESIGN.md's 24 px rule; error links had 2 px between them; a hidden label kept stale text; an old Start error lingered; and the contrast test omitted the review colour as plain text (it passes at 6.36:1 or more). Focus rings on view headings, `main`, and the error summary appeared for keyboard users, not mouse users; they were removed because those are not controls. Not changed: guarding the file input against an empty change event, since cancelling the dialog fires `cancel`, not `change`. Option 1 for opening any drawer (links on whole-day leads plus a closed "All drawers" section) moves into block 4.
+
+65. **Build M8 block 4: navigation and states (authorized 2026-10-23).** Views use `#/` addresses so Back, Forward, refresh, and copied links behave normally; filters replace the address instead of adding history entries; the skip link's `#main` is ignored by the router. Results live only in the page: a refresh or copied results or drawer link shows Start with "Results are not saved", and an unknown drawer code shows its own view. Downloads turn the report strings already in the response into files in the browser, so no server file is needed. Waiting uses the button's own words, Cancel, a notice after 5 seconds, and a 90-second limit with "Try again"; these timings live in `web.py`. Cancel, the time limit, and leaving the view end the wait at once and ignore any late answer. Option 1 from decision 64 is in: whole-day leads link to that date's drawers, and a closed All drawers section links to every drawer. Because the plan forbids the browser counting leads, the filter line describes the filter in words rather than "3 of 16". Prepare files shows server and connection failures beside its button instead of in the file error summary. CSS and JavaScript now total 52,441 bytes against the 60 KB budget, so block 5 has about 7.5 KB of room.
 
 ## Math and test commitments
 

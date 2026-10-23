@@ -101,12 +101,13 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
         "view-prepare",
         "view-results",
         "view-drawer",
+        "view-missing",
     ]
     views = {attrs["id"]: attrs for tag, attrs in page.tags if tag == "section"}
     assert "hidden" not in views["view-start"]
     assert all(
         "hidden" in views[name]
-        for name in ("view-prepare", "view-results", "view-drawer")
+        for name in ("view-prepare", "view-results", "view-drawer", "view-missing")
     )
     # Drawer details builds its title from the shift code, so it has a template.
     assert all(
@@ -231,6 +232,39 @@ def test_results_hooks_match_the_response_fields(client) -> None:
     ):
         assert deposit[reason], reason
     assert "counted cash is unknown" not in deposit["data-day-incomplete"]
+
+
+def test_navigation_waiting_and_download_hooks(client) -> None:
+    """Views are reached by #/ addresses, timings come from Python, and every report downloads."""
+    page, text = _page(client)
+    with client.post("/api/demo") as response:
+        payload = response.get_json()
+    body = next(attrs for tag, attrs in page.tags if tag == "body")
+    assert body["data-slow-notice-ms"] == str(web.SLOW_NOTICE_MS) == "5000"
+    assert body["data-give-up-ms"] == str(web.GIVE_UP_MS) == "90000"
+    reports = [
+        attrs["data-report"] for tag, attrs in page.tags if "data-report" in attrs
+    ]
+    assert sorted(reports) == sorted(payload["reports"])
+    assert not any("data-go" in attrs for tag, attrs in page.tags)
+    in_page = [
+        attrs["href"]
+        for tag, attrs in page.tags
+        if tag == "a" and attrs["href"].startswith("#")
+    ]
+    # The skip link is the only in-page link that is not a view address.
+    assert [href for href in in_page if not href.startswith("#/")] == ["#main"]
+    assert {"#/", "#/prepare", "#/results"} <= set(in_page)
+    for words in (
+        "Results are not saved. Run the example again or upload your files.",
+        "This drawer is not in the current results",
+        "The demo server may be waking up. This usually takes about a minute.",
+    ):
+        assert words in text
+    cancels = [
+        attrs for tag, attrs in page.tags if attrs.get("id", "").endswith("-cancel")
+    ]
+    assert len(cancels) == 2 and all("hidden" in attrs for attrs in cancels)
 
 
 def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:

@@ -172,8 +172,12 @@ CLIENT_MESSAGES = {
     "rename": errors.WEB_CLIENT_RENAME,
     "too_large": errors.WEB_CLIENT_TOO_LARGE,
     "network": errors.WEB_CLIENT_NETWORK,
+    "timeout": errors.WEB_CLIENT_TIMEOUT,
     "unavailable": errors.WEB_UNAVAILABLE,
 }
+# The browser adds a waking-server notice after 5 seconds and stops waiting at 90.
+SLOW_NOTICE_MS = 5_000
+GIVE_UP_MS = 90_000
 
 
 def _json_response(payload: dict) -> Response:
@@ -421,6 +425,8 @@ def create_app() -> Flask:
             row_limits=ROW_LIMITS,
             max_field_characters=MAX_FIELD_CHARACTERS,
             max_upload_bytes=MAX_REQUEST_BYTES,
+            slow_notice_ms=SLOW_NOTICE_MS,
+            give_up_ms=GIVE_UP_MS,
         )
 
     @app.get("/examples/<file_name>")

@@ -4,8 +4,9 @@ This guide covers two things: the M8 website and the existing M4 HTML report.
 M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in
 `src/drawercheck/static/app.css`. Block 2 added the Start view with the example
 tape and the Prepare files view with its checklist. Block 3 added Results and
-Drawer details with the count sheet. The full accessibility check is block 5.
-The report's styles are unchanged.
+Drawer details with the count sheet. Block 4 added filters, report downloads,
+and the waiting states. The full accessibility check is block 5. The report's
+styles are unchanged.
 
 Read this file for how the website should **look**. Read
 [WEB_PLAN.md](docs/WEB_PLAN.md) for how it should **behave**: views, wording,
@@ -142,6 +143,9 @@ from the stylesheet, so a token change that breaks contrast fails the tests.
 | Status label | Short word on its tinted background: Note, Check, Needs review, Ready, Missing, Problem. "Waiting" uses `muted` text with a `line` outline. |
 | File chooser | A normal labelled "Choose files" button; dragging files onto the list is optional extra help. |
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
+| Filters | A native `select` (44 px tall, `control` border) and native radio buttons with `accent-color`, each with a visible label; no custom dropdowns. |
+| Downloads | Three labelled buttons under the facts: "Web page (.html)" as the main button, then "Spreadsheet (.csv)" and "Text (.txt)". |
+| Waiting | The busy button's own words, a Cancel button beside it, and after 5 seconds a sentence with a `control` left rule. Failures show in `review` text with a "Try again" button. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |
 | Demo notice | A full-width strip at the top of every view: "Example data only. Do not upload real store records." |
 | Footer | Not for real cash control; files are deleted after each check; links to the code and the example report, both on GitHub. |

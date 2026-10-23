@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
   <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </head>
-<body data-max-upload-bytes="{{ max_upload_bytes }}">
+<body data-max-upload-bytes="{{ max_upload_bytes }}" data-slow-notice-ms="{{ slow_notice_ms }}" data-give-up-ms="{{ give_up_ms }}">
   {#- One drawer tape for both views. The example passes its amounts; Drawer details
       leaves them empty for the script to fill and lets each label open its meaning. -#}
   {% macro tape(name, amounts=none, word="", level="", level_class="", explain=false, caption_class="") -%}
@@ -48,14 +48,17 @@
     <section id="view-start" class="view" aria-labelledby="start-heading" data-title="Check a cash drawer | DrawerCheck">
       <div class="start-grid">
         <div>
+          <p class="note" id="not-saved" hidden>Results are not saved. Run the example again or upload your files.</p>
           <h1 id="start-heading" tabindex="-1">Check a cash drawer against its records</h1>
           <p class="lead">At the end of a shift, a cashier counts the cash in the drawer. DrawerCheck compares that count with the register's records and lists anything worth a second look.</p>
           <p>Try it with a made-up month from Demo Store #001: 60 drawers on two registers, with a few records set up to need review.</p>
           <div class="actions">
             <button type="button" class="button button-primary" id="try-example" data-busy-text="Checking the example...">Try the example</button>
-            <button type="button" class="button button-secondary" data-go="prepare">Use your own files</button>
+            <a class="button button-secondary" href="#/prepare">Use your own files</a>
+            <button type="button" class="button button-secondary" id="start-cancel" hidden>Cancel</button>
           </div>
-          <p class="inline-error" id="start-error" role="alert"></p>
+          <p class="waiting-slow" id="start-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
+          <div class="request-error" id="start-error" role="alert" data-retry="Try again"></div>
           <p class="hint">This free demo server sleeps when nobody is using it. If the page or a check is slow to start, the server is waking up, which usually takes about a minute.</p>
         </div>
 
@@ -84,7 +87,7 @@
     </section>
 
     <section id="view-prepare" class="view view-narrow" aria-labelledby="prepare-heading" data-title="Prepare your files | DrawerCheck" hidden>
-      <button type="button" class="link-button back-link" data-go="start">Back to start</button>
+      <a class="back-link" href="#/">Back to start</a>
 
       <div class="error-summary" id="error-summary" tabindex="-1" hidden>
         <div role="alert">
@@ -120,7 +123,10 @@
 
       <div class="actions">
         <button type="button" class="button button-primary" id="check-files" data-busy-text="Checking your files...">Check my files</button>
+        <button type="button" class="button button-secondary" id="prepare-cancel" hidden>Cancel</button>
       </div>
+      <p class="waiting-slow" id="prepare-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
+      <div class="request-error" id="prepare-error" role="alert" data-retry="Try again"></div>
 
       <details class="help">
         <summary>How to prepare your files</summary>
@@ -156,14 +162,44 @@
       </ul>
       <p class="severity-counts"><span class="severity-intro">Leads by level:</span> <span id="severity-chips"></span></p>
 
+      <div class="downloads" role="group" aria-labelledby="downloads-heading">
+        <h2 id="downloads-heading" class="downloads-heading">Download the full report</h2>
+        <div class="actions">
+          <button type="button" class="button button-primary" data-report="html">Web page (.html)</button>
+          <button type="button" class="button button-secondary" data-report="csv">Spreadsheet (.csv)</button>
+          <button type="button" class="button button-secondary" data-report="text">Text (.txt)</button>
+        </div>
+        <p class="hint">The files are made from these results in your browser. The web page works offline and has no scripts.</p>
+      </div>
+
       <h2 id="leads-heading">Review leads</h2>
       <p class="hint">A lead is something in the records worth checking. It is not a finding about anyone. Leads that need review come first.</p>
+      <div class="filters" id="filters">
+        <div class="field">
+          <label for="filter-date">Date</label>
+          <select id="filter-date" data-all="All dates"></select>
+        </div>
+        <fieldset class="field">
+          <legend>Level</legend>
+          <div class="choices" id="filter-level" data-all="All"></div>
+        </fieldset>
+      </div>
+      <p class="hint" id="filter-status" aria-live="polite"
+         data-all="Showing all leads."
+         data-level="Showing leads marked {level}."
+         data-date="Showing all leads on {date}."
+         data-both="Showing leads marked {level} on {date}."></p>
       <ol class="lead-list" id="lead-list" aria-labelledby="leads-heading"
           data-whole-day="Whole day"
           data-drawer-template="Drawer {code}"
           data-rule-template="Rule {code}"
-          data-open-text="Open drawer details"></ol>
+          data-open-text="Open drawer details"
+          data-day-drawers="Drawers on {date}:"></ol>
       <p id="no-leads" hidden>No leads were found in these records.</p>
+      <div id="no-matches" hidden>
+        <p>No leads match these filters.</p>
+        <a class="button button-secondary" href="#/results" data-role="clear-filters">Show all leads</a>
+      </div>
 
       <details class="help" id="day-details">
         <summary>Totals by day</summary>
@@ -210,6 +246,27 @@
         </div>
       </details>
 
+      <details class="help" id="drawer-list-details">
+        <summary>All drawers</summary>
+        <p class="hint">Every drawer in these results, including balanced ones. Open any drawer to see its calculation.</p>
+        <div class="table-scroll" role="region" aria-labelledby="drawer-list-caption" tabindex="0">
+          <table class="data-table" id="drawer-table">
+            <caption id="drawer-list-caption">Every drawer, its status, and its cash difference</caption>
+            <thead>
+              <tr>
+                <th scope="col">Drawer</th>
+                <th scope="col">Date</th>
+                <th scope="col">Register</th>
+                <th scope="col">Cashier ID</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="number">Difference</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+
       <details class="help">
         <summary>What do Note, Check, and Needs review mean?</summary>
         <dl class="definitions">
@@ -223,12 +280,12 @@
       </details>
 
       <div class="actions">
-        <button type="button" class="button button-secondary" data-go="start">Start a new check</button>
+        <a class="button button-secondary" href="#/">Start a new check</a>
       </div>
     </section>
 
     <section id="view-drawer" class="view" aria-labelledby="drawer-heading" data-title-template="Drawer {code} | DrawerCheck" hidden>
-      <button type="button" class="link-button back-link" data-go="results">Back to results</button>
+      <a class="back-link" href="#/results" data-role="back-to-results">Back to results</a>
       <h1 id="drawer-heading" tabindex="-1" data-template="Drawer {code}"></h1>
       <p class="lead" id="drawer-about"
          data-template="Register {register} on {date}. Cashier ID {cashier}."
@@ -304,6 +361,12 @@
            data-day-incomplete="This drawer was counted, but the whole day's expected bank deposit is unknown because some of that day's records are missing, inconsistent, or still open. So this drawer's share is not calculated."></p>
       </details>
     </section>
+
+    <section id="view-missing" class="view" aria-labelledby="missing-heading" data-title="Drawer not found | DrawerCheck" hidden>
+      <h1 id="missing-heading" tabindex="-1">This drawer is not in the current results</h1>
+      <p class="lead" id="missing-code" data-template="No drawer with the code {code} was checked in these results. The address may come from another check."></p>
+      <a class="button button-secondary" href="#/results" data-role="back-to-results">Back to results</a>
+    </section>
   </main>
   <footer class="site-footer">
     <div class="wrap">
@@ -320,6 +383,6 @@
     <p data-message="{{ key }}">{{ text }}</p>
     {% endfor %}
   </div>
-  <p class="visually-hidden" id="announcer" aria-live="polite"></p>
+  <p class="visually-hidden" id="announcer" aria-live="polite" data-stopped="Stopped waiting."></p>
 </body>
 </html>

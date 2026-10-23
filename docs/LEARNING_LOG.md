@@ -845,3 +845,39 @@ input after each choice.
 Screenshots are in `docs/screenshots/2026-10-23-m8-block3-repair/` (6 images,
 about 1.4 MB). Block 4 will extend the 320 px check to all 60 drawers once
 every drawer has an address. Block 4 waits for **next**.
+
+## M8 block 4: Navigation and states
+
+- Built: `#/` addresses for every view, so Back, Forward, refresh, and copied
+  links work; date and level filters that replace the address; report
+  downloads made in the browser from the response; Cancel, a slow-start notice,
+  and a time limit with "Try again"; and drawer links on whole-day leads plus
+  an All drawers section, so every drawer can be opened.
+- Learned: Cancel has to end the wait itself, not wait for the network to give
+  up, and any answer that arrives afterwards must be ignored. A copied link is
+  a promise the page may not be able to keep, so it needs an honest message
+  ("Results are not saved") rather than an empty screen.
+- Interview question: How do you make a single-page app's Back button,
+  refresh, and copied links behave the way visitors expect when nothing is
+  saved on the server?
+
+The user authorized block 4 on 2026-10-23. Same local environment as block 3.
+The browser checks used real pointer clicks and, for waiting, a deliberately
+slowed `fetch` in the page that ignores Cancel, so late answers really arrive.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 684 tests in 11.7 seconds; a new page test checks the timing attributes against `web.py`, one download button per report, `#/` view links, and the waiting and missing-results wording. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. |
+| `node --check src/drawercheck/static/app.js` | PASS. |
+| Addresses and history in Firefox | Observed: the example run adds one history entry and lands on `#/results` with focus on its heading. Choosing "Needs review" and then September 16 changes the address to `#/results?date=2026-09-16&show=review` with no new history entries and shows 1 lead with links to both of that day's drawers. Following a link opens `#/drawer/2026-09-16-R1` with the day's deposit lead; the browser's Back returns to the filtered results and Forward to the drawer. A "Note" filter on that date shows the empty state; "Show all leads" restores all 16 and moves focus to the date list. A bad filter address falls back to `#/results`. |
+| Missing results and odd addresses | Observed: reloading on a drawer address and opening a copied results link both show Start with "Results are not saved" at `#/`; a copied `#/prepare` link works. `#/drawer/NOPE-123` shows the missing-drawer view; `#main` leaves the view alone; `#/no-such-page` becomes `#/`. |
+| Downloads | Observed: all three files are identical to the response's report strings with the right names and types. Firefox saved `drawercheck.html`, `.csv`, and `.txt` to disk (24,718, 1,899, and 11,950 bytes); the saved HTML report opened from disk with its title, no scripts, and no external files. |
+| Waiting | Observed: after 0.3 seconds (shortened for the test) the button reads "Checking the example...", is marked busy, and shows Cancel and the slow-start sentence. Cancel restores the button and focus at once and announces "Stopped waiting."; the late answer arrived 2.5 seconds later and was ignored. A 1-second limit (shortened) shows "The demo server did not answer in time." with "Try again", which then succeeds. Leaving for Prepare files while waiting also ignores the late answer. A connection failure on Prepare files shows beside the button with "Try again", not in the file error summary. |
+| Layout and targets | Observed: all 60 drawers, opened by address at 320 px, are exactly 320 px wide with the right page titles; filtered Results is also 320 px. No link, button, summary, radio label, or select is under 24 x 24 px on Results, Drawer details, the missing-drawer view, or Start after a time-out. Light and dark runs gave identical results. |
+| Budgets | PASS: CSS 19,584 bytes and JavaScript 32,857 bytes (52,441 together) against 60 KB. |
+
+Screenshots are in `docs/screenshots/2026-10-23-m8-block4/` (12 images, about
+2.6 MB). Screen-reader announcements, 200% text, 400% zoom, and an automated
+accessibility scan remain block 5. No hosted CI or deployment result is
+claimed. Block 5 waits for **next**.

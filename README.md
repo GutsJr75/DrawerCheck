@@ -24,7 +24,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
 | Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | In progress (milestone M8, blocks 1 to 3 of 7 done: page layout, Start, Prepare files, Results, and Drawer details) |
+| Website screens and public hosting | In progress (milestone M8, blocks 1 to 4 of 7 done: every screen, addresses, filters, downloads, and waiting states; checks and hosting next) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
 **Automated checks:** the hosted run for the final web request code,
@@ -204,10 +204,11 @@ messages, with checks and fixes.
 ## Web request layer (for developers)
 
 The server side of the planned website is built; the screens are milestone M8,
-built in blocks. So far the site has its layout, the Start view with the
-example button, the Prepare files view for uploads, and the Results and Drawer
-details screens; addresses, filters, and downloads come next. Install the
-optional packages and run the web tests:
+built in blocks. The site now has every screen: Start with the example
+button, Prepare files for uploads, Results with filters and report downloads,
+and Drawer details. Back, Forward, and copied links work, and results are kept
+only while the page is open. Accessibility checks and hosting come next.
+Install the optional packages and run the web tests:
 
 ```sh
 pip install -e ".[dev,web]"

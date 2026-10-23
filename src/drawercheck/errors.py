@@ -164,6 +164,7 @@ WEB_CLIENT_TOO_LARGE = (
 WEB_CLIENT_NETWORK = (
     "The demo server could not be reached. Check your connection and try again."
 )
+WEB_CLIENT_TIMEOUT = "The demo server did not answer in time. Try again in a moment."
 
 
 class WebInputError(Exception):
