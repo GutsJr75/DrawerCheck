@@ -139,9 +139,14 @@ def _print_explanation(explanation: ShiftExplanation) -> None:
     _print_line(
         f"  Expected daily deposit (all registers): {_money_or_unknown(explanation.daily_deposit_cents)}"
     )
-    _print_line(
-        "Includes repeated-shortage checks and simplified bank matching. Review daily leads for deposit exceptions."
+    deposit_flags = tuple(
+        flag for flag in explanation.daily_flags if flag.rule_code == "R08_DEPOSIT"
     )
+    if deposit_flags:
+        _print_line(f"Daily deposit review for {shift.business_date}:")
+        for flag in deposit_flags:
+            _print_line(f"  [{flag.severity}] {flag.rule_code}: {flag.message}")
+            _print_line(f"    Evidence: {json.dumps(flag.evidence, sort_keys=True)}")
     _print_line("Review leads, not findings about a person:")
     if not result.flags:
         _print_line("  No review flags for this shift.")
@@ -149,9 +154,12 @@ def _print_explanation(explanation: ShiftExplanation) -> None:
         _print_line(f"  [{flag.severity}] {flag.rule_code}: {flag.message}")
         _print_line(f"    Evidence: {json.dumps(flag.evidence, sort_keys=True)}")
 
-    if explanation.daily_flags:
+    other_daily_flags = tuple(
+        flag for flag in explanation.daily_flags if flag.rule_code != "R08_DEPOSIT"
+    )
+    if other_daily_flags:
         _print_line("Daily review leads:")
-        for flag in explanation.daily_flags:
+        for flag in other_daily_flags:
             _print_line(f"  [{flag.severity}] {flag.rule_code}: {flag.message}")
             _print_line(f"    Evidence: {json.dumps(flag.evidence, sort_keys=True)}")
 

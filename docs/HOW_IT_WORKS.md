@@ -251,8 +251,12 @@ drawercheck explain 2026-09-03-R1 --db demo-m3.db
 
 Use `--from 2026-09-01 --to 2026-09-03` to select an inclusive range on
 `reconcile`, or `--config path/to/policy.toml` to choose settings. `explain`
-requires that the shift's business date has already been reconciled. The full
-default demo produces 16 required flags. See [demo scenarios](DEMO_SCENARIOS.md)
+requires that the shift's business date has already been reconciled.
+Its output places any saved R08 leads under `Daily deposit review for YYYY-MM-DD`
+beside the daily expected deposit, including severity, message, and
+evidence. These leads apply to the whole date, not just the selected register.
+Other daily record leads remain separate, and no deposit flag is printed twice.
+The full default demo produces 16 required flags. See [demo scenarios](DEMO_SCENARIOS.md)
 for the complete verified expectations.
 
 ## Reports from saved results

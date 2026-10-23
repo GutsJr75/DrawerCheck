@@ -247,6 +247,39 @@ def test_reconcile_and_explain_workflow(
     assert output.err == ""
 
 
+@pytest.mark.parametrize(
+    ("shift_code", "message", "difference"),
+    [
+        ("2026-09-16-R1", "Missing deposit", None),
+        ("2026-09-21-R2", "$100.00 less than expected", -10000),
+    ],
+)
+def test_explain_lists_saved_deposit_lead_beside_daily_amount(
+    demo_database: Path,
+    capsys: pytest.CaptureFixture[str],
+    shift_code: str,
+    message: str,
+    difference: int | None,
+) -> None:
+    """Both registers can explain their day's saved R08 lead once, beside its amount."""
+    assert main(["reconcile", "--db", str(demo_database)]) == 0
+    capsys.readouterr()
+    assert main(["explain", shift_code, "--db", str(demo_database)]) == 0
+    output = capsys.readouterr()
+    heading = f"Daily deposit review for {shift_code[:10]}:"
+    assert output.err == ""
+    assert output.out.index(
+        "Expected daily deposit (all registers):"
+    ) < output.out.index(heading)
+    assert output.out.index(heading) < output.out.index(
+        "Review leads, not findings about a person:"
+    )
+    assert message in output.out
+    assert output.out.count("R08_DEPOSIT") == 1
+    if difference is not None:
+        assert f'"difference_cents": {difference}' in output.out
+
+
 def test_missing_config_notice_and_saved_policy(
     demo_database: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

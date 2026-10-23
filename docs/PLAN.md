@@ -176,6 +176,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 49. **Reserve all exact matches before reviewing leftovers (approved 2026-10-22).** The user approved option (b) after a reproduced one-cent deposit change produced an ambiguous flag plus an unexpected-entry flag. This deliberately amends the original brief's section 7 per-date greedy sequence and decision 14; keep the original brief unchanged as history. Pass one reserves exact matches across all dates, in date order with bank-date/ID tie breaks. Pass two applies the unique-mismatch, missing, and ambiguous branches to unresolved days, also in date order. Keep full-history context before filtering in both passes. This produces one warning for September 2's $2,489.98 expected amount versus $2,489.99 recorded, while preserving all 16 default demo flags. Bump saved-policy version to 4, describe differences as less/more than expected while retaining signed evidence, and retain the documented equal-amount and calendar limitations. This is an M5 repair; M6 remains awaiting authorization.
 
+50. **Make daily deposit leads easy to find in `explain`.** Display saved R08 leads directly below the expected daily deposit under `Daily deposit review for YYYY-MM-DD`, including severity, message, and evidence. Keep other daily record leads separate and show each deposit lead once. This improves the visibility of existing saved flags without changing reconciliation, policy version 4, or milestone progress.
+
 ## Math and test commitments
 
 All monetary values below are integer cents internally:

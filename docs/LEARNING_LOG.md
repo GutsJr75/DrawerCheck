@@ -399,3 +399,21 @@ initial M5 results under policy version 4. Browser appearance, remote CI, and
 public deployment are not claimed as verified by this repair.
 
 Next milestone: **M6**, after the user says **next**.
+
+## M5 follow-up: Visible daily deposit leads in explain
+
+- Built: Moved the existing saved R08 leads beside the expected daily deposit
+  under `Daily deposit review for YYYY-MM-DD`, with severity, message, and
+  evidence. Kept other daily record leads separate and prevented duplicate output.
+- Learned: A feature can already exist but be hard to notice under a generic
+  heading. Putting the deposit lead beside its amount makes its scope clearer.
+- Interview question: Why should a shift explanation distinguish that shift's
+  cash difference from a bank-deposit lead that covers the whole date?
+
+Verified locally on 2026-10-22: `.venv/bin/pytest -q` passed 549 tests, and both
+Ruff checks passed. Two focused CLI regressions first failed on the missing
+date-specific heading. An installed CLI run verified September 16's missing
+deposit and September 21's mismatch, each printed once under the correct date.
+`git diff --check` and prohibited-punctuation checks passed. Reconciliation,
+saved policy version 4, the sample report, and the 16 golden flags are unchanged.
+This is a small M5 presentation follow-up; M6 remains unstarted.
