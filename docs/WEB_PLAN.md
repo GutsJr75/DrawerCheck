@@ -1,8 +1,8 @@
 # Public frontend plan
 
 Status: Scope approved on 2026-10-22; implementation is scheduled for M7/M8.
-M0 through M5 are complete. M6 local work and checks are complete; hosted CI
-verification remains pending. M7 requires a separate instruction after M6.
+M0 through M6 are complete, including hosted CI verification. M7 is the next
+milestone and awaits a separate user instruction.
 
 ## User decision
 

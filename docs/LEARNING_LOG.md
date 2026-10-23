@@ -469,3 +469,38 @@ browser verification, public app, or deployment result is claimed.
 
 Remaining M6 step: publish the reviewed local commit and observe all three CI
 jobs. M7 remains unstarted and requires the user's separate instruction.
+
+## M6 completion: Hosted CI observed
+
+- Built: Recorded the successful hosted run, updated the final core checklist
+  to eight PASS rows, and marked M6 complete in the README and project plans.
+- Learned: Read-only GitHub access can inspect workflow runs and job logs without
+  installing `gh`. A local Python 3.14 interpreter is not required to observe
+  that version passing in hosted CI. Translation tests remain distinct from
+  real operating-system lock/permission tests.
+- Interview question: What evidence would you show to support the claim that
+  this project passes on all three supported Python versions?
+
+The user published commit `75c221c5e362345dffd6d420bd877d81a0628f6d`.
+[Core checks run 1](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717)
+completed successfully on 2026-10-22 in America/Los_Angeles
+(2026-10-23 06:38 UTC). The run SHA was checked against the local M6 commit.
+
+| Observed hosted job | Result |
+| --- | --- |
+| [Python 3.12](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279029010) | PASS: install, lint, format check, 559 tests, and installed CLI help. |
+| [Python 3.13](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279028772) | PASS: install, lint, format check, 559 tests, and installed CLI help. |
+| [Python 3.14](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279029217) | PASS: install, lint, format check, 559 tests, and installed CLI help. |
+
+Both the job-step conclusions and the test-summary lines in all three logs were
+read. T05/T06 remain deliberately simulated SQLite failures to verify the guide's
+actual message-translation paths; no extra real-lock test or application change
+was needed. This update only records evidence in documentation. Earlier pending
+CI statements above describe the initial handoff and are superseded here.
+
+Documentation checks passed: `git diff --check`, local Markdown links,
+prohibited punctuation, and both Ruff checks. Application tests were not rerun
+for this evidence-only edit; runtime code, tests, and workflow bytes are unchanged
+from the hosted commit whose three passing test logs were inspected.
+
+M6 is complete. M7 remains unstarted, awaiting **next**.

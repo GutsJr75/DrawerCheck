@@ -1,8 +1,8 @@
 # DrawerCheck plan
 
-Status: M0 through M5 complete. M6 local deliverables and checks are complete on 2026-10-22; hosted CI verification remains pending.
-Next: publish the reviewed M6 commit and observe its GitHub Actions matrix before
-closing M6. M7 requires a separate user instruction after M6 verification.
+Status: M0 through M6 complete, including the hosted Python 3.12/3.13/3.14 CI run observed on 2026-10-22.
+Next: M7, optional web request handling and isolated temporary runs.
+Wait for the user's **next** before starting M7.
 See `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md` for actual results.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
@@ -178,9 +178,11 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 50. **Make daily deposit leads easy to find in `explain`.** Display saved R08 leads directly below the expected daily deposit under `Daily deposit review for YYYY-MM-DD`, including severity, message, and evidence. Keep other daily record leads separate and show each deposit lead once. This improves the visibility of existing saved flags without changing reconciliation, policy version 4, or milestone progress.
 
-51. **Finish local M6 work without claiming unobserved CI.** Add ten exact troubleshooting symptoms tied to real CLI paths and central error messages, honest interview/sharing material, a README CI badge and concept links, and `docs/CORE_CHECKLIST.md` with PASS/FAIL evidence. Use fresh local clones of the candidate source snapshot for separate Python 3.12/3.13 installs and a core-only install; no Python 3.14 interpreter is available locally. The connected GitHub repository grants read access but no push access and currently reports zero workflow runs. Keep hosted CI FAIL until the local commit is published and all jobs are observed passing. This is the only remaining M6 delivery check; do not start M7 automatically.
+51. **Finish local M6 work without claiming unobserved CI.** Add ten exact troubleshooting symptoms tied to real CLI paths and central error messages, honest interview/sharing material, a README CI badge and concept links, and `docs/CORE_CHECKLIST.md` with PASS/FAIL evidence. Use fresh local clones of the candidate source snapshot for separate Python 3.12/3.13 installs and a core-only install; no Python 3.14 interpreter is available locally. At the initial local handoff the connected repository was read-only and reported zero runs, so hosted CI stayed FAIL. The later user push and observed successful run close that check under decision 53; M7 is still not started automatically.
 
 52. **Use verified current Actions releases for the M6 matrix.** Follow the linked GitHub Python workflow structure, using `actions/checkout@v7.0.1` and `actions/setup-python@v7.1.0` verified from their release pages on 2026-10-22. The tutorial still shows older majors, so the release checks supersede those sample tags. Test Python 3.12, 3.13, and 3.14 with editable dev installation, both Ruff checks, pytest, and installed CLI help. Grant only `contents: read`, disable persisted checkout credentials, and keep publishing/deployment out of this workflow. Primary references are linked in `docs/CORE_CHECKLIST.md`.
+
+53. **Close M6 from observed hosted evidence.** After the user published `75c221c`, inspect run `39912675717` and its three jobs/logs. The run passed on Python 3.12, 3.13, and 3.14, with 559 tests, both Ruff checks, and installed help successful in each job. Record the exact run URL and tested SHA in the core checklist and mark all eight rows PASS. Keep the SQLite lock/read-only troubleshooting tests as deterministic message-translation checks; no real-lock extension is needed for M6. This evidence update changes documentation only, not runtime code, tests, or the workflow. M7 still requires **next**.
 
 ## Math and test commitments
 

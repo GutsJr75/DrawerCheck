@@ -1,7 +1,7 @@
 # Core verification checklist
 
-Status: M6 local deliverables and verification complete. A passing remote GitHub Actions run
-has not been observed. M7/M8's web implementation is not started.
+Status: M6 complete. Local checks and the hosted Python 3.12/3.13/3.14 matrix
+have passed. M7/M8's web implementation is not started.
 
 This checklist follows the original core definition of done. PASS means the
 check was actually run successfully; FAIL includes checks not yet verified.
@@ -16,22 +16,23 @@ The [learning log](LEARNING_LOG.md) records commands, environments, and outcomes
 | Every troubleshooting symptom has a matching CLI test | PASS | All ten guide entries were reproduced by `tests/test_troubleshooting.py`. |
 | CSV formula-protection checks | PASS | Both full suites passed all sanitizer/export checks; actual CSV exports contained 16 flag rows. |
 | Finished README, sample, and explicit screenshot placeholder | PASS | README includes setup, three demo steps, terminal output, limitations, concept links, and documentation links. No actual screenshot is claimed. |
-| GitHub CI is green for the M6 changes | FAIL: not observed | The new workflow must be published and run on GitHub. The connected repository is read-only and currently has no workflow runs. |
+| GitHub CI is green for the M6 changes | PASS | [Core checks run 1](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717) passed for commit `75c221c5e362345dffd6d420bd877d81a0628f6d`; all three Python jobs passed 559 tests, both Ruff checks, and installed help. |
 
 ## Python versions and CI
 
 The workflow targets Python 3.12, 3.13, and 3.14 on `ubuntu-latest`. Local
 interpreters are Python 3.12.9 with SQLite 3.45.3 and Python 3.13.5 with SQLite
-3.47.1. There is no local Python 3.14 interpreter available. A configured matrix
-is not evidence that the hosted jobs passed.
+3.47.1. There is no local Python 3.14 interpreter available; its successful
+hosted job now supplies that version's test evidence. All three job summaries
+and test logs were inspected, rather than inferring success from configuration.
 
 Verification used two new local clones of an isolated Git snapshot of the M6
 candidate files, with separate environments and no existing environments or
 caches copied into them. Development wheels were downloaded to a temporary
-folder, then both installs used that wheel folder with `--no-index`. The public
-GitHub checkout does not contain the local M6 changes until they are published.
-Later changes only record documentation results; runtime code and tests match
-the verified snapshot.
+folder, then both installs used that wheel folder with `--no-index`. The user
+published the M6 commit, which the hosted run tested. This completion update
+only records documentation results; runtime code, tests, and the workflow are
+unchanged from the tested commit.
 
 Each clone also passed `pip check`, repeated imports and reconciliation, a
 foreign-key check, all three exports, and comparison of the generated offline
@@ -46,9 +47,17 @@ The guide still shows older action tags; the release pages were checked on
 It grants read-only repository access and runs the repository's install, Ruff,
 pytest, and installed-help commands without publishing a package or a website.
 
-## Remaining delivery step
+## Observed hosted run
 
-Publish the reviewed local M6 commit to the intended GitHub branch and observe
-all three workflow jobs. If a job fails, fix it and rerun it before marking the
-remote CI row PASS. No passing remote run or complete hosted version matrix is
-claimed by this checklist. M7 requires a separate user instruction after M6.
+The push-triggered [run](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717)
+completed successfully on 2026-10-22 in America/Los_Angeles
+(2026-10-23 06:38 UTC). Each job passed installation, lint, formatting, tests,
+and installed CLI help:
+
+- [Python 3.12](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279029010): 559 tests passed.
+- [Python 3.13](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279028772): 559 tests passed.
+- [Python 3.14](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279029217): 559 tests passed.
+
+All eight original core checklist rows are now PASS. This does not claim
+browser verification or public-app deployment. M7 requires a separate user
+instruction; it has not started.

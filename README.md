@@ -8,12 +8,13 @@ counted cash with POS totals, flags differences for human review, and explains
 each shift. It exports terminal text, a self-contained HTML report, and a CSV
 of review flags.
 
-**Current milestone: M6 local work verified; hosted CI pending.** Installation, exact
+**Current milestone: M6 complete, including hosted CI.** Installation, exact
 money handling, database tables, fake demo generation, validated imports, cash
 calculations, six required review rules, shift explanations, and three report
 formats are implemented, including repeated-shortage checks and simplified bank
-matching. The CI workflow checks Python 3.12, 3.13, and 3.14; no remote run has
-been observed yet. See the [core checklist](docs/CORE_CHECKLIST.md) for actual
+matching. The [observed CI run](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717)
+passed 559 tests and both Ruff checks on Python 3.12, 3.13, and 3.14.
+See the [core checklist](docs/CORE_CHECKLIST.md) for actual
 verification results. The badge reflects GitHub's status, not a local test run.
 
 A public browser demo is now planned after the core is complete. Visitors will
@@ -302,7 +303,7 @@ and scenario requirements for future work. Its original web/hosting exclusions
 were superseded by the public-frontend amendment in the current plan.
 The six required core rules are implemented. The M7/M8 public app and optional
 R03/R06/R07 rules remain future work. See the checklist for M6 verification and
-any outstanding GitHub CI evidence.
+the hosted GitHub CI evidence. M7 awaits a separate user instruction.
 
 ## Further reading
 
