@@ -76,7 +76,10 @@ def calculate_shift(
 
 
 def calculate_shifts(
-    shifts: tuple[Shift, ...], config: Config
+    shifts: tuple[Shift, ...],
+    config: Config,
+    *,
+    max_related_shift_codes: int | None = None,
 ) -> tuple[ShiftResult, ...]:
     """Check full imported register context before callers select a date range."""
     by_register: dict[str, list[Shift]] = defaultdict(list)
@@ -86,6 +89,9 @@ def calculate_shifts(
         by_register[shift.register_id].append(shift)
         if shift.closed_at is not None:
             closings[(shift.register_id, shift.business_date)].append(shift)
+    related_codes = sum(len(group) * (len(group) - 1) for group in closings.values())
+    if max_related_shift_codes is not None and related_codes > max_related_shift_codes:
+        raise errors.CalculationLimitError(errors.CALCULATION_DETAIL_LIMIT)
     for register_shifts in by_register.values():
         ordered = sorted(
             register_shifts, key=lambda shift: (shift.opened_at, shift.shift_code)
@@ -98,6 +104,12 @@ def calculate_shifts(
                     break
                 if right.closed_at is not None and right.closed_at <= right.opened_at:
                     continue
+                related_codes += 2
+                if (
+                    max_related_shift_codes is not None
+                    and related_codes > max_related_shift_codes
+                ):
+                    raise errors.CalculationLimitError(errors.CALCULATION_DETAIL_LIMIT)
                 overlaps[left.id].append(right.shift_code)
                 overlaps[right.id].append(left.shift_code)
     history: dict[str, deque[ShiftResult]] = defaultdict(
@@ -213,6 +225,8 @@ def reconcile(
     config: Config,
     from_date: str | None = None,
     to_date: str | None = None,
+    *,
+    max_related_shift_codes: int | None = None,
 ) -> ReconciliationResult:
     """Save one inclusive range, rolling back all replacements if anything fails."""
     start = parse_range_date(from_date, "--from")
@@ -232,7 +246,9 @@ def reconcile(
             end = end or all_dates[-1]
             if start > end:
                 raise errors.ReconciliationError(errors.NO_SHIFTS_IN_RANGE)
-            results = calculate_shifts(shifts, config)
+            results = calculate_shifts(
+                shifts, config, max_related_shift_codes=max_related_shift_codes
+            )
             selected = tuple(
                 result
                 for result in results

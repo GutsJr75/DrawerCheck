@@ -1,5 +1,6 @@
 """Optional stateless web requests using the same offline reconciliation core."""
 
+import json
 import sqlite3
 from dataclasses import asdict
 from pathlib import Path
@@ -11,7 +12,7 @@ from werkzeug.exceptions import HTTPException
 
 from drawercheck import errors
 from drawercheck.config import Config
-from drawercheck.csv_contract import CSV_HEADERS
+from drawercheck.csv_contract import CSV_HEADERS, DENOMINATIONS_CENTS
 from drawercheck.demo import generate_demo
 from drawercheck.importer import import_directory
 from drawercheck.models import Flag, ShiftResult, group_flags_by_date
@@ -29,11 +30,31 @@ from drawercheck.reports import (
 
 MAX_REQUEST_BYTES = 2 * 1024 * 1024
 MAX_SHIFTS = 1000
+MAX_FIELD_CHARACTERS = 256
+MAX_RELATED_SHIFT_CODES = 1000
+MAX_RESPONSE_BYTES = 10_000_000
 ROW_LIMITS = {
+    "registers.csv": 5,
+    "cashiers.csv": 100,
     "shifts.csv": MAX_SHIFTS,
+    "pos_totals.csv": MAX_SHIFTS,
+    "cash_counts.csv": MAX_SHIFTS * len(DENOMINATIONS_CENTS),
     "bank_deposits.csv": 2000,
     "safe_drops.csv": 2000,
 }
+
+
+def _json_response(payload: dict) -> Response:
+    # Stop encoding at the full-response budget instead of building a huge JSON string.
+    encoder = json.JSONEncoder(ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+    content = bytearray()
+    for chunk in encoder.iterencode(payload):
+        encoded = chunk.encode("utf-8")
+        if len(content) + len(encoded) + 1 > MAX_RESPONSE_BYTES:
+            raise errors.WebInputError(errors.WEB_RESPONSE_LIMIT)
+        content.extend(encoded)
+    content.extend(b"\n")
+    return Response(bytes(content), mimetype="application/json")
 
 
 class _UploadRequest(Request):
@@ -193,9 +214,14 @@ def _run_request(*, demo: bool) -> Response:
         else:
             _save_uploads(directory)
         database = directory / "run.db"
-        import_directory(directory, database, row_limits=ROW_LIMITS)
-        reconcile(database, Config())
-        response = jsonify(_response_data(load_report(database)))
+        import_directory(
+            directory,
+            database,
+            row_limits=ROW_LIMITS,
+            max_field_characters=MAX_FIELD_CHARACTERS,
+        )
+        reconcile(database, Config(), max_related_shift_codes=MAX_RELATED_SHIFT_CODES)
+        response = _json_response(_response_data(load_report(database)))
     # The response is fully buffered; no download depends on the deleted workspace.
     return response
 
@@ -221,6 +247,12 @@ def create_app() -> Flask:
 
     @app.after_request
     def private_response(response: Response) -> Response:
+        if (
+            response.content_length is not None
+            and response.content_length > MAX_RESPONSE_BYTES
+        ):
+            response = jsonify(error={"message": errors.WEB_RESPONSE_LIMIT})
+            response.status_code = 400
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         return response
@@ -256,6 +288,10 @@ def create_app() -> Flask:
                 "limit": error.limit,
             }
         ), 400
+
+    @app.errorhandler(errors.CalculationLimitError)
+    def detail_limit(error: errors.CalculationLimitError) -> tuple[Response, int]:
+        return jsonify(error={"message": errors.WEB_DETAIL_LIMIT}), 400
 
     @app.errorhandler(errors.DrawerCheckError)
     def core_error(error: errors.DrawerCheckError) -> tuple[Response, int]:

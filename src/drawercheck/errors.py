@@ -134,6 +134,14 @@ WEB_MALFORMED_CSV = (
     "The CSV format could not be read. Check the quotes and commas around each value."
 )
 WEB_LONG_CSV_VALUE = "A value is too long. Shorten it and save the file again."
+CSV_VALUE_LENGTH = (
+    "This value exceeds {limit} characters. Shorten it and save the file again."
+)
+CALCULATION_DETAIL_LIMIT = (
+    "This run has too many related shift codes to prepare its details."
+)
+WEB_DETAIL_LIMIT = "This set has too many overlapping shifts or multiple closing shifts for the same register and date. Choose a smaller set of synthetic records."
+WEB_RESPONSE_LIMIT = "These results contain too much detail for this demo. Choose fewer records or shorter text values and try again."
 WEB_EMPTY = "No shift or bank-deposit records were found. Add synthetic records to the CSVs and upload them again."
 WEB_UNAVAILABLE = "The check could not finish. Try again with the example or upload the seven CSVs again."
 WEB_BAD_REQUEST = (
@@ -171,6 +179,10 @@ class ConfigError(DrawerCheckError, ValueError):
 
 class ReconciliationError(DrawerCheckError):
     """A calculation or explanation cannot run on the requested data."""
+
+
+class CalculationLimitError(DrawerCheckError):
+    """A caller's limit prevents expanding excessive shift relationships."""
 
 
 class ImportValidationError(DrawerCheckError):

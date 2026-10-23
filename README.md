@@ -82,11 +82,17 @@ The application factory is `drawercheck.web:create_app()`.
 `POST /api/demo` accepts an empty body and checks the fixed example.
 `POST /api/check` accepts the seven synthetic CSVs as repeated multipart `files`
 fields. The whole request is limited to 2 MiB, including form overhead, and a
-run may contain at most 1,000 shifts, 2,000 bank deposits, and 2,000 safe drops.
-These record limits are checked before opening the database. Blank lines do
+run may contain at most 5 registers, 100 people, 1,000 shifts, 2,000 bank
+deposits, and 2,000 safe drops. Each field may contain up to 256 characters.
+The same early checks cap POS rows at 1,000 and cash-count rows at 12,000,
+following the one-POS-record and twelve-denomination rules for each shift.
+These record and field limits are checked before opening the database. Blank lines do
 not count, and a quoted value spanning several lines is still one record.
-Each request uses a separate temporary
-database that is closed and deleted before the response returns.
+Each request uses a separate temporary database that is closed and deleted
+before the response returns. Excessive overlap details are rejected before
+they expand into large lists. The full response, including all three reports,
+is limited to 10 MB; a larger result gets a short error asking for a smaller run.
+These are web demo limits, not restrictions on the CLI.
 
 The JSON response contains summaries, shift explanations, review leads, and
 all three complete reports. Money is formatted in Python. Results are not

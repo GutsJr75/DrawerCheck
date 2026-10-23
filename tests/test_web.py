@@ -4,7 +4,7 @@ import csv
 import importlib
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 from io import BytesIO, StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -729,3 +729,260 @@ def test_record_cap_counts_csv_records_not_physical_lines(
             stream.write("\r\n")
     with app.test_client() as client:
         assert _upload(client, csv_directory).status_code == 200
+
+
+@pytest.mark.parametrize(
+    "file_name,limit", [("registers.csv", 5), ("cashiers.csv", 100)]
+)
+@pytest.mark.parametrize("extra", [-1, 0, 1, 1000])
+def test_roster_caps_before_database(
+    app,
+    csv_directory: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    file_name: str,
+    limit: int,
+    extra: int,
+) -> None:
+    source = csv_directory / file_name
+    with source.open(newline="") as stream:
+        rows = list(csv.reader(stream))
+    count = limit + extra
+    rows.extend(
+        [
+            [f"EXTRA-{index}", f"Demo entry {index}"]
+            for index in range(count - len(rows) + 1)
+        ]
+    )
+    if count < len(rows) - 1:
+        rows = rows[: count + 1]
+    with source.open("w", newline="") as stream:
+        csv.writer(stream, lineterminator="\n").writerows(rows)
+    if count > limit:
+
+        def forbidden(*args):
+            pytest.fail("Excess roster reached the database")
+
+        monkeypatch.setattr(db, "connect", forbidden)
+    with app.test_client() as client:
+        response = _upload(client, csv_directory)
+    assert response.status_code == (400 if count > limit else 200)
+    if count > limit:
+        assert (
+            response.get_json()["error"]["message"]
+            == f"{file_name} contains more than {limit:,} records. Choose a smaller set of synthetic records."
+        )
+
+
+def _combined_workload(directory: Path, *, long_identifiers: bool = False) -> None:
+    generate_demo(directory, days=500)
+
+    def read(name):
+        with (directory / name).open(newline="") as stream:
+            return list(csv.reader(stream))
+
+    def write(name, rows):
+        with (directory / name).open("w", newline="") as stream:
+            csv.writer(stream, lineterminator="\n").writerows(rows)
+
+    register_ids = [
+        f"R{index}" + ("-" + "&" * 253 if long_identifiers else "")
+        for index in range(1, 6)
+    ]
+    write(
+        "registers.csv",
+        [CSV_HEADERS["registers.csv"]]
+        + [
+            [identifier, f"Demo register {index}"]
+            for index, identifier in enumerate(register_ids)
+        ],
+    )
+    rows = read("cashiers.csv")
+    rows.extend(
+        [
+            [f"EXTRA-PERSON-{index}", f"Demo person {index}"]
+            for index in range(100 - len(rows) + 1)
+        ]
+    )
+    write("cashiers.csv", rows)
+    rows = read("shifts.csv")
+    columns = {name: index for index, name in enumerate(rows[0])}
+    dates = {}
+    for index, row in enumerate(rows[1:]):
+        day = (date(2026, 9, 1) + timedelta(days=index)).isoformat()
+        dates[row[columns["shift_code"]]] = day
+        row[columns["business_date"]] = day
+        row[columns["register_id"]] = register_ids[0]
+        for field in ("opened_at", "closed_at"):
+            if row[columns[field]]:
+                row[columns[field]] = day + row[columns[field]][10:]
+    write("shifts.csv", rows)
+    rows = read("safe_drops.csv")
+    for row in rows[1:]:
+        row[2] = dates[row[0]] + row[2][10:]
+    originals = rows[1:]
+    for index in range(2000 - len(originals)):
+        row = originals[index % len(originals)].copy()
+        row[1], row[3] = "0.01", f"DEMO-EXTRA-{index}"
+        rows.append(row)
+    write("safe_drops.csv", rows)
+    rows = read("cash_counts.csv")
+    counted_codes = {row[0] for row in rows[1:]}
+    for code in dates:
+        if code not in counted_codes:
+            for denomination in (
+                "100.00",
+                "50.00",
+                "20.00",
+                "10.00",
+                "5.00",
+                "2.00",
+                "1.00",
+                "0.50",
+                "0.25",
+                "0.10",
+                "0.05",
+                "0.01",
+            ):
+                rows.append([code, denomination, "0"])
+    write("cash_counts.csv", rows)
+    write(
+        "bank_deposits.csv",
+        [CSV_HEADERS["bank_deposits.csv"]]
+        + [
+            [
+                (date(2026, 9, 1) + timedelta(days=index)).isoformat(),
+                "0.01",
+                f"DEMO-{index}",
+            ]
+            for index in range(2000)
+        ],
+    )
+
+
+@pytest.mark.parametrize("long_identifiers", [False, True])
+def test_combined_caps_keep_the_full_response_within_budget(
+    app, tmp_path: Path, long_identifiers: bool
+) -> None:
+    """Budget every JSON field and embedded report together, including escaping."""
+    directory = tmp_path / "combined"
+    _combined_workload(directory, long_identifiers=long_identifiers)
+    assert (
+        sum((directory / name).stat().st_size for name in CSV_HEADERS)
+        < web.MAX_REQUEST_BYTES
+    )
+    with app.test_client() as client:
+        response = _upload(client, directory)
+    assert len(response.get_data()) <= 10_000_000
+    if long_identifiers:
+        assert response.status_code == 400
+        assert "too much detail" in response.get_json()["error"]["message"]
+    else:
+        assert response.status_code == 200
+        payload = response.get_json()
+        assert len(payload["shifts"]) == 1000
+        assert len(payload["days"]) == 2000
+        assert set(payload["reports"]) == {"text", "html", "csv"}
+
+
+def test_overlong_values_are_rejected_before_database(
+    app, csv_directory: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = csv_directory / "cashiers.csv"
+    source.write_text("cashier_id,display_name\nDEMO-PERSON," + "x" * 257 + "\n")
+
+    def forbidden(*args):
+        pytest.fail("Overlong value reached the database")
+
+    monkeypatch.setattr(db, "connect", forbidden)
+    with app.test_client() as client:
+        response = _upload(client, csv_directory)
+    assert response.status_code == 400
+    assert "256 characters" in response.get_json()["error"]["message"]
+
+
+@pytest.mark.parametrize("same_day", [True, False])
+def test_excessive_shift_relationships_stop_before_rule_evaluation(
+    app, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, same_day: bool
+) -> None:
+    directory = tmp_path / "overlap"
+    _combined_workload(directory)
+    with (directory / "shifts.csv").open(newline="") as stream:
+        rows = list(csv.reader(stream))
+    columns = {name: index for index, name in enumerate(rows[0])}
+    for row in rows[1:]:
+        row[columns["closed_at"]] = "2035-01-01T16:00:00"
+        if same_day:
+            row[columns["business_date"]] = "2026-09-01"
+            row[columns["opened_at"]] = "2026-09-01T08:00:00"
+    with (directory / "shifts.csv").open("w", newline="") as stream:
+        csv.writer(stream, lineterminator="\n").writerows(rows)
+
+    def forbidden(*args):
+        raise RuntimeError("Unbounded shift relationships reached rules")
+
+    monkeypatch.setattr("drawercheck.reconcile.evaluate_rules", forbidden)
+    with app.test_client() as client:
+        response = _upload(client, directory)
+    assert response.status_code == 400
+    assert "overlapping" in response.get_json()["error"]["message"]
+
+
+@pytest.mark.parametrize("difference", [-1, 0, 1])
+def test_complete_response_budget_boundary(
+    app, monkeypatch: pytest.MonkeyPatch, difference: int
+) -> None:
+    with app.test_client() as client:
+        baseline = client.post("/api/demo")
+        size = len(baseline.get_data())
+        monkeypatch.setattr(web, "MAX_RESPONSE_BYTES", size + difference, raising=False)
+        response = client.post("/api/demo")
+    assert response.status_code == (400 if difference < 0 else 200)
+    if difference >= 0:
+        assert len(response.get_data()) == size
+    else:
+        assert "too much detail" in response.get_json()["error"]["message"]
+
+
+def test_large_error_also_respects_response_budget(
+    app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(web, "MAX_RESPONSE_BYTES", 1000)
+    with app.test_client() as client:
+        response = client.post(
+            "/api/check", data={"files": (BytesIO(b"x"), "x" * 1500)}
+        )
+    assert response.status_code == 400
+    assert len(response.get_data()) <= 1000
+    assert "too much detail" in response.get_json()["error"]["message"]
+    assert response.headers["Cache-Control"] == "no-store"
+
+
+@pytest.mark.parametrize(
+    "file_name,limit", [("pos_totals.csv", 1000), ("cash_counts.csv", 12000)]
+)
+@pytest.mark.parametrize("extra", [1, 1000])
+def test_remaining_csv_caps_before_database(
+    app,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    file_name: str,
+    limit: int,
+    extra: int,
+) -> None:
+    directory = tmp_path / "natural-limits"
+    _combined_workload(directory)
+    source = directory / file_name
+    with source.open(newline="") as stream:
+        rows = list(csv.reader(stream))
+    assert len(rows) - 1 == limit
+    with source.open("a", newline="") as stream:
+        csv.writer(stream, lineterminator="\n").writerows([rows[1]] * extra)
+
+    def forbidden(*args):
+        pytest.fail("Excess POS/count rows reached the database")
+
+    monkeypatch.setattr(db, "connect", forbidden)
+    with app.test_client() as client:
+        response = _upload(client, directory)
+    assert response.status_code == 400
+    assert response.get_json()["error"]["limit"] == limit

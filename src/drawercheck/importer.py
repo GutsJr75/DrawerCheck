@@ -139,7 +139,10 @@ def _check_headers(file_name: str, line_number: int, headers: list[str]) -> None
 
 
 def _read_rows(
-    file_name: str, data: bytes, max_rows: int | None = None
+    file_name: str,
+    data: bytes,
+    max_rows: int | None = None,
+    max_field_characters: int | None = None,
 ) -> list[_CsvRow]:
     try:
         text = data.decode("utf-8-sig")
@@ -190,6 +193,17 @@ def _read_rows(
             else:
                 if max_rows is not None and len(rows) >= max_rows:
                     raise errors.ImportRowLimitError(file_name, max_rows)
+                if max_field_characters is not None:
+                    for column, value in zip(headers, values):
+                        if len(value) > max_field_characters:
+                            raise errors.ImportValidationError(
+                                file_name,
+                                line_number,
+                                column,
+                                errors.CSV_VALUE_LENGTH.format(
+                                    limit=max_field_characters
+                                ),
+                            )
                 rows.append(_CsvRow(file_name, line_number, dict(zip(headers, values))))
     if headers is None:
         raise errors.ImportValidationError(file_name, 1, "<header>", errors.EMPTY_CSV)
@@ -409,6 +423,7 @@ def import_directory(
     database_path: str | Path,
     *,
     row_limits: Mapping[str, int] | None = None,
+    max_field_characters: int | None = None,
 ) -> list[ImportResult]:
     """Import all seven CSVs atomically and return committed per-file results."""
     sources = []
@@ -419,7 +434,10 @@ def import_directory(
                 file_name,
                 hashlib.sha256(data).hexdigest(),
                 _read_rows(
-                    file_name, data, row_limits.get(file_name) if row_limits else None
+                    file_name,
+                    data,
+                    row_limits.get(file_name) if row_limits else None,
+                    max_field_characters,
                 ),
             )
         )

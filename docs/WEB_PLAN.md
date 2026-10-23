@@ -121,9 +121,13 @@ cannot prove that arbitrary uploaded names or figures are fictional.
   response, including after an error. Keep no shared visitor results database.
   The response must include the information needed to display results and
   download reports while the page is open, so downloads need no saved workspace.
-- Workload limits: a 2 MiB total upload-request limit, at most 1,000 shifts,
-  2,000 bank deposits, and 2,000 safe drops per run. Count CSV records before
-  opening a database, excluding headers and blank lines. These are project
+- Workload limits: a 2 MiB total upload-request limit, at most 5 registers,
+  100 people, 1,000 shifts, 2,000 bank deposits, and 2,000 safe drops per run.
+  POS/count rows are capped at their natural maxima of 1,000 and 12,000.
+  Each field has a 256-character limit. Count CSV records and check field lengths
+  before opening a database, excluding headers and blank lines. Limit expanded
+  shift-code references to 1,000 and the complete response to 10,000,000 bytes.
+  These are project
   choices, not industry standards. Confirm that
   the default demo fits and test rejection at the boundaries during M7.
 - Keep all errors in `errors.py`. Escape dynamic HTML, protect CSV exports,
@@ -213,12 +217,41 @@ Both routes use the core's built-in example policies, independent of local
 `config.toml`. The 2 MiB limit includes the complete multipart request. Valid
 requests exactly at the limit pass; larger ones return 413. Multipart parsing
 also has an eight-part limit and 128 KiB non-file-field limit. The per-file
-record limits are 1,000 for `shifts.csv`, 2,000 for `bank_deposits.csv`, and
-2,000 for `safe_drops.csv`. Exceeding any record limit returns 400 while the
+record limits are 5 for `registers.csv`, 100 for `cashiers.csv`, 1,000 for
+`shifts.csv`, 2,000 for `bank_deposits.csv`, and 2,000 for `safe_drops.csv`.
+The remaining files also have early caps: 1,000 for `pos_totals.csv` and 12,000
+for `cash_counts.csv`, following one POS row and twelve allowed denominations
+per shift. This gives all seven files a row cap before database work.
+Values in data records may have up to 256 characters, including whitespace.
+Exceeding a record or field limit returns 400 while the
 shared CSV reader prepares the input, before SQLite is opened or any rows are
 inserted. Headers and blank lines do not count; quoted multiline values remain
 one record. These limits apply only to web runs; CLI imports remain uncapped.
-The fixed example has 60 shifts and fits comfortably within the limits.
+The fixed example uses 2 registers, 5 people, and 60 shifts, comfortably within
+the limits.
+
+Roster caps also bound the register-by-date missing-record leads. Long text and
+overlaps need separate bounds: web reconciliation allows at most 1,000 total
+references to other shift codes across overlap and multiple-closing details.
+Multiple-closing references are counted before the lists are created; overlap
+references are counted as pairs are found and stop before crossing the limit.
+Excess returns 400 before rule evaluation and saving results. This is a workload
+limit, not a change to the reconciliation rules. Core callers can omit the limit.
+
+The entire serialized response, including all result fields, JSON escaping,
+three embedded reports, and the trailing newline, has a 10 MB budget
+(10,000,000 bytes). JSON is encoded incrementally into a bounded response buffer.
+Results that exceed the budget return a short 400 error; no flags or reports
+are silently truncated. Error responses have the same final size check. Cleanup
+and no-store/nosniff headers apply to these rejections as well. Report strings
+and records still use working memory, so this response limit is not a claim
+that the process uses only 10 MB of RAM.
+
+The combined stress fixture fills all seven record caps, spreads 1,000 shifts
+over 1,000 dates, and verifies that the full successful response is under 10 MB.
+Separate cases cover long HTML-escaped identifiers and excessive same-day or
+cross-date overlaps. These must be rejected safely rather than relying on one
+fixture as proof that every accepted input will have a small output.
 
 JSON includes `notice`, `from_date`, `to_date`, `generated_at`, `days`, `cashiers`,
 `flags`, `shifts`, and `reports`. Money fields use names ending in `_amount`

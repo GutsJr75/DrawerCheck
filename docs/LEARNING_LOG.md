@@ -602,3 +602,55 @@ metadata, and CLI error text remains unchanged.
 
 No hosted CI result is claimed for this repair commit. M8 still awaits **next**;
 its frontend, deployment timeout, and Content-Security-Policy remain later work.
+
+## M7 repair: Roster caps and response budget
+
+- Built: Pre-database caps of 5 registers and 100 people; a web-only 256-character
+  field limit; an early bound on expanded overlap/multiple-closing details; and
+  a 10 MB complete-response budget with short errors instead of partial results.
+  Applied the schema's natural POS/count row maxima before database work, so all
+  seven files are capped. Added combined-limit, escaping, roster, calculation,
+  and response-boundary tests.
+- Learned: Limits can multiply: expected registers create review leads across
+  dates, and long IDs repeat in evidence and reports. One stress fixture is
+  useful but cannot prove every allowed input stays small. Early expansion
+  limits and a final serialized-byte budget cover different parts of the work.
+- Interview question: Why would you check both input size and output size for
+  a public service that expands uploaded records into explanations and reports?
+
+The user authorized this contained follow-up on 2026-10-23. The existing Python
+3.13.5 / SQLite 3.47.1 / Flask 3.1.3 environment was used. No dependencies or
+calculation policies changed. The CLI's normal calls omit the optional field
+and calculation budgets; the public web factory supplies them explicitly.
+
+The initial read-only assessment measured a combined fixture with 1,000 shifts
+on 1,000 dates, 2,000 bank entries, 2,000 drops, and 100 people: 10 registers
+returned 13,054,247 bytes, while 5 returned 8,197,238 bytes. During regression
+development, using 256-character HTML-escaped register IDs with only 5 registers
+reproduced a 19,611,238-byte response before the response guard was added.
+
+| Command or check | Result |
+| --- | --- |
+| New regression selection before repair | Reproduced missing roster/field caps and missing output-budget enforcement. The normal combined fixture passed; long escaped IDs exceeded 10 MB. An overlap test fixture's timestamp column mapping was corrected before testing the calculation guard. |
+| `.venv/bin/pytest -q tests/test_workload.py tests/test_web.py` | PASS: 97 focused cases before two core-default checks and four POS/count limit cases were added. The final six-case POS/count and combined-fixture selection also passed. |
+| `.venv/bin/pytest -q` | PASS: 662 tests, including 32 added in this follow-up, with resource/cleanup warnings still treated as errors. Normal demo, CLI/web parity, exact troubleshooting messages, rollback, and isolation checks remain passing. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 662 tests collected. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean; 51 Python files formatted. |
+| Roster and field boundaries | PASS: 4/5 registers and 99/100 people succeed; excess rosters, including 1,000 extra records, fail before db.connect. A 257-character field also fails before db.connect; the escaped-ID case reaches the response guard with 256-character values. |
+| Shift-detail work bounds | PASS: 1,000 same-day closings and 1,000 cross-date overlapping shifts are rejected before rule evaluation. Nine smaller boundary cases verify exact overlap-only, closing-only, and combined reference counts and default uncapped calculations. |
+| Complete response boundary | PASS: the exact serialized byte count and one byte more are accepted; a budget one byte smaller returns the short 400 error. A separate test checks oversized error responses and no-store headers. |
+| Combined-cap reproduction after repair, filling all seven row caps | PASS: ordinary identifiers return a complete 8,196,971-byte response; escaped long identifiers return a 136-byte 400 error. Local observations were 0.931 and 0.990 seconds, respectively; these are not hosting guarantees. |
+| Default core behaviour beyond web limits | PASS: uncapped imports/reconciliation accept 6 registers, 101 people, and a 257-character name. Default calculations also retain all 1,012 other-shift references in a 23-shift overlap case; applying the optional 1,000-reference budget rejects it. |
+| Natural POS/count limits before database work | PASS: the combined fixture fills 1,000 POS rows and 12,000 count rows. One extra row or 1,000 extra rows in either file is rejected before db.connect; all four excess-row tests first failed when those early caps were absent. |
+| Final documentation checks | PASS: git diff --check, local Markdown links, prohibited punctuation, AGENTS.md length, and the shared CLAUDE.md import. |
+
+The combined fixture has 5 registers, 100 people, 1,000 shifts on 1,000 dates,
+2,000 bank entries, 2,000 drops, 1,000 POS rows, and 12,000 count rows. Its assertion measures the full response,
+including the three reports and JSON escaping. Temporary-workspace assertions
+and ResourceWarning failures also apply to response/detail-limit rejection cases.
+The 10,000,000-byte response buffer does not imply a 10 MB process-memory limit:
+report strings and parsed records also occupy memory. Input field and expanded
+relationship limits prevent the earlier uncontrolled amplification paths.
+
+This repair is verified locally. No new hosted CI, browser, or deployment result
+is claimed. M8, including timeout and CSP configuration, still awaits **next**.
