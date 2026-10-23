@@ -1,8 +1,9 @@
 # DrawerCheck design guide
 
-This guide covers two things: the planned M8 website and the existing M4 HTML
-report. The website sections are an agreed plan; no screens are built or
-visually verified yet. The report's styles are unchanged.
+This guide covers two things: the M8 website and the existing M4 HTML report.
+M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in
+`src/drawercheck/static/app.css`; the views come in later blocks, and the full
+accessibility check is block 5. The report's styles are unchanged.
 
 Read this file for how the website should **look**. Read
 [WEB_PLAN.md](docs/WEB_PLAN.md) for how it should **behave**: views, wording,
@@ -85,6 +86,11 @@ setting. Contrast ratios were calculated for each pair listed.
 `accent` is the only decorative colour. The four status colours appear only on
 status labels and their related text, never as large fills or backgrounds.
 
+The demo notice reverses `text` and `surface` (14.7:1 light, 12.0:1 dark), so
+it needs no extra token: a dark strip in light mode and a light strip in dark
+mode. `tests/test_web_page.py` recalculates every pair above, plus this one,
+from the stylesheet, so a token change that breaks contrast fails the tests.
+
 ### Typography
 
 - **Fonts:** IBM Plex Sans for text and IBM Plex Mono for money, served from the
@@ -92,6 +98,10 @@ status labels and their related text, never as large fills or backgrounds.
   Open Font License included. No font is loaded from another website. Fallbacks:
   `system-ui, -apple-system, "Segoe UI", Roboto, sans-serif` and
   `ui-monospace, Menlo, Consolas, monospace`. Use `font-display: swap`.
+- **Font files:** the Latin1 WOFF2 files from IBM's GitHub releases
+  `@ibm/plex-sans@1.1.0` and `@ibm/plex-mono@2.5.0`, with IBM's own
+  `unicode-range` values. The four files total 78,660 bytes. The page preloads
+  the two Sans files; the browser fetches Mono only when money appears.
 - **Why Plex:** it reads clearly at small sizes, has a slightly technical,
   ledger-like character that suits cash records, and looks the same on every
   device, unlike the report's system fonts.
@@ -130,7 +140,7 @@ status labels and their related text, never as large fills or backgrounds.
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |
 | Demo notice | A full-width strip at the top of every view: "Example data only. Do not upload real store records." |
-| Footer | Not for real cash control; files are deleted after each check; links to the code and the downloadable report. |
+| Footer | Not for real cash control; files are deleted after each check; links to the code and the example report, both on GitHub. |
 
 ## Signature elements
 

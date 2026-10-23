@@ -1,0 +1,202 @@
+"""Check the page shell, its local assets, and the colour tokens without a browser."""
+
+import importlib
+import re
+import tomllib
+from fnmatch import fnmatch
+from html.parser import HTMLParser
+from pathlib import Path
+
+import pytest
+
+pytest.importorskip("flask")
+web = importlib.import_module("drawercheck.web")
+PACKAGE = Path(web.__file__).parent
+STATIC = PACKAGE / "static"
+ROOT = PACKAGE.parent.parent
+REPOSITORY = "https://github.com/GutsJr75/DrawerCheck"
+# Copied from the security-header section of docs/WEB_PLAN.md.
+PLANNED_POLICY = (
+    "default-src 'self'; script-src 'self'; style-src 'self'; "
+    "font-src 'self'; img-src 'self' data: blob:; connect-src 'self'; "
+    "object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+)
+
+
+class _Page(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.tags: list[tuple[str, dict[str, str | None]]] = []
+        self.text: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.tags.append((tag, dict(attrs)))
+
+    def handle_data(self, data: str) -> None:
+        self.text.append(data)
+
+
+@pytest.fixture
+def client():
+    """Serve the app in-process; no browser or network is involved."""
+    with web.create_app().test_client() as client:
+        yield client
+
+
+def _page(client) -> tuple[_Page, str]:
+    response = client.get("/")
+    assert response.status_code == 200 and response.mimetype == "text/html"
+    parser = _Page()
+    parser.feed(response.get_data(as_text=True))
+    return parser, " ".join(" ".join(parser.text).split())
+
+
+def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
+    page, text = _page(client)
+    tags = [tag for tag, _ in page.tags]
+    assert ("html", {"lang": "en"}) in page.tags
+    assert tags.count("h1") == 1 and tags.count("main") == 1
+    assert tags.count("header") == tags.count("footer") == 1
+    first_link = next(attrs for tag, attrs in page.tags if tag == "a")
+    assert first_link == {"class": "skip-link", "href": "#main"}
+    assert ("main", {"id": "main", "class": "wrap", "tabindex": "-1"}) in page.tags
+    assert any(
+        tag == "meta" and attrs.get("name") == "viewport" for tag, attrs in page.tags
+    )
+    assert "| DrawerCheck" in text
+    assert "Example data only. Do not upload real store records." in text
+    assert "It is not for real cash control." in text
+    assert "Uploaded files are checked and then deleted. Nothing is saved." in text
+
+
+def test_page_has_no_inline_code_or_remote_assets(client) -> None:
+    page, _ = _page(client)
+    tags = [tag for tag, _ in page.tags]
+    assert "style" not in tags
+    for tag, attrs in page.tags:
+        assert "style" not in attrs
+        assert not any(name.startswith("on") for name in attrs)
+        if tag == "script":
+            assert attrs.get("src", "").startswith("/static/")
+        if tag == "link":
+            assert attrs["href"].startswith("/static/")
+        if tag == "a" and not attrs["href"].startswith("#"):
+            # Outbound links are ordinary navigation, never loaded resources.
+            assert attrs["href"].startswith(REPOSITORY)
+
+
+@pytest.mark.parametrize(
+    "method, path",
+    [("get", "/"), ("get", "/static/app.css"), ("post", "/api/demo")],
+)
+def test_security_headers_on_every_response(client, method: str, path: str) -> None:
+    # Closing the response also closes a served static file.
+    with getattr(client, method)(path) as response:
+        assert response.status_code == 200
+    assert response.headers["Content-Security-Policy"] == PLANNED_POLICY
+    assert web.CONTENT_SECURITY_POLICY == PLANNED_POLICY
+    assert response.headers["Referrer-Policy"] == "no-referrer"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["Cache-Control"] == "no-store"
+
+
+def test_stylesheet_fonts_are_local_and_served(client) -> None:
+    css = (STATIC / "app.css").read_text(encoding="utf-8")
+    urls = re.findall(r'url\("([^"]+)"\)', css)
+    assert len(urls) == 4 and css.count("font-display: swap") == 4
+    page, _ = _page(client)
+    preloads = {
+        attrs["href"]
+        for tag, attrs in page.tags
+        if tag == "link" and attrs.get("rel") == "preload"
+    }
+    assert preloads <= {f"/static/{url}" for url in urls}
+    for url in urls:
+        assert url.startswith("fonts/") and "//" not in url
+        with client.get(f"/static/{url}") as response:
+            assert response.status_code == 200 and response.mimetype == "font/woff2"
+            assert response.get_data()[:4] == b"wOF2"
+    license_text = (STATIC / "fonts" / "LICENSE.txt").read_text(encoding="utf-8")
+    assert "SIL Open Font License, Version 1.1" in license_text
+
+
+def test_static_files_meet_the_performance_budget() -> None:
+    """DESIGN.md: CSS and JavaScript under 60 KB together; fonts under 200 KB."""
+    code = sum(
+        path.stat().st_size
+        for pattern in ("*.css", "*.js")
+        for path in STATIC.glob(pattern)
+    )
+    fonts = sum(path.stat().st_size for path in (STATIC / "fonts").glob("*.woff2"))
+    assert 0 < code < 60_000
+    assert 0 < fonts < 200_000
+
+
+def test_package_data_includes_every_template_and_static_file() -> None:
+    """A wheel install must ship the same screens as an editable checkout."""
+    config = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    patterns = config["tool"]["setuptools"]["package-data"]["drawercheck"]
+    files = [
+        path.relative_to(PACKAGE).as_posix()
+        for folder in ("templates", "static")
+        for path in (PACKAGE / folder).rglob("*")
+        if path.is_file()
+    ]
+    assert files
+    for name in files:
+        assert any(fnmatch(name, pattern) for pattern in patterns), name
+
+
+def _luminance(colour: str) -> float:
+    channels = [int(colour[index : index + 2], 16) / 255 for index in (1, 3, 5)]
+    linear = [
+        value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
+        for value in channels
+    ]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def _contrast(first: str, second: str) -> float:
+    lighter, darker = sorted((_luminance(first), _luminance(second)), reverse=True)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def _themes() -> dict[str, dict[str, str]]:
+    css = (STATIC / "app.css").read_text(encoding="utf-8")
+    light = re.search(r"^:root \{(.*?)^\}", css, re.S | re.M)
+    dark = re.search(
+        r"@media \(prefers-color-scheme: dark\) \{\s*:root \{(.*?)\}", css, re.S
+    )
+    assert light and dark
+    return {
+        name: dict(re.findall(r"--([a-z-]+): (#[0-9a-f]{6});", block.group(1)))
+        for name, block in (("light", light), ("dark", dark))
+    }
+
+
+# WCAG 2.2 AA: 4.5:1 for text, 3:1 for control borders.
+CONTRAST_PAIRS = [
+    ("text", "surface", 4.5),
+    ("text", "page", 4.5),
+    ("surface", "text", 4.5),  # The demo notice reverses these two colours.
+    ("muted", "surface", 4.5),
+    ("muted", "page", 4.5),
+    ("control", "surface", 3),
+    ("control", "page", 3),
+    ("accent", "surface", 4.5),
+    ("accent", "page", 4.5),
+    ("on-accent", "accent", 4.5),
+    ("note", "note-bg", 4.5),
+    ("check", "check-bg", 4.5),
+    ("review", "review-bg", 4.5),
+    ("ready", "ready-bg", 4.5),
+]
+
+
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_colour_tokens_meet_wcag_contrast(theme: str) -> None:
+    tokens = _themes()[theme]
+    assert set(_themes()["light"]) == set(_themes()["dark"])
+    for foreground, background, minimum in CONTRAST_PAIRS:
+        ratio = _contrast(tokens[foreground], tokens[background])
+        assert ratio >= minimum, (foreground, background, round(ratio, 2))

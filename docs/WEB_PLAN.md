@@ -6,11 +6,22 @@
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
-- **M8, screens and public demo: not started.** It waits for the user's next
-  instruction.
+- **M8, screens and public demo: in progress, built in seven blocks.** Block 1
+  (the screen data from Python and the page layout) is done and waits for the
+  user's review. Blocks 2 to 7 each need the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
+
+| M8 block | What gets built | Status |
+| --- | --- | --- |
+| 1 | Summary, count line totals, and labels in the JSON; page layout, colour tokens, IBM Plex fonts, demo notice, footer, and security headers | Done |
+| 2 | Start and Prepare files: "Try the example", the example tape, and the file checklist with its error summary | Not started |
+| 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Not started |
+| 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Not started |
+| 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Not started |
+| 6 | Hosting: Render setup and a check of the live public site | Not started |
+| 7 | Wrap-up: README screenshots and interview notes | Not started |
 - **Quick map of this document:** the user decision and audience come first,
   then the screens and wording, the architecture, hosting, milestones, the
   definition of done, and finally the [M7 request contract](#m7-request-contract-and-handoff)
@@ -123,6 +134,9 @@ buttons, refresh, and copied links behave the way people expect:
   is not in the current results" with a link back to Results.
 - Do not block leaving the page with a browser warning. The demo notice already
   says results disappear when the page closes.
+- The "Skip to main content" link uses `#main`. The block 4 router must treat
+  only addresses starting with `#/` as views and leave other hashes alone, so
+  the skip link keeps working.
 
 ### Uploading files
 
@@ -188,6 +202,21 @@ M8 must add these to the M7 JSON, computed in Python with integer cents:
 
 Add tests that compare these new fields with the CLI results for the demo.
 
+Built in M8 block 1 (2026-10-23), in `web.py`:
+
+| Field | Shape | Demo value |
+| --- | --- | --- |
+| `shifts[].shift.counts[].line_total_amount` | Formatted money, from integer cents | `$400.00` for four $100 bills on `2026-09-03-R1` |
+| `summary.drawers_checked` | Number of shifts in the results | 60 |
+| `summary.drawers_needing_review` | Shifts with at least one `review` lead of their own | 4 |
+| `summary.leads_total` and `summary.leads_by_severity` | All leads, then `info`, `warn`, and `review` counts | 16; 2, 7, and 7 |
+| `summary.deposit_lead_days` | Distinct dates with an `R08_DEPOSIT` lead | 2 |
+| `labels.rules`, `labels.severities`, `labels.statuses` | Code-to-words maps from the wording table | `Balanced (within $1.00)` uses the run's tolerance |
+
+Tests check each field against the CLI's saved results, check that the line
+totals add up to the counted cash for every demo shift, and check that every
+rule code in `rules.py` and every severity and status has public words.
+
 **These additions must not undo the M7 workload fixes.** The existing test
 `test_combined_caps_keep_the_full_response_within_budget` fills every web limit
 at once and must still succeed under the 10 MB response budget. Measured on
@@ -196,7 +225,8 @@ count rows and 6,019 flags), leaving about 1.8 MB. Estimates: line totals add
 roughly 360 KB; repeating labels on every flag would add roughly 400 KB more,
 which the single lookup avoids. Keep that test unchanged as the guard, record
 the new measured size in the learning log, and do not raise the budget to make
-room.
+room. Measured after block 1: 8,539,525 bytes (342,554 more), about 1.46 MB
+under the unchanged budget.
 
 ### Security headers for the public site
 
@@ -205,7 +235,9 @@ itself: `default-src 'self'; script-src 'self'; style-src 'self';
 font-src 'self'; img-src 'self' data: blob:; connect-src 'self';
 object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`.
 Keep `X-Content-Type-Options: nosniff` and `Cache-Control: no-store`, and add
-`Referrer-Policy: no-referrer`. No inline scripts or styles are needed. Keep a
+`Referrer-Policy: no-referrer`. No inline scripts or styles are needed. Block 1
+sends all four headers on every response: the page, its static files, and the
+API. Tests compare the policy with the exact text above. Keep a
 tight Gunicorn worker timeout, such as 30 seconds: a full-size check takes about
 a second, and the browser's 90-second wait covers the host waking up, not
 processing. Confirm the final values against the host's documentation during
@@ -400,7 +432,8 @@ cross-date overlaps. These must be rejected safely rather than relying on one
 fixture as proof that every accepted input will have a small output.
 
 JSON includes `notice`, `from_date`, `to_date`, `generated_at`, `days`, `cashiers`,
-`flags`, `shifts`, and `reports`. Money fields use names ending in `_amount`
+`flags`, `shifts`, and `reports`. M8 block 1 added `labels` and `summary`, plus
+`line_total_amount` on each count row. Money fields use names ending in `_amount`
 and are formatted in Python, including nested flag evidence. Count entries have
 a formatted `denomination` and integer `quantity`. Missing cash remains `unknown`;
 a bank-only date says `Not calculated (no shifts)`. No browser money calculations

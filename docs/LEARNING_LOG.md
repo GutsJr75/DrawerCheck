@@ -690,3 +690,45 @@ only stops the browser waiting, 400% desktop zoom is checked separately from
 200% text resizing, and the combined-limits response (measured at 8,196,971
 bytes, about 1.8 MB under the 10 MB budget) must stay within budget after the
 M8 additions. Labels will be sent once as a lookup to save roughly 400 KB.
+
+## M8 block 1: Screen data and page layout
+
+- Built: Python now sends count-sheet line totals, a results summary (drawers
+  checked, drawers needing review, leads by severity, days with deposit leads),
+  and one lookup of public words for every rule, severity, and status. Added
+  the page layout with colour tokens, self-hosted IBM Plex fonts, the demo
+  notice, the footer, package data, and the planned security headers.
+- Learned: A test can guard a design rule as well as a calculation. The colour
+  tokens are rechecked for contrast from the stylesheet itself, and a packaging
+  test fails if a new static file would be left out of an installed copy.
+  Serving the page from the app's own address keeps a strict style policy
+  possible, because nothing needs inline code.
+- Interview question: How would you prove that a web page meets its colour
+  contrast and "no third-party requests" rules every time someone changes it?
+
+The user authorized block 1 on 2026-10-23. Verified locally with Python 3.13.5,
+Flask 3.1.3, Gunicorn 26.2.0, pytest 9.1.1, and Ruff 0.17.1. Fonts came from
+IBM's GitHub releases `@ibm/plex-sans@1.1.0` and `@ibm/plex-mono@2.5.0`; this
+was the only download for the site. The Mono zip matched GitHub's published
+SHA-256 (`6d23f012...`); the Sans release publishes none, and its measured
+SHA-256 was `fb365d91...`.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 674 tests, 12 of them new, with resource and cleanup warnings still treated as errors. |
+| `.venv/bin/pytest --collect-only -q` | PASS: 674 tests collected. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean; 52 Python files formatted. |
+| Screen fields against the CLI | PASS: the demo summary is 60 drawers, 4 needing review, 16 leads (2, 7, and 7), and 2 deposit-lead days, matching the CLI's saved flags. Line totals add up to the counted cash for every demo shift, and the uncounted shift has none. |
+| Combined-limits response size | PASS: 8,539,525 bytes (was 8,196,971), about 1.46 MB under the unchanged 10 MB budget; the existing guard test is unchanged. The demo response is 156,611 bytes. |
+| Page, headers, and assets | PASS: one `h1`, `lang="en"`, a skip link, the demo notice, and the footer; no inline scripts, styles, or event attributes; the exact planned Content-Security-Policy and `Referrer-Policy: no-referrer` on the page, a static file, and the API. |
+| Budgets and contrast | PASS: CSS 6,472 bytes (no JavaScript yet) against 60 KB; fonts 78,660 bytes against 200 KB. Fourteen token pairs meet WCAG 2.2 AA contrast in both themes. |
+| Wheel build and fresh install | PASS: the wheel contains the template, CSS, four fonts, and licence. Installed into a new virtual environment, it served the page, a font, and the demo summary. |
+| `.venv/bin/flask --app drawercheck.web:create_app routes` | PASS: lists `/`, `/static/<path:filename>`, and both API routes. |
+| Headless Firefox screenshots through local Gunicorn | Observed: light and dark at 1,280 px and 320 px wide render Plex fonts with no sideways scrolling. The access log shows only four local requests: the page, the stylesheet, and the two Sans fonts. |
+
+The Playwright and frontend-design plugins were installed but not loaded into
+this session, so the frontend-design guidance was read from its installed file
+and Firefox's built-in headless screenshot was used instead of Playwright. That
+was a visual look only. Keyboard, zoom, screen-reader, and automated
+accessibility checks have not been run and remain block 5. No hosted CI or
+deployment result is claimed. Block 2 waits for **next**.

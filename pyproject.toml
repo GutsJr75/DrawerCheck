@@ -22,6 +22,15 @@ drawercheck = "drawercheck.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+drawercheck = [
+    "templates/*.html",
+    "static/*.css",
+    "static/*.js",
+    "static/fonts/*.woff2",
+    "static/fonts/LICENSE.txt",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-W error::ResourceWarning"

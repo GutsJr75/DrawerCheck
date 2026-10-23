@@ -2,20 +2,25 @@
 
 import csv
 import importlib
+import re
 import sqlite3
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, date, datetime, timedelta
 from io import BytesIO, StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Barrier
+from typing import get_args, get_type_hints
 
 import pytest
 
-from drawercheck import db, errors
+from drawercheck import db, errors, rules
 from drawercheck.cli import main
 from drawercheck.csv_contract import CSV_HEADERS
 from drawercheck.demo import generate_demo
+from drawercheck.models import Flag, ShiftResult
+from drawercheck.money import format_cents, parse_dollars
 from drawercheck.reconcile import explain_shift
 from drawercheck.reports import csv_out, html, load_report, text
 
@@ -108,6 +113,96 @@ def test_demo_upload_and_cli_match(app, tmp_path: Path) -> None:
     assert demo.headers["Cache-Control"] == "no-store"
     assert demo.headers["X-Content-Type-Options"] == "nosniff"
     assert "Set-Cookie" not in demo.headers
+
+
+def _dollars_to_cents(amount: str) -> int:
+    return parse_dollars(amount.replace("$", "").replace(",", ""))
+
+
+def test_screen_fields_match_cli_results(app, tmp_path: Path) -> None:
+    """The summary, count line totals, and labels agree with the CLI's saved results."""
+    directory, database = tmp_path / "cli-inputs", tmp_path / "cli.db"
+    assert main(["demo-data", "--out", str(directory)]) == 0
+    assert main(["import", "--dir", str(directory), "--db", str(database)]) == 0
+    assert main(["reconcile", "--db", str(database)]) == 0
+    report = load_report(database, generated_at=GENERATED_AT)
+    with app.test_client() as client:
+        payload = client.post("/api/demo").get_json()
+    severities = Counter(flag.severity for flag in report.flags)
+    assert payload["summary"] == {
+        "drawers_checked": len(report.shifts),
+        "drawers_needing_review": len(
+            {
+                flag.shift_id
+                for flag in report.flags
+                if flag.shift_id is not None and flag.severity == "review"
+            }
+        ),
+        "leads_total": len(report.flags),
+        "leads_by_severity": {
+            "info": severities["info"],
+            "warn": severities["warn"],
+            "review": severities["review"],
+        },
+        "deposit_lead_days": len(
+            {
+                flag.business_date
+                for flag in report.flags
+                if flag.rule_code == "R08_DEPOSIT"
+            }
+        ),
+    }
+    # The design's plain-facts line for the demo.
+    assert payload["summary"] == {
+        "drawers_checked": 60,
+        "drawers_needing_review": 4,
+        "leads_total": 16,
+        "leads_by_severity": {"info": 2, "warn": 7, "review": 7},
+        "deposit_lead_days": 2,
+    }
+    for item in payload["shifts"]:
+        result = explain_shift(database, item["shift"]["shift_code"]).result
+        rows = item["shift"]["counts"]
+        assert [(row["denomination"], row["quantity"]) for row in rows] == [
+            (format_cents(denomination), quantity)
+            for denomination, quantity in result.shift.counts
+        ]
+        line_totals = [_dollars_to_cents(row["line_total_amount"]) for row in rows]
+        if result.counted_cents is None:
+            assert line_totals == []
+        else:
+            assert sum(line_totals) == result.counted_cents
+    worked = next(
+        item
+        for item in payload["shifts"]
+        if item["shift"]["shift_code"] == "2026-09-03-R1"
+    )
+    assert [row["line_total_amount"] for row in worked["shift"]["counts"][:3]] == [
+        "$400.00",
+        "$50.00",
+        "$40.00",
+    ]
+    labels = payload["labels"]
+    assert {flag["rule_code"] for flag in payload["flags"]} == set(labels["rules"])
+    assert labels["severities"] == {
+        "info": "Note",
+        "warn": "Check",
+        "review": "Needs review",
+    }
+    assert labels["statuses"]["balanced"] == "Balanced (within $1.00)"
+    assert {item["status"] for item in payload["shifts"]} <= set(labels["statuses"])
+    # Labels are sent once, never repeated on each flag.
+    assert all("label" not in key for flag in payload["flags"] for key in flag)
+
+
+def test_labels_cover_every_rule_severity_and_status() -> None:
+    """A new rule code or status cannot reach the screens without public words."""
+    source = Path(rules.__file__).read_text(encoding="utf-8")
+    assert set(re.findall(r'"(R\d\d_[A-Z_]+)"', source)) == set(web.RULE_LABELS)
+    assert set(get_args(get_type_hints(Flag)["severity"])) == set(web.SEVERITY_LABELS)
+    assert set(get_args(get_type_hints(ShiftResult)["status"])) == set(
+        web.STATUS_LABELS
+    )
 
 
 def test_upload_preserves_bom_crlf_and_raw_bytes(

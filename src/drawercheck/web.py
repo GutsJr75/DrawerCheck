@@ -2,12 +2,13 @@
 
 import json
 import sqlite3
+from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import IO
 
-from flask import Flask, Request, Response, jsonify, request
+from flask import Flask, Request, Response, jsonify, render_template, request
 from werkzeug.exceptions import HTTPException
 
 from drawercheck import errors
@@ -41,6 +42,28 @@ ROW_LIMITS = {
     "cash_counts.csv": MAX_SHIFTS * len(DENOMINATIONS_CENTS),
     "bank_deposits.csv": 2000,
     "safe_drops.csv": 2000,
+}
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; "
+    "img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; "
+    "base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+)
+# Public words for each code, sent once per response so every screen agrees.
+RULE_LABELS = {
+    "R01_VARIANCE": "Cash difference to check",
+    "R02_SINGLE_DENOMINATION": "Possible single bill",
+    "R04_REPEAT_SHORT": "Repeated shortages",
+    "R05_MISSING_VERIFIER_OR_NOTE": "Missing sign-off",
+    "R08_DEPOSIT": "Bank deposit to check",
+    "R09_DATA_INTEGRITY": "Missing or inconsistent records",
+}
+SEVERITY_LABELS = {"info": "Note", "warn": "Check", "review": "Needs review"}
+STATUS_LABELS = {
+    "balanced": "Balanced (within {tolerance})",
+    "over": "Over",
+    "short": "Short",
+    "incomplete": "Missing records",
+    "open": "Still open",
 }
 
 
@@ -107,7 +130,11 @@ def _shift_data(
     )
     values = asdict(result)
     values["shift"]["counts"] = [
-        {"denomination": format_cents(denomination), "quantity": quantity}
+        {
+            "denomination": format_cents(denomination),
+            "quantity": quantity,
+            "line_total_amount": format_cents(denomination * quantity),
+        }
         for denomination, quantity in result.shift.counts
     ]
     values.update(
@@ -123,6 +150,41 @@ def _shift_data(
         else None,
     )
     return _display_values(values)
+
+
+def _labels(config: Config) -> dict:
+    tolerance = format_cents(config.within_tolerance_cents)
+    return {
+        "rules": RULE_LABELS,
+        "severities": SEVERITY_LABELS,
+        "statuses": {
+            status: label.format(tolerance=tolerance)
+            for status, label in STATUS_LABELS.items()
+        },
+    }
+
+
+def _summary(report: ReportData) -> dict:
+    # Leads and drawers are counted separately; one drawer can have several leads.
+    severities = Counter(flag.severity for flag in report.flags)
+    return {
+        "drawers_checked": len(report.shifts),
+        "drawers_needing_review": sum(
+            any(flag.severity == "review" for flag in result.flags)
+            for result in report.shifts
+        ),
+        "leads_total": len(report.flags),
+        "leads_by_severity": {
+            severity: severities[severity] for severity in SEVERITY_LABELS
+        },
+        "deposit_lead_days": len(
+            {
+                flag.business_date
+                for flag in report.flags
+                if flag.rule_code == "R08_DEPOSIT"
+            }
+        ),
+    }
 
 
 def _response_data(report: ReportData) -> dict:
@@ -147,6 +209,8 @@ def _response_data(report: ReportData) -> dict:
         "from_date": report.from_date,
         "to_date": report.to_date,
         "generated_at": report.generated_at,
+        "labels": _labels(report.config),
+        "summary": _summary(report),
         "days": days,
         "cashiers": cashiers,
         "flags": [
@@ -228,7 +292,7 @@ def _run_request(*, demo: bool) -> Response:
 
 def create_app() -> Flask:
     """Create an isolated-request app without a global database, run cache, or debug UI."""
-    app = Flask(__name__, static_folder=None)
+    app = Flask(__name__)
     app.request_class = _UploadRequest
     app.config.update(
         DEBUG=False,
@@ -236,6 +300,10 @@ def create_app() -> Flask:
         MAX_FORM_PARTS=8,
         MAX_FORM_MEMORY_SIZE=128 * 1024,
     )
+
+    @app.get("/")
+    def page() -> str:
+        return render_template("index.html")
 
     @app.post("/api/demo")
     def demo() -> Response:
@@ -255,6 +323,8 @@ def create_app() -> Flask:
             response.status_code = 400
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
+        response.headers["Referrer-Policy"] = "no-referrer"
         return response
 
     @app.errorhandler(errors.WebInputError)

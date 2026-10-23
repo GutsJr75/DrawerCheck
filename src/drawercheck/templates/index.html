@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A learning demo that compares a closing cash count with the register's records, using fictional data.">
+  <title>Check a cash drawer | DrawerCheck</title>
+  <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-Regular-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-SemiBold-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="notice">
+    <div class="wrap">
+      <p>Example data only. Do not upload real store records.</p>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="#/">DrawerCheck</a>
+    </div>
+  </header>
+  <main id="main" class="wrap" tabindex="-1">
+    <section aria-labelledby="start-heading">
+      <h1 id="start-heading">Check a cash drawer against its records</h1>
+      <p class="lead">At the end of a shift, a cashier counts the cash in the drawer. DrawerCheck compares that count with the register's records and lists anything worth a second look.</p>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>DrawerCheck is a personal learning project that uses fictional records. It is not for real cash control.</p>
+      <p>Uploaded files are checked and then deleted. Nothing is saved.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/GutsJr75/DrawerCheck">Source code on GitHub</a></li>
+        <li><a href="https://github.com/GutsJr75/DrawerCheck/blob/main/examples/sample_report.html">Example report on GitHub</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

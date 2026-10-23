@@ -24,7 +24,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
 | Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | Planned next (milestone M8) |
+| Website screens and public hosting | In progress (milestone M8, block 1 of 7 done: screen data and page layout) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
 **Automated checks:** the hosted run for the final web request code,
@@ -203,13 +203,18 @@ messages, with checks and fixes.
 
 ## Web request layer (for developers)
 
-The server side of the planned website is built; the screens are milestone M8.
-Install the optional packages and run the web tests:
+The server side of the planned website is built; the screens are milestone M8,
+built in blocks. So far the site has its page layout, colours, and fonts, but
+not its buttons or results screens yet. Install the optional packages and run
+the web tests:
 
 ```sh
 pip install -e ".[dev,web]"
-pytest -q tests/test_web.py
+pytest -q tests/test_web.py tests/test_web_page.py
 ```
+
+To look at the page on your own computer, run
+`flask --app drawercheck.web:create_app run` and open the address it prints.
 
 Flask handles web requests using the same Python code as the command line.
 Gunicorn runs the app on Linux and macOS hosts, and is not installed on Windows.
@@ -217,12 +222,14 @@ The app is created by `drawercheck.web:create_app()`.
 
 | Request | Sends | Returns |
 | --- | --- | --- |
+| `GET /` | Nothing | The website page, with its local styles and fonts |
 | `POST /api/demo` | Nothing | Full results for the built-in example |
 | `POST /api/check` | The seven CSV files | Full results for those files |
 
 Results come back as one JSON response containing summaries, shift
 explanations, review leads, and all three reports. Money is already formatted,
-so the browser never does cash arithmetic. Each request uses its own temporary
+and Python also sends the count-sheet line totals, the results summary counts,
+and the plain words for each code, so the browser never does cash arithmetic. Each request uses its own temporary
 database, which is deleted before the response is sent. Nothing is saved on the
 server.
 
