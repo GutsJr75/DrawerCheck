@@ -12,6 +12,23 @@
   <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </head>
 <body data-max-upload-bytes="{{ max_upload_bytes }}">
+  {#- One drawer tape for both views. The example passes its amounts; Drawer details
+      leaves them empty for the script to fill and lets each label open its meaning. -#}
+  {% macro tape(name, amounts=none, word="", level="", level_class="", explain=false, caption_class="") -%}
+  <table class="tape" data-tape="{{ name }}">
+    <caption{% if caption_class %} class="{{ caption_class }}"{% endif %}>{{ caller() }}</caption>
+    <tbody>
+      {% for line in tape_lines %}
+      <tr data-line="{{ line.key }}"{% if line.key in ("expected", "difference") %} class="tape-rule tape-total"{% endif %}>
+        <th scope="row"><div class="tape-label"><span class="tape-op" aria-hidden="true">{{ line.sign }}</span>{% if line.spoken %}<span class="visually-hidden">{{ line.spoken }} </span>{% endif %}
+          {%- if explain %}<details class="term"><summary>{{ line.label }}</summary><p>{{ line.definition }}</p></details>{% else %}{{ line.label }}{% endif %}</div></th>
+        <td class="money">{{ amounts[line.key] if amounts else "" }}</td>
+      </tr>
+      {% endfor %}
+      <tr data-line="result" class="tape-result"><td colspan="2"><span data-role="word">{{ word }}</span> <span class="status {{ level_class }}" data-role="level"{% if not level %} hidden{% endif %}>{{ level }}</span></td></tr>
+    </tbody>
+  </table>
+  {%- endmacro %}
   <a class="skip-link" href="#main">Skip to main content</a>
   <div class="notice">
     <div class="wrap">
@@ -45,45 +62,19 @@
         <div>
           <figure class="tape-figure">
             <div class="tape-paper">
-              <table class="tape">
-                <caption>Register R1, September 3, 2026<span class="tape-code">Shift 2026-09-03-R1</span></caption>
-                <tbody>
-                  <tr data-line="opening_float"><th scope="row"><span class="tape-op" aria-hidden="true"></span>Opening float</th><td class="money">$200.00</td></tr>
-                  <tr data-line="cash_sales"><th scope="row"><span class="tape-op" aria-hidden="true">+</span><span class="visually-hidden">Plus </span>Cash sales</th><td class="money">$1,250.75</td></tr>
-                  <tr data-line="paid_ins"><th scope="row"><span class="tape-op" aria-hidden="true">+</span><span class="visually-hidden">Plus </span>Paid-ins</th><td class="money">$0.00</td></tr>
-                  <tr data-line="cash_refunds"><th scope="row"><span class="tape-op" aria-hidden="true">-</span><span class="visually-hidden">Minus </span>Cash refunds</th><td class="money">$12.00</td></tr>
-                  <tr data-line="paid_outs"><th scope="row"><span class="tape-op" aria-hidden="true">-</span><span class="visually-hidden">Minus </span>Paid-outs</th><td class="money">$20.00</td></tr>
-                  <tr data-line="safe_drops"><th scope="row"><span class="tape-op" aria-hidden="true">-</span><span class="visually-hidden">Minus </span>Safe drops</th><td class="money">$900.00</td></tr>
-                  <tr data-line="expected" class="tape-rule tape-total"><th scope="row"><span class="tape-op" aria-hidden="true">=</span><span class="visually-hidden">Equals </span>Expected cash</th><td class="money">$518.75</td></tr>
-                  <tr data-line="counted"><th scope="row"><span class="tape-op" aria-hidden="true"></span>Counted cash</th><td class="money">$498.75</td></tr>
-                  <tr data-line="difference" class="tape-rule tape-total"><th scope="row"><span class="tape-op" aria-hidden="true"></span>Difference</th><td class="money">-$20.00</td></tr>
-                  <tr data-line="result" class="tape-result"><td colspan="2">Short <span class="status status-review">Needs review</span></td></tr>
-                </tbody>
-              </table>
+              {% call tape("example", amounts=example_tape, word="Short", level="Needs review", level_class="status-review") -%}
+                Register R1, September 3, 2026<span class="tape-code">Shift 2026-09-03-R1</span>
+              {%- endcall %}
             </div>
             <figcaption>Example from the built-in demo</figcaption>
           </figure>
           <details class="help">
             <summary>What do these lines mean?</summary>
             <dl class="definitions">
-              <dt>Opening float</dt>
-              <dd>Cash put in the drawer at the start of the shift, so the cashier can give change.</dd>
-              <dt>Cash sales</dt>
-              <dd>Sales paid in cash, as recorded by the register.</dd>
-              <dt>Paid-ins</dt>
-              <dd>Cash added to the drawer that did not come from a sale.</dd>
-              <dt>Cash refunds</dt>
-              <dd>Cash given back to customers for returns.</dd>
-              <dt>Paid-outs</dt>
-              <dd>Cash taken from the drawer to pay for something, such as supplies.</dd>
-              <dt>Safe drops</dt>
-              <dd>Cash moved from the drawer to the safe during the shift.</dd>
-              <dt>Expected cash</dt>
-              <dd>What the drawer should hold, worked out from the lines above.</dd>
-              <dt>Counted cash</dt>
-              <dd>What was actually counted in the drawer at closing.</dd>
-              <dt>Difference</dt>
-              <dd>Counted cash minus expected cash. Below zero means the drawer is short.</dd>
+              {% for line in tape_lines %}
+              <dt>{{ line.label }}</dt>
+              <dd>{{ line.definition }}</dd>
+              {% endfor %}
               <dt>Needs review</dt>
               <dd>The difference is large enough that a person should recount and check the records. It is a lead to check, not a finding about anyone.</dd>
             </dl>
@@ -153,12 +144,163 @@
       </details>
     </section>
 
-    <section id="view-results" class="view" aria-labelledby="results-heading" data-title="Results | DrawerCheck" hidden>
+    <section id="view-results" class="view" aria-labelledby="results-heading" data-title="Results | DrawerCheck" data-announce="Results are ready." hidden>
       <h1 id="results-heading" tabindex="-1">Results</h1>
-      <p id="results-ready" data-template="Results are ready: {drawers} drawers checked from {from} to {to}."></p>
+      <p class="lead" id="results-range" data-template="Records from {from} to {to}."></p>
+
+      <ul class="facts" aria-label="Summary">
+        <li><span class="fact-number" data-fact="drawers_checked"></span> <span data-one="drawer checked" data-many="drawers checked"></span></li>
+        <li><span class="fact-number" data-fact="drawers_needing_review"></span> <span data-one="drawer needs review" data-many="drawers need review"></span></li>
+        <li><span class="fact-number" data-fact="leads_total"></span> <span data-one="lead in total" data-many="leads in total"></span></li>
+        <li><span class="fact-number" data-fact="deposit_lead_days"></span> <span data-one="day with bank-deposit leads" data-many="days with bank-deposit leads"></span></li>
+      </ul>
+      <p class="severity-counts"><span class="severity-intro">Leads by level:</span> <span id="severity-chips"></span></p>
+
+      <h2 id="leads-heading">Review leads</h2>
+      <p class="hint">A lead is something in the records worth checking. It is not a finding about anyone. Leads that need review come first.</p>
+      <ol class="lead-list" id="lead-list" aria-labelledby="leads-heading"
+          data-whole-day="Whole day"
+          data-drawer-template="Drawer {code}"
+          data-rule-template="Rule {code}"
+          data-open-text="Open drawer details"></ol>
+      <p id="no-leads" hidden>No leads were found in these records.</p>
+
+      <details class="help" id="day-details">
+        <summary>Totals by day</summary>
+        <div class="table-scroll" role="region" aria-labelledby="day-caption" tabindex="0">
+          <table class="data-table" id="day-table">
+            <caption id="day-caption">Drawers and expected bank deposit for each day</caption>
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col" class="number">Drawers</th>
+                <th scope="col" class="number" data-status="balanced"></th>
+                <th scope="col" class="number" data-status="over"></th>
+                <th scope="col" class="number" data-status="short"></th>
+                <th scope="col" class="number" data-status="incomplete"></th>
+                <th scope="col" class="number" data-status="open"></th>
+                <th scope="col" class="number">Expected bank deposit</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+
+      <details class="help" id="cashier-details">
+        <summary>Totals by cashier</summary>
+        <p class="hint">These totals describe records, not people. They include every known difference, even small ones counted as balanced. Drawers with missing records or still open are left out of the money totals.</p>
+        <div class="table-scroll" role="region" aria-labelledby="cashier-caption" tabindex="0">
+          <table class="data-table" id="cashier-table">
+            <caption id="cashier-caption">Known differences for each cashier ID</caption>
+            <thead>
+              <tr>
+                <th scope="col">Cashier ID</th>
+                <th scope="col">Name</th>
+                <th scope="col" class="number">Drawers</th>
+                <th scope="col" class="number">Total over</th>
+                <th scope="col" class="number">Total short</th>
+                <th scope="col" class="number">Total over/short</th>
+                <th scope="col" class="number">Missing records</th>
+                <th scope="col" class="number">Still open</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+
+      <details class="help">
+        <summary>What do Note, Check, and Needs review mean?</summary>
+        <dl class="definitions">
+          <dt>Needs review</dt>
+          <dd>A person should look at these records and recount the cash where possible.</dd>
+          <dt>Check</dt>
+          <dd>Worth a closer look, at a lower priority than Needs review.</dd>
+          <dt>Note</dt>
+          <dd>Background that may help explain another lead, such as a difference that equals exactly one bill.</dd>
+        </dl>
+      </details>
+
       <div class="actions">
         <button type="button" class="button button-secondary" data-go="start">Start a new check</button>
       </div>
+    </section>
+
+    <section id="view-drawer" class="view" aria-labelledby="drawer-heading" data-title-template="Drawer {code} | DrawerCheck" hidden>
+      <button type="button" class="link-button back-link" data-go="results">Back to results</button>
+      <h1 id="drawer-heading" tabindex="-1" data-template="Drawer {code}"></h1>
+      <p class="lead" id="drawer-about"
+         data-template="Register {register} on {date}. Cashier ID {cashier}."
+         data-times="Opened {opened}, closed {closed}."
+         data-still-open="Opened {opened}, still open."></p>
+
+      <div class="drawer-grid" id="drawer-grid" data-unknown="unknown">
+        <div>
+          <h2>How expected cash is worked out</h2>
+          <figure class="tape-figure">
+            <div class="tape-paper">
+              {% call tape("drawer", explain=true, caption_class="visually-hidden") -%}
+                Drawer tape. Select a line's name to see what it means.
+              {%- endcall %}
+            </div>
+            <figcaption>Select a line's name to see what it means.</figcaption>
+          </figure>
+          <p class="note" id="tape-note"
+             data-open="This drawer is still open, so it has no closing count or difference yet."
+             data-no-pos="Expected cash is unknown because the register's sales totals are missing."
+             data-no-count="Counted cash is unknown because no cash count was recorded. It is not treated as $0.00."></p>
+        </div>
+
+        <div>
+          <h2 id="count-heading">Count sheet</h2>
+          <div class="sheet-paper">
+          <table class="count-sheet" id="count-sheet">
+            <caption class="visually-hidden">Bills and coins counted at closing</caption>
+            <thead>
+              <tr>
+                <th scope="col">Bill or coin</th>
+                <th scope="col" class="number">Quantity</th>
+                <th scope="col" class="number">Line total</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="2">Counted cash</th>
+                <td class="money number" id="count-total"></td>
+              </tr>
+            </tfoot>
+          </table>
+          </div>
+          <p class="note" id="count-missing" hidden
+             data-none="No cash count was recorded for this drawer, so there is no count sheet. Counted cash is unknown, not $0.00."
+             data-open="This drawer is still open, so it has not been counted yet."></p>
+        </div>
+      </div>
+
+      <h2 id="drawer-leads-heading">Leads for this drawer</h2>
+      <ol class="lead-list" id="drawer-leads" aria-labelledby="drawer-leads-heading"></ol>
+      <p id="drawer-no-leads" hidden>This drawer has no leads.</p>
+
+      <div id="day-leads-block" hidden>
+        <h2 id="day-leads-heading">Leads for the whole day</h2>
+        <p class="hint">These cover every drawer on this date, such as the bank deposit.</p>
+        <ol class="lead-list" id="day-leads" aria-labelledby="day-leads-heading"></ol>
+      </div>
+
+      <details class="help">
+        <summary>How the limits work</summary>
+        <p id="limits-text"
+           data-template="A difference of {tolerance} or less counts as balanced. On this drawer, a difference of {review} or more needs review; this limit depends on the drawer's cash sales."
+           data-unknown="A difference of {tolerance} or less counts as balanced. The review limit for this drawer is unknown because its sales totals are missing."></p>
+      </details>
+      <details class="help">
+        <summary>How this drawer adds to the bank deposit</summary>
+        <p id="deposit-text"
+           data-template="This drawer adds {contribution} to the expected bank deposit for {date}: counted cash {counted}, plus safe drops {drops}, minus {retained} left in the drawer for the next shift. The whole day's expected deposit is {daily}."
+           data-unknown="This drawer's part of the bank deposit is unknown because its counted cash is unknown, so the day's expected deposit is unknown too."></p>
+      </details>
     </section>
   </main>
   <footer class="site-footer">

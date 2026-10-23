@@ -32,6 +32,7 @@ class _Page(HTMLParser):
         self.text: list[str] = []
         self.open_views: list[str | None] = []
         self.heading_views: list[str | None] = []
+        self.tape: str | None = None
         self.tape_line: str | None = None
         self.capturing: tuple[str, str] | None = None
         self.captured: dict[tuple[str, str], str] = {}
@@ -43,16 +44,21 @@ class _Page(HTMLParser):
             self.open_views.append(attributes.get("id"))
         elif tag == "h1":
             self.heading_views.append(self.open_views[-1] if self.open_views else None)
+        elif tag == "table":
+            self.tape = attributes.get("data-tape")
         elif tag == "tr":
             self.tape_line = attributes.get("data-line")
         elif tag == "td" and self.tape_line:
-            self.capturing = ("tape", self.tape_line)
+            # Captured per tape, so the empty Drawer details tape cannot mix in.
+            self.capturing = (f"tape-{self.tape}", self.tape_line)
         if "data-message" in attributes:
             self.capturing = ("message", attributes["data-message"])
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "section":
             self.open_views.pop()
+        elif tag == "table":
+            self.tape = self.tape_line = None
         elif tag in ("td", "p"):
             self.capturing = None
 
@@ -90,12 +96,24 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
     tags = [tag for tag, _ in page.tags]
     assert ("html", {"lang": "en"}) in page.tags
     # One h1 per view; only Start is visible before any script runs.
-    assert page.heading_views == ["view-start", "view-prepare", "view-results"]
+    assert page.heading_views == [
+        "view-start",
+        "view-prepare",
+        "view-results",
+        "view-drawer",
+    ]
     views = {attrs["id"]: attrs for tag, attrs in page.tags if tag == "section"}
     assert "hidden" not in views["view-start"]
-    assert "hidden" in views["view-prepare"] and "hidden" in views["view-results"]
     assert all(
-        attrs["data-title"].endswith(" | DrawerCheck") for attrs in views.values()
+        "hidden" in views[name]
+        for name in ("view-prepare", "view-results", "view-drawer")
+    )
+    # Drawer details builds its title from the shift code, so it has a template.
+    assert all(
+        (attrs.get("data-title") or attrs["data-title-template"]).endswith(
+            " | DrawerCheck"
+        )
+        for attrs in views.values()
     )
     assert tags.count("main") == 1
     assert tags.count("header") == tags.count("footer") == 1
@@ -143,7 +161,7 @@ def test_start_tape_matches_the_demo_calculation(client) -> None:
         (flag["severity"] for flag in shift["flags"]),
         key=["info", "warn", "review"].index,
     )
-    assert page.found("tape") == {
+    assert page.found("tape-example") == {
         "opening_float": record["opening_float_amount"],
         "cash_sales": pos["cash_sales_amount"],
         "paid_ins": pos["paid_ins_amount"],
@@ -159,6 +177,48 @@ def test_start_tape_matches_the_demo_calculation(client) -> None:
     registers = {item["shift"]["register_id"] for item in payload["shifts"]}
     sentence = f"{payload['summary']['drawers_checked']} drawers on two registers"
     assert sentence in text and len(registers) == 2
+
+
+def test_both_tapes_share_one_set_of_lines_and_meanings(client) -> None:
+    """Start and Drawer details use the same labels, signs, and definitions."""
+    page, _ = _page(client)
+    html = client.get("/").get_data(as_text=True)
+    keys = [line.key for line in web.TAPE_LINES]
+    assert keys == list(web.EXAMPLE_TAPE)
+    for tape in ("example", "drawer"):
+        rows = re.search(
+            rf'<table class="tape" data-tape="{tape}">(.*?)</table>', html, re.S
+        )
+        assert rows, tape
+        assert re.findall(r'data-line="([a-z_]+)"', rows.group(1)) == [*keys, "result"]
+    drawer = re.search(r'data-tape="drawer">(.*?)</table>', html, re.S).group(1)
+    for line in web.TAPE_LINES:
+        # Each Drawer details label opens its meaning; the Start tape lists them below.
+        assert f"<summary>{line.label}</summary><p>{line.definition}</p>" in drawer
+        assert (
+            f"<dt>{line.label}</dt>" in html and f"<dd>{line.definition}</dd>" in html
+        )
+        if line.spoken:
+            assert f'<span class="visually-hidden">{line.spoken} </span>' in drawer
+    assert "<details" not in re.search(
+        r'data-tape="example">(.*?)</table>', html, re.S
+    ).group(1)
+
+
+def test_results_hooks_match_the_response_fields(client) -> None:
+    """Every number or word slot in Results points at a field Python sends."""
+    page, _ = _page(client)
+    with client.post("/api/demo") as response:
+        payload = response.get_json()
+    facts = [attrs["data-fact"] for tag, attrs in page.tags if "data-fact" in attrs]
+    assert facts and set(facts) <= set(payload["summary"])
+    statuses = [
+        attrs["data-status"] for tag, attrs in page.tags if "data-status" in attrs
+    ]
+    assert set(statuses) == set(payload["labels"]["statuses"])
+    plural_labels = [attrs for tag, attrs in page.tags if "data-one" in attrs]
+    assert len(plural_labels) == len(facts)
+    assert all(attrs["data-many"] for attrs in plural_labels)
 
 
 def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:

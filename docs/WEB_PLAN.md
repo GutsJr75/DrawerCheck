@@ -7,8 +7,8 @@
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
 - **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
-  and 2 are done; block 2 (Start and Prepare files) waits for the user's
-  review. Blocks 3 to 7 each need the user's go-ahead.
+  to 3 are done; block 3 (Results and Drawer details) waits for the user's
+  review. Blocks 4 to 7 each need the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
@@ -17,7 +17,7 @@
 | --- | --- | --- |
 | 1 | Summary, count line totals, and labels in the JSON; page layout, colour tokens, IBM Plex fonts, demo notice, footer, and security headers | Done |
 | 2 | Start and Prepare files: "Try the example", the example tape, and the file checklist with its error summary | Done |
-| 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Not started |
+| 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Done |
 | 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Not started |
 | 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Not started |
 | 6 | Hosting: Render setup and a check of the live public site | Not started |
@@ -171,6 +171,24 @@ Built in M8 block 2 (2026-10-23):
   slow-start message, and the 90-second limit. Results show one sentence until
   block 3 builds the real view.
 - Drag and drop is not built; the plan treats it as optional.
+
+Built in M8 block 3 (2026-10-23):
+
+- Results shows the plain-facts line from `summary`, the leads by level, and
+  every lead with its level, plain title, Python's message, and the date,
+  drawer or "Whole day", and rule code as secondary detail. "Needs review"
+  comes first, then date and drawer. The day and cashier tables sit in closed
+  sections and fill only when opened, so a large upload shows quickly.
+- Drawer details shows the tape, the count sheet, this drawer's leads, the
+  day's leads, how the limits work, and how the drawer adds to the bank
+  deposit. Every amount is Python's string; unknown amounts say why.
+- Both tapes come from one list of lines in `web.py` (`TAPE_LINES`), so the
+  Start example and Drawer details share labels, signs, and definitions.
+- Only drawers with their own leads can be opened from Results for now. Block
+  4's `#/drawer/<code>` addresses make every drawer reachable, including
+  those with only whole-day leads.
+- Results renders every lead at once. A very large upload (thousands of
+  leads) may be slow to draw; block 4's filters are the first remedy.
 
 ### Loading and slow starts
 

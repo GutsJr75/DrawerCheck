@@ -19,3 +19,4 @@ Every image shows fictional demo data only.
 | --- | --- | --- | --- |
 | [2026-10-23-m8-block1](2026-10-23-m8-block1/) | 2026-10-23 | The page layout: demo notice, heading, and footer, before any views existed | Headless Firefox 158 screenshots of the local app |
 | [2026-10-23-m8-block2](2026-10-23-m8-block2/) | 2026-10-23 | Start with the example tape and its help, and Prepare files when empty, with missing files, and with a server error on one file | Headless Firefox 158 driven through WebDriver BiDi, light and dark |
+| [2026-10-23-m8-block3](2026-10-23-m8-block3/) | 2026-10-23 | Results with the plain-facts line, leads, and the day and cashier tables; Drawer details for `2026-09-03-R1` with a definition open; the uncounted drawer `2026-09-25-R1`; and a drawer with a whole-day deposit lead from an upload missing September 3's deposit | Headless Firefox 158 driven through WebDriver BiDi, light and dark |

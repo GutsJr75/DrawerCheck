@@ -779,3 +779,37 @@ These browser checks used scripted clicks and file selection, not a person's
 keyboard or a screen reader. Focus order, zoom, screen-reader announcements,
 and an automated accessibility scan remain block 5. No hosted CI or deployment
 result is claimed. Block 3 waits for **next**.
+
+## M8 block 3: Results and Drawer details
+
+- Built: Results with the plain-facts line, leads by level, every lead in
+  priority order, and day and cashier tables that fill when opened. Drawer
+  details with the tape (each label opens its meaning), the count sheet with a
+  bookkeeping total line, this drawer's and the whole day's leads, and plain
+  sentences on limits and the bank deposit. Both tapes share one `TAPE_LINES`
+  list in Python.
+- Learned: Missing data needs its own words at every level: "unknown" in a
+  cell, a sentence saying why, and no count sheet instead of a sheet of zeros.
+  Screen readers also need separators that sighted visitors get from spacing,
+  such as the hidden commas between the lead counts.
+- Interview question: How do you show a calculation step by step in a browser
+  without letting the browser do any of the arithmetic?
+
+The user authorized block 3 on 2026-10-23. Verified with the same local
+environment as block 2: Python 3.13.5, Flask 3.1.3, Gunicorn 26.2.0, pytest
+9.1.1, Ruff 0.17.1, Firefox 158.0.1, and Node 22.22.0.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 683 tests, 2 of them new, in 10.4 seconds; the process ended normally (10.6 seconds wall time). |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. Ruff now reports 53 files because it also reads `docs/screenshots/README.md`. |
+| `node --check src/drawercheck/static/app.js` | PASS. |
+| Shared tape and Results hooks | PASS: both tapes list the same nine lines in order; every Drawer details label opens its exact `TAPE_LINES` definition; every `data-fact` and `data-status` slot names a field the server sends. |
+| Budgets | PASS: CSS 17,596 bytes and JavaScript 20,891 bytes (38,487 together) against 60 KB. |
+| Headless Firefox through WebDriver BiDi, local Gunicorn, light and dark | Observed: Results shows 60 drawers checked, 4 drawers need review, 16 leads, and 2 deposit-lead days, matching `summary`; all 7 "Needs review" leads come first; the two whole-day leads have no drawer button. Drawer `2026-09-03-R1`: all nine tape amounts and all twelve count rows equal the `/api/demo` values, the total is $498.75, and the limits and deposit sentences use $1.00, $12.50, $1,198.75, and $2,698.27. Drawer `2026-09-25-R1` shows "unknown" for counted cash and difference, no count sheet, and the reason. An upload without September 3's deposit shows a whole-day lead on that drawer. Day table 30 rows, cashier table 4 rows. No sideways scrolling at 320 px on Results or Drawer details. |
+| Fixes found by looking at the screenshots | Bills and coins were right-aligned under a left heading; the hidden tape caption left a gap; a definition stayed open on the next drawer; screen readers would have heard "7Check 7Note". All four were fixed and the run repeated. |
+
+Screenshots are in `docs/screenshots/2026-10-23-m8-block3/` (14 images, about
+4.7 MB, mostly tall full-page Results images). Keyboard order, zoom, screen
+readers, and an automated accessibility scan remain block 5. No hosted CI or
+deployment result is claimed. Block 4 waits for **next**.

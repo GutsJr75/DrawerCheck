@@ -3,9 +3,9 @@
 This guide covers two things: the M8 website and the existing M4 HTML report.
 M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in
 `src/drawercheck/static/app.css`. Block 2 added the Start view with the example
-tape and the Prepare files view with its checklist. Results and Drawer details
-come in block 3, and the full accessibility check is block 5. The report's
-styles are unchanged.
+tape and the Prepare files view with its checklist. Block 3 added Results and
+Drawer details with the count sheet. The full accessibility check is block 5.
+The report's styles are unchanged.
 
 Read this file for how the website should **look**. Read
 [WEB_PLAN.md](docs/WEB_PLAN.md) for how it should **behave**: views, wording,
@@ -176,7 +176,9 @@ line separates the inputs from the result, and the result line is emphasised.
   lines. This edge is the site's one decorative flourish; nothing else on the
   page gets one.
 - Each label can open a one-sentence definition ("A safe drop is cash moved
-  from the drawer to the safe during the shift").
+  from the drawer to the safe during the shift"). On Drawer details each label
+  is a `details` element with a dotted underline; each drawer opens with them
+  closed. The Start example lists the same definitions in one section below it.
 - A missing input shows "unknown" with the reason, and the expected line says
   why it cannot be calculated. It never shows `$0.00` for missing data.
 - Every amount comes from the server. The browser does no arithmetic.
@@ -197,6 +199,12 @@ The counted cash appears like the paper count sheet a cashier fills in:
 Line totals are calculated in Python and sent with the results (see
 [WEB_PLAN.md](docs/WEB_PLAN.md#data-the-screens-need-from-python)).
 
+The sheet is a `surface` panel with a thin `line` rule under each row. The total
+follows the bookkeeping convention: a single `control` rule above "Counted
+cash" and a double rule below it. Bills and coins label their rows on the left;
+quantities and line totals are right-aligned. With no count rows, the sheet is
+replaced by a sentence saying counted cash is unknown, not $0.00.
+
 ### The example tape on the Start view
 
 Instead of a marketing banner, the Start view shows a small, clearly labelled
@@ -210,6 +218,13 @@ The top of Results is one line of labelled numbers, not a grid of icon cards.
 Keep counts of leads and counts of drawers separate. For the demo:
 "60 drawers checked", "4 drawers need review", "16 leads in total", and
 "2 days with bank-deposit leads".
+
+Built in block 3: the number is semibold at 24 px and the words stay at body
+size on the same baseline, separated by thin `line` rules, so the row reads as
+a sentence rather than as stat cards. On phones the facts stack. A second line
+gives the leads by level as status labels with counts. Leads then follow in one
+panel, one row each: level, plain title, Python's message, and a muted line
+with the date, the drawer or "Whole day", and the rule code.
 
 ## What to avoid
 

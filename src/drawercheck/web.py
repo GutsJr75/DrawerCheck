@@ -3,7 +3,7 @@
 import json
 import sqlite3
 from collections import Counter
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import IO
@@ -64,6 +64,97 @@ STATUS_LABELS = {
     "short": "Short",
     "incomplete": "Missing records",
     "open": "Still open",
+}
+
+
+@dataclass(frozen=True)
+class TapeLine:
+    """One drawer-tape line: its key, sign, spoken sign, label, and plain meaning."""
+
+    key: str
+    sign: str
+    spoken: str
+    label: str
+    definition: str
+
+
+# Both tapes (the Start example and Drawer details) use these words and signs.
+TAPE_LINES = (
+    TapeLine(
+        "opening_float",
+        "",
+        "",
+        "Opening float",
+        "Cash put in the drawer at the start of the shift, so the cashier can give change.",
+    ),
+    TapeLine(
+        "cash_sales",
+        "+",
+        "Plus",
+        "Cash sales",
+        "Sales paid in cash, as recorded by the register.",
+    ),
+    TapeLine(
+        "paid_ins",
+        "+",
+        "Plus",
+        "Paid-ins",
+        "Cash added to the drawer that did not come from a sale.",
+    ),
+    TapeLine(
+        "cash_refunds",
+        "-",
+        "Minus",
+        "Cash refunds",
+        "Cash given back to customers for returns.",
+    ),
+    TapeLine(
+        "paid_outs",
+        "-",
+        "Minus",
+        "Paid-outs",
+        "Cash taken from the drawer to pay for something, such as supplies.",
+    ),
+    TapeLine(
+        "safe_drops",
+        "-",
+        "Minus",
+        "Safe drops",
+        "Cash moved from the drawer to the safe during the shift.",
+    ),
+    TapeLine(
+        "expected",
+        "=",
+        "Equals",
+        "Expected cash",
+        "What the drawer should hold, worked out from the lines above.",
+    ),
+    TapeLine(
+        "counted",
+        "",
+        "",
+        "Counted cash",
+        "What was actually counted in the drawer at closing.",
+    ),
+    TapeLine(
+        "difference",
+        "",
+        "",
+        "Difference",
+        "Counted cash minus expected cash. Below zero means the drawer is short.",
+    ),
+)
+# The Start view's example is drawer 2026-09-03-R1; a test compares it with /api/demo.
+EXAMPLE_TAPE = {
+    "opening_float": "$200.00",
+    "cash_sales": "$1,250.75",
+    "paid_ins": "$0.00",
+    "cash_refunds": "$12.00",
+    "paid_outs": "$20.00",
+    "safe_drops": "$900.00",
+    "expected": "$518.75",
+    "counted": "$498.75",
+    "difference": "-$20.00",
 }
 FILE_DESCRIPTIONS = {
     "cashiers.csv": "Cashiers and managers, each with an ID and a name",
@@ -323,6 +414,8 @@ def create_app() -> Flask:
     def page() -> str:
         return render_template(
             "index.html",
+            tape_lines=TAPE_LINES,
+            example_tape=EXAMPLE_TAPE,
             files=FILE_DESCRIPTIONS,
             messages=CLIENT_MESSAGES,
             row_limits=ROW_LIMITS,
