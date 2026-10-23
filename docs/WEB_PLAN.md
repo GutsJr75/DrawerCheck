@@ -190,6 +190,23 @@ Built in M8 block 3 (2026-10-23):
 - Results renders every lead at once. A very large upload (thousands of
   leads) may be slow to draw; block 4's filters are the first remedy.
 
+Block 3 repair after review (2026-10-23):
+
+- The bank-deposit sentence now names the actual reason a drawer's share is
+  unknown, checked in order: the drawer is still open; it has no count; or it
+  was counted but its day is incomplete. A day is incomplete when any drawer is
+  open or has missing records, a register closed twice or is missing, or a
+  register appears more than once (`expected_deposit` in `reconcile.py`).
+  Python's calculation is unchanged.
+- The tape's status line may wrap, so a "Balanced (within $1.00)" drawer with a
+  label fits 320 px. Tape labels and error-summary links are at least 24 px
+  tall, and error links have 8 px between them.
+- Block 4 adds links to every drawer: whole-day leads link to that date's
+  drawers, labelled as drawers on that date because an unexpected bank entry
+  is filed under its own date and may be unrelated to them, and a closed
+  "All drawers" section lists every drawer. Bank-only dates have no drawer
+  links.
+
 ### Loading and slow starts
 
 There are two different waits, and only the second one is ours to design:

@@ -127,7 +127,9 @@ from the stylesheet, so a token change that breaks contrast fails the tests.
 - **Breakpoints:** 640 px and 1,024 px. Below 640 px, results tables become
   stacked rows, one review item per row.
 - **Focus ring:** 3 px solid `accent` with a 2 px gap, on every interactive
-  element.
+  element. View headings, `main`, and the error summary receive focus from
+  scripts but are not controls, so they show no ring; a checklist row reached
+  from an error link keeps its ring so visitors can see where they landed.
 - **Transitions:** at most 150 ms on colour changes; none when reduced motion is
   requested.
 

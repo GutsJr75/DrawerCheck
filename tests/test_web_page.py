@@ -219,6 +219,18 @@ def test_results_hooks_match_the_response_fields(client) -> None:
     plural_labels = [attrs for tag, attrs in page.tags if "data-one" in attrs]
     assert len(plural_labels) == len(facts)
     assert all(attrs["data-many"] for attrs in plural_labels)
+    # One deposit sentence for each reason a drawer's share can be unknown.
+    deposit = next(
+        attrs for tag, attrs in page.tags if attrs.get("id") == "deposit-text"
+    )
+    for reason in (
+        "data-template",
+        "data-open",
+        "data-no-count",
+        "data-day-incomplete",
+    ):
+        assert deposit[reason], reason
+    assert "counted cash is unknown" not in deposit["data-day-incomplete"]
 
 
 def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:
@@ -362,6 +374,9 @@ CONTRAST_PAIRS = [
     ("note", "note-bg", 4.5),
     ("check", "check-bg", 4.5),
     ("review", "review-bg", 4.5),
+    # Problem messages and error links use the review colour as plain text.
+    ("review", "surface", 4.5),
+    ("review", "page", 4.5),
     ("ready", "ready-bg", 4.5),
 ]
 

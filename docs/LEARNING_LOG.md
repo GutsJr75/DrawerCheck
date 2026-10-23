@@ -813,3 +813,35 @@ Screenshots are in `docs/screenshots/2026-10-23-m8-block3/` (14 images, about
 4.7 MB, mostly tall full-page Results images). Keyboard order, zoom, screen
 readers, and an automated accessibility scan remain block 5. No hosted CI or
 deployment result is claimed. Block 4 waits for **next**.
+
+## M8 block 3 repair: Outside review findings
+
+- Built: Fixes for an outside review of blocks 1 to 3, each claim verified in
+  the code and in Firefox first. The deposit sentence now names the real reason
+  a share is unknown; the tape's status line wraps at 320 px; tape labels and
+  error links meet the 24 px target rule; script-focused headings and the error
+  summary show no ring; and stale Start errors and hidden labels are cleared.
+- Learned: A layout check on one example drawer is not a layout check on every
+  drawer: the only demo drawer that is balanced and needs review was the one
+  that broke at 320 px. Focus rings also depend on how a button is pressed, so
+  checks need real mouse and keyboard input, not scripted clicks.
+- Interview question: When an outside reviewer reports problems, how do you
+  decide which to fix, which to reword, and which to decline?
+
+The user authorized this repair on 2026-10-23. Same local environment as block
+3. Review item 5c (an empty file-input change after cancelling the dialog) was
+not changed: browsers fire `cancel` there, and the script already empties the
+input after each choice.
+
+| Command or check | Result |
+| --- | --- |
+| Before the repair, in Firefox | Reproduced: drawer `2026-09-27-R2` made the page 362 px wide at 320 px; tape labels and error links were 22 px tall with 2 px between error links; a heading ring appeared after keyboard Enter but not after a real mouse click. `2026-09-25-R2` was counted ($5,493.47) but would have been told its counted cash was unknown. |
+| `.venv/bin/pytest -q` | PASS: 683 tests in 10.8 seconds; the contrast test now also checks the review colour on page and panel backgrounds, and a page test checks all four deposit sentences. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. |
+| `node --check src/drawercheck/static/app.js` | PASS. |
+| Headless Firefox through WebDriver BiDi with real pointer and key input, light and dark | Observed: no link, button, summary, or file-chooser label under 24 x 24 px on Start, Prepare files with the error summary, Results with every section open, or Drawer details; error links 24 px tall with 8 px gaps. All nine drawers that Results can open, and Results itself, are exactly 320 px wide at 320 px. Headings and the error summary show no ring after mouse or keyboard; the checklist row reached by an error link does. A failed example run's error clears on returning to Start. An upload with an open drawer and an incomplete day gives the four deposit sentences: still open (`2026-09-29-R1`), no count (`2026-09-25-R1`), counted but day incomplete (`2026-09-25-R2`, $5,473.47 counted), and complete (`2026-09-03-R1`, $1,198.75). |
+| Budgets | PASS: CSS and JavaScript together 39,517 bytes against 60 KB. |
+
+Screenshots are in `docs/screenshots/2026-10-23-m8-block3-repair/` (6 images,
+about 1.4 MB). Block 4 will extend the 320 px check to all 60 drawers once
+every drawer has an address. Block 4 waits for **next**.

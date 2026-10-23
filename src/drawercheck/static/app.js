@@ -80,6 +80,10 @@
     for (const [key, view] of Object.entries(views)) {
       view.hidden = key !== name;
     }
+    if (name === "start") {
+      // An old example failure should not greet a visitor who comes back later.
+      startError.textContent = "";
+    }
     document.title = views[name].dataset.title;
     views[name].querySelector("h1").focus();
   }
@@ -337,11 +341,10 @@
       results.labels.statuses[item.status];
     const level = drawerTape.querySelector('[data-role="level"]');
     const worst = worstSeverity(item.flags);
+    // A drawer without leads clears the label rather than hiding the last one.
     level.hidden = !worst;
-    if (worst) {
-      level.className = `status ${severityClass[worst]}`;
-      level.textContent = results.labels.severities[worst];
-    }
+    level.className = worst ? `status ${severityClass[worst]}` : "status";
+    level.textContent = worst ? results.labels.severities[worst] : "";
 
     const notes = [];
     if (item.status === "open") {
@@ -392,17 +395,29 @@
             tolerance: item.within_tolerance_amount,
             review: item.review_threshold_amount,
           });
-    depositText.textContent =
-      item.deposit_contribution_amount === unknown
-        ? depositText.dataset.unknown
-        : fill(depositText.dataset.template, {
-            contribution: item.deposit_contribution_amount,
-            date: formatDate(shift.business_date),
-            counted: item.counted_amount,
-            drops: shift.safe_drops_amount,
-            retained: item.retained_float_amount,
-            daily: item.daily_deposit_amount,
-          });
+    depositText.textContent = depositSentence(item, unknown);
+  }
+
+  function depositSentence(item, unknown) {
+    // Python leaves a drawer's share blank whenever its whole day is incomplete,
+    // so the sentence names the actual reason, checked in this order.
+    if (item.status === "open") {
+      return depositText.dataset.open;
+    }
+    if (item.counted_amount === unknown) {
+      return depositText.dataset.noCount;
+    }
+    if (item.deposit_contribution_amount === unknown) {
+      return depositText.dataset.dayIncomplete;
+    }
+    return fill(depositText.dataset.template, {
+      contribution: item.deposit_contribution_amount,
+      date: formatDate(item.shift.business_date),
+      counted: item.counted_amount,
+      drops: item.shift.safe_drops_amount,
+      retained: item.retained_float_amount,
+      daily: item.daily_deposit_amount,
+    });
   }
 
   function openDrawer(shiftCode) {

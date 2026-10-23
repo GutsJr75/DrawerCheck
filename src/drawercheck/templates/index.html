@@ -299,7 +299,9 @@
         <summary>How this drawer adds to the bank deposit</summary>
         <p id="deposit-text"
            data-template="This drawer adds {contribution} to the expected bank deposit for {date}: counted cash {counted}, plus safe drops {drops}, minus {retained} left in the drawer for the next shift. The whole day's expected deposit is {daily}."
-           data-unknown="This drawer's part of the bank deposit is unknown because its counted cash is unknown, so the day's expected deposit is unknown too."></p>
+           data-open="This drawer is still open, so its part of the bank deposit cannot be worked out yet, and the day's expected deposit is unknown."
+           data-no-count="This drawer's part of the bank deposit is unknown because no cash count was recorded, so the day's expected deposit is unknown too."
+           data-day-incomplete="This drawer was counted, but the whole day's expected bank deposit is unknown because some of that day's records are missing, inconsistent, or still open. So this drawer's share is not calculated."></p>
       </details>
     </section>
   </main>

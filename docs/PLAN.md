@@ -11,8 +11,9 @@
 - **In progress:** M8, the website screens and public demo, in seven blocks
   (listed in `docs/WEB_PLAN.md`). Blocks 1 to 3 (screen data and layout, Start
   and Prepare files, and Results and Drawer details) were each authorized and
-  built on 2026-10-23 (decisions 60, 61, and 63). Wait for the user's review
-  and **next** before block 4.
+  built on 2026-10-23 (decisions 60, 61, and 63), and block 3 was repaired
+  after an outside review (decision 64). Wait for the user's **next** before
+  block 4.
 - **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
 
 How the scope grew:
@@ -215,6 +216,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 62. **Keep screenshots as a dated timeline in the repository (user rule, 2026-10-23).** After block 2 the user asked for the screenshots to be committed, with dates in the names and a separate folder for each timeline, so progress is easy to see, and asked that every agent know the rule. Folders are `docs/screenshots/<YYYY-MM-DD>-<milestone>-<block>/`; filenames repeat the date and label, then view, state, theme, and width. Earlier folders are never changed. `docs/screenshots/README.md` indexes them, and the rule lives in AGENTS.md so every agent reads it at the start of a task. Blocks 1 and 2 were backfilled from the screenshots taken during their checks (19 images, about 3 MB). This applies to all later screenshot work, including the block 5 and 7 screenshots.
 
 63. **Build M8 block 3: Results and Drawer details (authorized 2026-10-23).** Results shows the plain-facts line from Python's `summary`, the leads by level, and every lead ordered "Needs review" first, then by date and drawer; the browser sorts codes but never counts or calculates. The day and cashier tables listed in this plan's experience section are included as closed sections that fill when opened, so large uploads stay quick to show. Drawer details shows the tape, the count sheet, this drawer's leads apart from whole-day leads, and plain sentences on the limits and the bank-deposit contribution, all from Python's strings. Both tapes now come from one `TAPE_LINES` list in `web.py`; the Start example's amounts moved there too, still checked against `/api/demo`. Only drawers with their own leads can be opened until block 4 adds addresses. Wording avoided deadlines ("soon") and claims about causes; cashier totals say they describe records, not people.
+
+64. **Repair block 3 after an outside review (authorized 2026-10-23).** The user brought a review of blocks 1 to 3; each claim was checked against the code and measured in Firefox before any change. Confirmed and fixed: the deposit sentence blamed a missing count even for counted drawers on incomplete days (three reasons now, in order: open, no count, day incomplete; no calculation change); drawer `2026-09-27-R2` widened the page to 362 px at 320 px because the tape's status line could not wrap; tape labels and error links were 22 px tall against DESIGN.md's 24 px rule; error links had 2 px between them; a hidden label kept stale text; an old Start error lingered; and the contrast test omitted the review colour as plain text (it passes at 6.36:1 or more). Focus rings on view headings, `main`, and the error summary appeared for keyboard users, not mouse users; they were removed because those are not controls. Not changed: guarding the file input against an empty change event, since cancelling the dialog fires `cancel`, not `change`. Option 1 for opening any drawer (links on whole-day leads plus a closed "All drawers" section) moves into block 4.
 
 ## Math and test commitments
 

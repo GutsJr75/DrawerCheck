@@ -188,8 +188,11 @@ a:hover {
   outline-offset: 2px;
 }
 
-/* Headings and main receive focus from scripts after a view change; no ring is needed there. */
-[tabindex="-1"]:focus:not(:focus-visible) {
+/* Scripts move focus to these after a view change, the skip link, or a failed
+   check. They are not controls, so no ring; the next Tab reaches a control. */
+main:focus,
+h1[tabindex="-1"]:focus,
+.error-summary:focus {
   outline: none;
 }
 
@@ -548,8 +551,10 @@ main {
   font-weight: 600;
 }
 
+/* The status word and its label may wrap, so long statuses fit 320px screens. */
 .tape .tape-result td {
   padding-top: var(--space-2);
+  white-space: normal;
 }
 
 .tape-figure figcaption {
@@ -820,8 +825,10 @@ main {
 }
 
 /* A tape label opens its one-sentence meaning in place. */
+/* Inline-block makes the clickable box the full 24px line, not just the letters. */
 .term summary {
-  display: inline;
+  display: inline-block;
+  min-height: 1.5rem;
   text-decoration: underline dotted;
   text-underline-offset: 0.2em;
   cursor: pointer;
@@ -905,7 +912,13 @@ main {
   padding-left: var(--space-5);
 }
 
+.error-summary li + li {
+  margin-top: var(--space-2);
+}
+
 .error-summary a {
+  display: inline-block;
+  min-height: 1.5rem;
   color: var(--review);
   font-weight: 600;
 }
