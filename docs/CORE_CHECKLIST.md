@@ -1,7 +1,9 @@
 # Core verification checklist
 
 Status: M6 complete. Local checks and the hosted Python 3.12/3.13/3.14 matrix
-have passed. M7/M8's web implementation is not started.
+have passed. This is the historical M6 core checklist; M7's request layer is now
+locally verified, and M8's screens/deployment remain planned. See the learning
+log and web plan for M7 results.
 
 This checklist follows the original core definition of done. PASS means the
 check was actually run successfully; FAIL includes checks not yet verified.
@@ -59,5 +61,5 @@ and installed CLI help:
 - [Python 3.14](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717/job/120279029217): 559 tests passed.
 
 All eight original core checklist rows are now PASS. This does not claim
-browser verification or public-app deployment. M7 requires a separate user
-instruction; it has not started.
+browser verification or public-app deployment. M7 was subsequently authorized
+on 2026-10-23; its local results are recorded separately in the learning log.

@@ -1,8 +1,9 @@
 # Interview and project-sharing notes
 
 DrawerCheck is a personal learning project with fictional data. These notes
-describe the implemented offline core through M6. The public web app remains
-planned for M7/M8. Use [the checklist](CORE_CHECKLIST.md) for observed validation;
+describe the implemented offline core through M6. M7 now adds locally tested
+web requests; browser screens and public hosting remain M8 work.
+Use [the checklist](CORE_CHECKLIST.md) for observed core validation;
 workflow configuration alone does not prove that GitHub CI passed.
 
 ## A 30-second pitch
@@ -81,9 +82,9 @@ The first five also form a short practice set for a code walkthrough.
    control simply because the fictional examples pass.
 
 8. **Is the website built or the project fully deployed?**
-   No. The command-line core and offline reports exist. The approved web plan
-   calls for isolated temporary runs and a minimal interface for beginners, but
-   implementation and public deployment remain separate future milestones.
+   The core, offline reports, and optional web request layer exist. Web checks
+   use separate temporary runs and return their results without keeping a shared
+   database. The browser interface and public deployment remain M8 work.
 
 ## Three resume bullet options
 

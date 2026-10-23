@@ -1,8 +1,9 @@
 # Public frontend plan
 
-Status: Scope approved on 2026-10-22; implementation is scheduled for M7/M8.
-M0 through M6 are complete, including hosted CI verification. M7 is the next
-milestone and awaits a separate user instruction.
+Status: M7 request handling is complete and locally verified after the user's
+2026-10-23 authorization. M0 through M6 include observed hosted CI; M7's updated
+CI workflow has not yet been observed remotely. M8 screens and deployment await
+the user's next instruction.
 
 ## User decision
 
@@ -75,9 +76,9 @@ not a cashier name, and multiline records make guessed spreadsheet row numbers
 unreliable. The website runs the pipeline itself, so do not ask visitors to run
 CLI commands. Keep the existing validation and shared calculations unchanged.
 
-This decision records future M7/M8 behaviour only. It does not implement screens,
-change the M4 report, or authorize M5. Detailed visual choices and browser checks
-remain part of the later frontend work. See [DESIGN.md](../DESIGN.md).
+This design decision originally recorded future M7/M8 behaviour without authorizing
+implementation. M7 was subsequently authorized and completed. Detailed visual
+choices and browser checks remain M8 work. See [DESIGN.md](../DESIGN.md).
 
 ## Experience to build
 
@@ -187,6 +188,71 @@ for review. Optional rules R03, R06, and R07 move to M9 and remain opt-in.
 - Update README with the public demo link, real screenshots, core/web setup,
   temporary-data behavior, hosting limitations, and a plain explanation of each
   library. Update career material only after the claimed features exist.
+
+## M7 request contract and handoff
+
+Install with `pip install -e ".[dev,web]"`. The core-only installation remains
+`pip install -e .`. The web extra adds Flask to handle requests and Gunicorn to
+serve the application on Unix hosts; Gunicorn is excluded on native Windows.
+The application factory is `drawercheck.web:create_app()`. No browser page is
+implemented at this milestone.
+
+| Request | Input | Successful response |
+| --- | --- | --- |
+| `POST /api/demo` | Empty body, no URL options | The fixed 30-day example's full results. |
+| `POST /api/check` | Multipart upload with seven repeated `files` fields | The uploaded records' full results. |
+
+Filenames must exactly match the seven names in the CSV contract. No archive,
+folder path, extra field, policy override, or database path is accepted. MIME
+labels are not treated as proof of CSV validity; the shared importer validates
+the actual bytes, including UTF-8/BOM, headers, rows, and references.
+
+Both routes use the core's built-in example policies, independent of local
+`config.toml`. The 2 MiB limit includes the complete multipart request. Valid
+requests exactly at the limit pass; larger ones return 413. Multipart parsing
+also has an eight-part limit and 128 KiB non-file-field limit. More than 1,000
+shifts returns 400 after validated import and before reconciliation. The fixed
+example has 60 shifts and fits comfortably within the limits.
+
+JSON includes `notice`, `from_date`, `to_date`, `generated_at`, `days`, `cashiers`,
+`flags`, `shifts`, and `reports`. Money fields use names ending in `_amount`
+and are formatted in Python, including nested flag evidence. Count entries have
+a formatted `denomination` and integer `quantity`. Missing cash remains `unknown`;
+a bank-only date says `Not calculated (no shifts)`. No browser money calculations
+are needed. Each shift includes its input records, expected/count/difference,
+saved shift leads, daily leads, policy thresholds, and shared deposit explanation.
+
+Each `reports` entry (`text`, `html`, `csv`) includes its `filename`, `media_type`,
+and complete `content`. M8 can turn these buffered strings into local downloads;
+it must not request an already deleted server workspace. The HTML content is the
+existing escaped offline report, and CSV uses the shared cell protection.
+JSON strings are data: M8 must render uploaded names, notes, identifiers, and
+errors through text nodes or normal template escaping, never `innerHTML`.
+
+Each run owns a fresh temporary directory. All database connections are closed,
+the directory is removed before the response returns, and upload streams close
+even after a failed multipart parse. There is no server run cache, session cookie,
+shared database, or stored download. Responses use `Cache-Control: no-store`.
+Invalid input returns JSON `error.message` with status 400; CSV errors additionally
+include `file_name`, physical `line_number`, and `column`. Server failures return
+a generic message with status 503 and do not log submitted records or paths.
+HTTP routing/parser failures also return JSON, without debug pages.
+
+Local verification and exact commands are recorded in the learning log. CI now
+tests the core before installing optional web packages, then runs the web tests
+on Python 3.12/3.13/3.14. This workflow change is not a claim of a new passing
+hosted run. M8 still needs the actual interface, browser and usability checks,
+and observed public deployment.
+
+## Dependency references rechecked on 2026-10-23
+
+- [Flask releases](https://flask.palletsprojects.com/en/stable/changes/) and
+  [Flask on PyPI](https://pypi.org/project/Flask/): Flask 3.1.3 and Python support.
+- [Gunicorn on PyPI](https://pypi.org/project/gunicorn/): Gunicorn 26.2.0 and Unix support.
+- [Flask resource limits](https://flask.palletsprojects.com/en/stable/web-security/):
+  total request size, multipart part count, and non-file-field limits.
+- [Flask uploads](https://flask.palletsprojects.com/en/stable/patterns/fileuploads/):
+  fixed filename handling and request-size rejection.
 
 ## Primary references reviewed on 2026-10-22
 

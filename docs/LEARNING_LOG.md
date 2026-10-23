@@ -504,3 +504,55 @@ for this evidence-only edit; runtime code, tests, and workflow bytes are unchang
 from the hosted commit whose three passing test logs were inspected.
 
 M6 is complete. M7 remains unstarted, awaiting **next**.
+
+## M7: Optional web requests and temporary runs
+
+- Built: An optional Flask application factory with example/upload requests,
+  fixed CSV filenames, bounded requests, isolated temporary databases, readable
+  source errors, formatted results, shared shift explanations, and all three
+  buffered reports. Added web tests to the existing three-version CI workflow
+  and documented the response contract for M8.
+- Learned: Deleting a run directory is only part of cleanup. A multipart parser
+  can open temporary upload streams before it finishes building its file list;
+  interrupted uploads need those streams explicitly tracked and closed. Keeping
+  complete reports in the response allows downloads after server cleanup.
+- Interview question: How can two visitors check different CSV files at the
+  same time without sharing data or needing saved server-side run history?
+
+The user explicitly authorized M7 on 2026-10-23. Verified locally with Python
+3.13.5, SQLite 3.47.1, Flask 3.1.3, Werkzeug 3.1.9, Gunicorn 26.2.0, pytest
+9.1.1, and Ruff 0.17.1. Flask/Gunicorn versions and upload-limit APIs were
+checked against primary sources linked in `WEB_PLAN.md`. The optional packages
+were installed after a restricted-network attempt failed and an authorized
+network retry succeeded. Unconditional runtime dependencies remain empty.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/python -m pip install -e '.[dev,web]'` with the temporary pip cache on the authorized retry | PASS: optional dependencies and editable package installed. |
+| `.venv/bin/pytest -q tests/test_web.py` during development | PASS: 51 web cases before two final policy/save-failure cases were added; the final full suite below includes all 53 web cases. |
+| `.venv/bin/pytest -q` after the final code/tests | PASS: 612 tests, including 559 existing core cases and 53 web cases; resource and cleanup warnings remain errors. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 612 tests collected. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both checks clean; 50 Python files formatted. |
+| Full CLI versus example/upload parity using Flask's in-process client | PASS: all 60 shift calculations/explanations, 16 review leads, 30 dates, and exact text/HTML/CSV contents agree with a fixed generation timestamp. |
+| Request and shift boundaries | PASS: valid multipart bodies at 2 MiB minus one byte and exactly 2 MiB pass; one byte over fails. Terminated WSGI streams without Content-Length remain bounded. Exactly 1,000 shifts pass; 1,001 fail before reconciliation. |
+| Upload validation and content protection | PASS: missing/duplicate/unexpected files, extra fields/options, path filenames, malformed/empty/invalid-encoding CSVs, multipart parser bounds, BOM/CRLF/raw bytes, physical multiline source locations, unknown IDs, HTML escaping, and protected CSV cells. |
+| Cleanup and isolation | PASS: simultaneous distinct runs cannot mix results or touch a local database. Connections and upload streams close on success/failure, temporary directories disappear, and a partially saved upload is removed. Unexpected exception text and internal paths are absent from responses/logs. |
+| Amount and policy handling | PASS: unknown counts remain unknown, recorded zero stays $0.00, bank-only dates invent no shifts, and local config.toml cannot change the built-in web policies. |
+| Fresh core-only wheel installation in a new virtual environment | PASS: installed with `--no-index --no-deps`, confirmed Flask/Gunicorn/pytest/Ruff absent, and ran installed help, demo-data, import, reconcile, worked explanation, and HTML report. The result remains 60 shifts and 16 flags. |
+| `.venv/bin/gunicorn --check-config 'drawercheck.web:create_app()'` | PASS: the application factory loads with Gunicorn; no public server or deployment was started. |
+| `.venv/bin/python -m pip check` | PASS: no broken requirements. |
+
+The interrupted unknown-length upload test first failed with unclosed parser
+streams. A small Flask Request subclass now closes every opened upload stream,
+including files never assigned to `request.files`. A separate test-client
+multipart-encoding temporary file also needed explicit closure in the tests;
+the warning policy was not weakened. Internal HTTP errors retain their status
+and method headers while returning plain JSON messages.
+
+M7 is complete with local evidence. CI first runs the core with only `.[dev]`,
+then installs `.[dev,web]` and explicitly runs the web suite on Python
+3.12/3.13/3.14. This updated workflow has not yet been observed on GitHub; the
+earlier hosted result remains M6 evidence only. No local Python 3.12/3.14 web
+test run, browser interface, usability check, or public deployment is claimed.
+
+M8 is next, awaiting **next**. The request layer exposes no browser screen yet.

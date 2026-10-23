@@ -110,6 +110,33 @@ RECONCILED = (
     "Reconciled {shifts} shifts from {start} to {end}; saved {flags} review flags."
 )
 
+WEB_TOO_LARGE = "The upload exceeds a size or file-count limit. Choose exactly seven CSV files, remove extra fields, and keep the whole request at or below 2 MiB."
+WEB_MULTIPART = "Choose the seven CSV files and send them together as a file upload."
+WEB_FIELDS = (
+    "Only the seven CSV files are accepted. Remove extra form fields and URL options."
+)
+WEB_FILENAME = "Unexpected filename {name!r}. Choose only the seven required CSV filenames, without folder paths."
+WEB_DUPLICATE = (
+    "File {name!r} was selected more than once. Choose each required file once."
+)
+WEB_MISSING = "Missing files: {names}. Choose all seven required CSV files."
+WEB_DEMO_BODY = "The example does not need files or options. Try the example again without an upload."
+WEB_SHIFT_LIMIT = "This upload contains more than 1,000 shifts. Choose a smaller set of synthetic records."
+WEB_INVALID_CSV = "{file_name}: source line {line_number}, field {column}: {detail} Correct the file and upload all seven CSVs again."
+WEB_EMPTY = "No shift or bank-deposit records were found. Add synthetic records to the CSVs and upload them again."
+WEB_UNAVAILABLE = "The check could not finish. Try again with the example or upload the seven CSVs again."
+WEB_BAD_REQUEST = (
+    "The request could not be read. Choose the seven CSV files and try again."
+)
+WEB_NOT_FOUND = "This address is unavailable. Start a new check."
+WEB_METHOD = "This action does not accept that request method. Start a new check."
+WEB_NOTICE = "DEMO DATA ONLY: Use synthetic records. Flags are leads for review, not findings about a person. Results are not saved on the server."
+WEB_HTTP_ERROR = "The request could not be completed. Start a new check."
+
+
+class WebInputError(Exception):
+    """A web request needs correction before the checks can run."""
+
 
 class DrawerCheckError(Exception):
     """An expected problem that can be explained without a traceback."""

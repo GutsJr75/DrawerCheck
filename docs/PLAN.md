@@ -1,8 +1,9 @@
 # DrawerCheck plan
 
-Status: M0 through M6 complete, including the hosted Python 3.12/3.13/3.14 CI run observed on 2026-10-22.
-Next: M7, optional web request handling and isolated temporary runs.
-Wait for the user's **next** before starting M7.
+Status: M0 through M7 complete. M7 was authorized on 2026-10-23 and verified locally.
+The hosted Python 3.12/3.13/3.14 result recorded below covers M6, not the new M7 changes.
+Next: M8, browser screens and public demo delivery.
+Wait for the user's **next** before starting M8.
 See `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md` for actual results.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
@@ -10,7 +11,7 @@ Design direction clarified on 2026-10-22: a minimal, professional interface for
 beginners, with focused views and optional explanations. The audience, wording,
 and usability decisions are recorded in `docs/WEB_PLAN.md` and `DESIGN.md`.
 That design-only update did not authorize implementation; M5 was separately
-authorized afterward. Web implementation remains scheduled for M7/M8.
+authorized afterward. Request handling is now built in M7; screens remain M8 work.
 
 ## Purpose and boundaries
 
@@ -183,6 +184,10 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 52. **Use verified current Actions releases for the M6 matrix.** Follow the linked GitHub Python workflow structure, using `actions/checkout@v7.0.1` and `actions/setup-python@v7.1.0` verified from their release pages on 2026-10-22. The tutorial still shows older majors, so the release checks supersede those sample tags. Test Python 3.12, 3.13, and 3.14 with editable dev installation, both Ruff checks, pytest, and installed CLI help. Grant only `contents: read`, disable persisted checkout credentials, and keep publishing/deployment out of this workflow. Primary references are linked in `docs/CORE_CHECKLIST.md`.
 
 53. **Close M6 from observed hosted evidence.** After the user published `75c221c`, inspect run `39912675717` and its three jobs/logs. The run passed on Python 3.12, 3.13, and 3.14, with 559 tests, both Ruff checks, and installed help successful in each job. Record the exact run URL and tested SHA in the core checklist and mark all eight rows PASS. Keep the SQLite lock/read-only troubleshooting tests as deterministic message-translation checks; no real-lock extension is needed for M6. This evidence update changes documentation only, not runtime code, tests, or the workflow. M7 still requires **next**.
+
+54. **Build a stateless M7 request layer.** The user explicitly authorized M7 on 2026-10-23. Add optional Flask 3.1.3 and Gunicorn 26.2.0-compatible version ranges, keeping unconditional dependencies empty. Use `create_app()` with `POST /api/demo` and `POST /api/check`; the latter accepts exactly seven fixed CSV names under repeated `files` fields. Reject extra fields, URL options, duplicate files, and client paths. Preserve input bytes. Use built-in `Config()` defaults, never a developer's working-directory config. A fresh temporary directory holds each run's inputs and database. Import with the existing validator, reject over 1,000 imported shifts before reconciliation, and return fully buffered JSON containing formatted results, shared explanations, and all three complete reports. Delete the workspace before returning; no run IDs, server-side history, or later download endpoint is needed. The browser must treat JSON strings as text. Screens, filters, browser checks, and deployment stay in M8.
+
+55. **Bound and close upload resources, including aborted parsing.** Flask limits the entire request to 2 MiB, including multipart overhead. Exactly 2 MiB is accepted when valid; larger requests get 413. Limit multipart forms to eight parts and 128 KiB per non-file field as additional parser bounds, while still accepting only the seven files. A small request subclass tracks every file stream as it is opened, then closes it even when a size limit interrupts parsing before `request.files` is assigned. Preserve resource-warning failures in pytest. Test known-length and terminated WSGI streams, temporary-directory cleanup, connection closure, and simultaneous runs. Send no-store JSON responses, disable debug, and expose readable source-file/physical-line/field errors without CLI instructions or internal paths. Log unexpected exception types only. A shared `build_explanation` helper preserves the existing CLI's contribution arithmetic.
 
 ## Math and test commitments
 

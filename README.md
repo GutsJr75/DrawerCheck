@@ -8,16 +8,18 @@ counted cash with POS totals, flags differences for human review, and explains
 each shift. It exports terminal text, a self-contained HTML report, and a CSV
 of review flags.
 
-**Current milestone: M6 complete, including hosted CI.** Installation, exact
+**Current milestone: M7 complete with local verification.** Installation, exact
 money handling, database tables, fake demo generation, validated imports, cash
 calculations, six required review rules, shift explanations, and three report
 formats are implemented, including repeated-shortage checks and simplified bank
 matching. The [observed CI run](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717)
 passed 559 tests and both Ruff checks on Python 3.12, 3.13, and 3.14.
+That hosted run covers M6. M7 adds optional web requests with isolated temporary
+runs; its updated workflow has not yet been observed remotely.
 See the [core checklist](docs/CORE_CHECKLIST.md) for actual
 verification results. The badge reflects GitHub's status, not a local test run.
 
-A public browser demo is now planned after the core is complete. Visitors will
+A public browser demo is planned in M8. Visitors will
 be able to run the built-in fake-data example or upload synthetic CSVs, inspect
 the results, and download reports. This frontend is not implemented yet; see the
 [approved web plan](docs/WEB_PLAN.md).
@@ -57,11 +59,36 @@ If your system uses `python3` for a supported Python version, use that name in
 the first command. The `[dev]` extra installs the test runner and code checker;
 the installed application has no third-party runtime dependencies. Downloading
 development tools requires internet access during initial setup. The command-line
-core makes no network calls. The planned public web layer will be a separate
-optional installation that handles browser requests.
+core makes no network calls. The optional web installation handles requests
+using the same calculations.
 
 Running `drawercheck` without arguments also prints help. An invalid argument
 prints a short error and returns exit code 1; successful help returns 0.
+
+## Optional web request layer (M7)
+
+The request layer exists; browser screens and public hosting remain M8 work.
+Install the optional packages and run its in-process tests:
+
+```sh
+pip install -e ".[dev,web]"
+pytest -q tests/test_web.py
+```
+
+Flask connects requests to the existing Python core. Gunicorn serves the Flask
+application on Unix hosts and is excluded from installation on native Windows.
+The application factory is `drawercheck.web:create_app()`.
+
+`POST /api/demo` accepts an empty body and checks the fixed example.
+`POST /api/check` accepts the seven synthetic CSVs as repeated multipart `files`
+fields. The whole request is limited to 2 MiB, including form overhead, and a
+run may contain at most 1,000 shifts. Each request uses a separate temporary
+database that is closed and deleted before the response returns.
+
+The JSON response contains summaries, shift explanations, review leads, and
+all three complete reports. Money is formatted in Python. Results are not
+saved on the server; the future interface will keep the response while the
+page remains open. See the [request contract](docs/WEB_PLAN.md#m7-request-contract-and-handoff).
 
 ## Try it in 3 steps
 
@@ -301,9 +328,10 @@ See the [milestone plan](docs/PLAN.md) for scope and decisions, and the
 The [original project brief](docs/PROJECT_BRIEF.md) preserves the input contracts
 and scenario requirements for future work. Its original web/hosting exclusions
 were superseded by the public-frontend amendment in the current plan.
-The six required core rules are implemented. The M7/M8 public app and optional
-R03/R06/R07 rules remain future work. See the checklist for M6 verification and
-the hosted GitHub CI evidence. M7 awaits a separate user instruction.
+The six required core rules and M7 request layer are implemented. M8 browser
+screens/public hosting and optional R03/R06/R07 rules remain future work.
+See the checklist for M6 verification and the hosted GitHub CI evidence.
+M8 awaits a separate user instruction.
 
 ## Further reading
 

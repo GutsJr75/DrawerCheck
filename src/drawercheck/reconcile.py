@@ -11,6 +11,7 @@ from drawercheck.config import Config, config_from_snapshot
 from drawercheck.models import (
     BankDeposit,
     DailyDeposit,
+    Flag,
     ReconciliationResult,
     Shift,
     ShiftExplanation,
@@ -269,6 +270,25 @@ def reconcile(
     return run
 
 
+def build_explanation(
+    result: ShiftResult,
+    config: Config,
+    daily_deposit_cents: int | None,
+    daily_flags: tuple[Flag, ...] = (),
+) -> ShiftExplanation:
+    """Prepare the same shift explanation from an already calculated day's results."""
+    contribution = (
+        result.counted_cents
+        + result.shift.safe_drops_cents
+        - config.retained_float_per_register_cents
+        if daily_deposit_cents is not None
+        else None
+    )
+    return ShiftExplanation(
+        result, config, contribution, daily_deposit_cents, daily_flags
+    )
+
+
 def explain_shift(database_path: str | Path, shift_code: str) -> ShiftExplanation:
     """Explain one completed shift using its saved policies and review leads."""
     _require_database(database_path)
@@ -302,13 +322,4 @@ def explain_shift(database_path: str | Path, shift_code: str) -> ShiftExplanatio
             daily_deposit = expected_deposit(
                 day_results, config, db.load_register_ids(con)
             )
-            contribution = (
-                (
-                    result.counted_cents
-                    + shift.safe_drops_cents
-                    - config.retained_float_per_register_cents
-                )
-                if daily_deposit is not None
-                else None
-            )
-    return ShiftExplanation(result, config, contribution, daily_deposit, daily_flags)
+    return build_explanation(result, config, daily_deposit, daily_flags)

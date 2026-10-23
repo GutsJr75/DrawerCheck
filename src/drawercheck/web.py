@@ -1,0 +1,268 @@
+"""Optional stateless web requests using the same offline reconciliation core."""
+
+import sqlite3
+from dataclasses import asdict
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import IO
+
+from flask import Flask, Request, Response, jsonify, request
+from werkzeug.exceptions import HTTPException
+
+from drawercheck import errors
+from drawercheck.config import Config
+from drawercheck.csv_contract import CSV_HEADERS
+from drawercheck.demo import generate_demo
+from drawercheck.importer import import_directory
+from drawercheck.models import ShiftResult
+from drawercheck.money import format_cents
+from drawercheck.reconcile import build_explanation, reconcile
+from drawercheck.reports import (
+    ReportData,
+    csv_out,
+    format_amount,
+    html,
+    load_report,
+    text,
+)
+
+MAX_REQUEST_BYTES = 2 * 1024 * 1024
+MAX_SHIFTS = 1000
+
+
+class _UploadRequest(Request):
+    # A failed multipart parse can open streams before request.files is assigned.
+    def _get_file_stream(
+        self,
+        total_content_length: int | None,
+        content_type: str | None,
+        filename: str | None = None,
+        content_length: int | None = None,
+    ) -> IO[bytes]:
+        stream = super()._get_file_stream(
+            total_content_length, content_type, filename, content_length
+        )
+        self.__dict__.setdefault("_upload_streams", []).append(stream)
+        return stream
+
+    def close(self) -> None:
+        """Close uploads even when parsing stopped before a files collection existed."""
+        try:
+            super().close()
+        finally:
+            for stream in self.__dict__.pop("_upload_streams", []):
+                stream.close()
+
+
+def _display_values(value: object) -> object:
+    # JSON is data, not HTML. M8 must render strings as text, never as innerHTML.
+    if isinstance(value, dict):
+        formatted = {}
+        for key, item in value.items():
+            if key.endswith("_cents"):
+                formatted[key.removesuffix("_cents") + "_amount"] = format_amount(item)
+            else:
+                formatted[key] = _display_values(item)
+        return formatted
+    if isinstance(value, (tuple, list)):
+        return [_display_values(item) for item in value]
+    return value
+
+
+def _shift_data(result: ShiftResult, report: ReportData) -> dict:
+    day = next(
+        day for day in report.days if day.business_date == result.shift.business_date
+    )
+    daily_flags = tuple(
+        flag
+        for flag in report.flags
+        if flag.shift_id is None and flag.business_date == day.business_date
+    )
+    explanation = build_explanation(
+        result, report.config, day.expected_deposit_cents, daily_flags
+    )
+    values = asdict(result)
+    values["shift"]["counts"] = [
+        {"denomination": format_cents(denomination), "quantity": quantity}
+        for denomination, quantity in result.shift.counts
+    ]
+    values.update(
+        deposit_contribution_cents=explanation.deposit_contribution_cents,
+        daily_deposit_cents=explanation.daily_deposit_cents,
+        daily_flags=[asdict(flag) for flag in explanation.daily_flags],
+        retained_float_cents=report.config.retained_float_per_register_cents,
+        within_tolerance_cents=report.config.within_tolerance_cents,
+        review_threshold_cents=report.config.review_threshold(
+            result.shift.pos.cash_sales_cents
+        )
+        if result.shift.pos
+        else None,
+    )
+    return _display_values(values)
+
+
+def _response_data(report: ReportData) -> dict:
+    days = []
+    for day in report.days:
+        values = _display_values(asdict(day))
+        values["expected_deposit_amount"] = day.expected_deposit_text
+        days.append(values)
+    cashiers = []
+    for cashier in report.cashiers:
+        values = _display_values(asdict(cashier))
+        if not cashier.known:
+            for key in ("over_amount", "short_amount", "net_amount"):
+                values[key] = "unknown"
+        cashiers.append(values)
+    return {
+        "notice": errors.WEB_NOTICE,
+        "from_date": report.from_date,
+        "to_date": report.to_date,
+        "generated_at": report.generated_at,
+        "days": days,
+        "cashiers": cashiers,
+        "flags": [
+            _display_values({**asdict(flag), "shift_code": report.shift_code(flag)})
+            for flag in report.flags
+        ],
+        "shifts": [_shift_data(result, report) for result in report.shifts],
+        "reports": {
+            "text": {
+                "filename": "drawercheck.txt",
+                "media_type": "text/plain",
+                "content": text.render(report),
+            },
+            "html": {
+                "filename": "drawercheck.html",
+                "media_type": "text/html",
+                "content": html.render(report),
+            },
+            "csv": {
+                "filename": "drawercheck.csv",
+                "media_type": "text/csv",
+                "content": csv_out.render(report),
+            },
+        },
+    }
+
+
+def _save_uploads(directory: Path) -> None:
+    if request.mimetype != "multipart/form-data":
+        raise errors.WebInputError(errors.WEB_MULTIPART)
+    if request.args or request.form or set(request.files) - {"files"}:
+        raise errors.WebInputError(errors.WEB_FIELDS)
+    uploads = request.files.getlist("files")
+    selected = {}
+    for upload in uploads:
+        name = upload.filename
+        if name not in CSV_HEADERS:
+            raise errors.WebInputError(errors.WEB_FILENAME.format(name=name))
+        if name in selected:
+            raise errors.WebInputError(errors.WEB_DUPLICATE.format(name=name))
+        selected[name] = upload
+    missing = [name for name in CSV_HEADERS if name not in selected]
+    if missing:
+        raise errors.WebInputError(errors.WEB_MISSING.format(names=", ".join(missing)))
+    # Iterate fixed server-owned names; client filenames never become paths.
+    for name in CSV_HEADERS:
+        selected[name].save(directory / name)
+
+
+def _run_request(*, demo: bool) -> Response:
+    with TemporaryDirectory(prefix="drawercheck-web-") as temporary:
+        directory = Path(temporary)
+        if demo:
+            if request.args or request.get_data(cache=False):
+                raise errors.WebInputError(errors.WEB_DEMO_BODY)
+            generate_demo(directory)
+        else:
+            _save_uploads(directory)
+        database = directory / "run.db"
+        imported = import_directory(directory, database)
+        shifts = next(
+            item.rows_imported for item in imported if item.file_name == "shifts.csv"
+        )
+        if shifts > MAX_SHIFTS:
+            raise errors.WebInputError(errors.WEB_SHIFT_LIMIT)
+        reconcile(database, Config())
+        response = jsonify(_response_data(load_report(database)))
+    # The response is fully buffered; no download depends on the deleted workspace.
+    return response
+
+
+def create_app() -> Flask:
+    """Create an isolated-request app without a global database, run cache, or debug UI."""
+    app = Flask(__name__, static_folder=None)
+    app.request_class = _UploadRequest
+    app.config.update(
+        DEBUG=False,
+        MAX_CONTENT_LENGTH=MAX_REQUEST_BYTES,
+        MAX_FORM_PARTS=8,
+        MAX_FORM_MEMORY_SIZE=128 * 1024,
+    )
+
+    @app.post("/api/demo")
+    def demo() -> Response:
+        return _run_request(demo=True)
+
+    @app.post("/api/check")
+    def check() -> Response:
+        return _run_request(demo=False)
+
+    @app.after_request
+    def private_response(response: Response) -> Response:
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
+
+    @app.errorhandler(errors.WebInputError)
+    def invalid_input(error: errors.WebInputError) -> tuple[Response, int]:
+        return jsonify(error={"message": str(error)}), 400
+
+    @app.errorhandler(errors.ImportValidationError)
+    def invalid_csv(error: errors.ImportValidationError) -> tuple[Response, int]:
+        return jsonify(
+            error={
+                "message": errors.WEB_INVALID_CSV.format(
+                    file_name=error.file_name,
+                    line_number=error.line_number,
+                    column=error.column,
+                    detail=error.detail,
+                ),
+                "file_name": error.file_name,
+                "line_number": error.line_number,
+                "column": error.column,
+            }
+        ), 400
+
+    @app.errorhandler(errors.DrawerCheckError)
+    def core_error(error: errors.DrawerCheckError) -> tuple[Response, int]:
+        if str(error) == errors.NO_SHIFTS:
+            return jsonify(error={"message": errors.WEB_EMPTY}), 400
+        return jsonify(error={"message": errors.WEB_UNAVAILABLE}), 503
+
+    @app.errorhandler(HTTPException)
+    def http_error(error: HTTPException) -> Response:
+        messages = {
+            400: errors.WEB_BAD_REQUEST,
+            404: errors.WEB_NOT_FOUND,
+            405: errors.WEB_METHOD,
+            413: errors.WEB_TOO_LARGE,
+        }
+        response = error.get_response()
+        response.set_data(
+            app.json.dumps(
+                {"error": {"message": messages.get(error.code, errors.WEB_HTTP_ERROR)}}
+            )
+        )
+        response.mimetype = "application/json"
+        return response
+
+    @app.errorhandler(Exception)
+    def server_error(error: Exception) -> tuple[Response, int]:
+        # Never log exception text, paths, or submitted records.
+        if not isinstance(error, (OSError, sqlite3.DatabaseError)):
+            app.logger.error("Web check failed (%s)", type(error).__name__)
+        return jsonify(error={"message": errors.WEB_UNAVAILABLE}), 503
+
+    return app
