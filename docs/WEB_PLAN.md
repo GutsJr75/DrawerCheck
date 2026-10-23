@@ -380,7 +380,9 @@ for review. Optional rules R03, R06, and R07 move to M9 and remain opt-in.
   is met.
 - Compare each view with DESIGN.md: tokens, fonts, the drawer tape, the count
   sheet, the plain-facts summary, and the "What to avoid" list. Record
-  screenshots of each view on desktop and phone widths.
+  screenshots of each view on desktop and phone widths, committed as a dated
+  timeline folder under [docs/screenshots/](screenshots/README.md) following
+  the screenshot rule in AGENTS.md.
 - Keep the core install working without web dependencies. Run pytest and both
   Ruff checks; add web coverage to CI and report only observed CI results.
 - Verify a real public URL from a fresh browser session before marking M8 done.

@@ -75,10 +75,25 @@ If needed, use `python3` for the first command after confirming its version.
 - Report only checks actually run. Never claim remote CI success without seeing
   a real passing run.
 
+## Screenshots (user rule, 2026-10-23)
+
+- Commit every screenshot of the app to the repository as a dated timeline,
+  never only to a temporary folder. Do this after each block that changes what
+  the site looks like, and whenever the user asks for screenshots.
+- Use a new folder per block: `docs/screenshots/<YYYY-MM-DD>-<milestone>-<block>/`,
+  dated the day the pictures were taken, for example `2026-10-23-m8-block2/`.
+- Start each filename with the same date and label, then view, state, theme,
+  and width: `2026-10-23-m8-block2-prepare-missing-light-320.png`.
+- Never overwrite, rename, or delete an earlier folder. New pictures of an old
+  view go in the new block's folder.
+- Add a row for each new folder to `docs/screenshots/README.md`, saying what it
+  shows and which tool took it. Show fake demo data only.
+
 ## Project documents
 
 - [Plan and decisions](docs/PLAN.md)
 - [Original project brief](docs/PROJECT_BRIEF.md)
 - [Approved public frontend plan](docs/WEB_PLAN.md)
 - [Learning log and verification](docs/LEARNING_LOG.md)
+- [Screenshot timeline](docs/screenshots/README.md)
 - [Setup and current features](README.md)

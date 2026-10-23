@@ -314,6 +314,7 @@ Design choices worth knowing:
 - [Interview notes](docs/INTERVIEW_NOTES.md): pitches, honest answers, and resume options.
 - [Milestone plan](docs/PLAN.md) and [website plan](docs/WEB_PLAN.md): scope and decisions.
 - [Learning log](docs/LEARNING_LOG.md): what was built and checked at each step.
+- [Screenshot timeline](docs/screenshots/README.md): dated pictures of the website as each block was built.
 - [Original project brief](docs/PROJECT_BRIEF.md): the starting requirements.
   Its website and hosting exclusions were later replaced by the approved
   website plan.
