@@ -60,6 +60,10 @@ def test_mismatch_sign_and_review_boundary(difference: int, severity: str) -> No
     assert flags[0].evidence["issue"] == "mismatch"
     assert flags[0].evidence["difference_cents"] == difference
     assert flags[0].evidence["deposit_id"] == 1 and flags[0].shift_id is None
+    assert ("less than expected" if difference < 0 else "more than expected") in flags[
+        0
+    ].message
+    assert "differs by" not in flags[0].message
 
 
 def test_mismatch_uses_configured_review_threshold() -> None:
@@ -105,14 +109,79 @@ def test_ambiguous_entries_are_not_combined_or_consumed() -> None:
     assert flags[0].evidence["candidate_deposit_ids"] == [1, 2]
 
 
-def test_ambiguous_candidate_can_match_a_later_day() -> None:
-    """Ambiguity leaves candidates available for a later exact match."""
+def test_later_exact_match_is_reserved_before_earlier_mismatch() -> None:
+    """Reserve a later day's exact entry before counting an earlier day's leftovers."""
     days = (DailyDeposit("2026-09-01", 10000), DailyDeposit("2026-09-02", 6000))
     flags = deposit_flags(
         days, (_entry(1, "2026-09-02", 6000), _entry(2, "2026-09-02", 4000)), Config()
     )
-    assert [flag.evidence["issue"] for flag in flags] == ["ambiguous", "unexpected"]
-    assert flags[-1].evidence["deposit_id"] == 2
+    assert len(flags) == 1 and flags[0].business_date == "2026-09-01"
+    assert flags[0].evidence["issue"] == "mismatch"
+    assert flags[0].evidence["deposit_id"] == 2
+    assert flags[0].evidence["difference_cents"] == -6000
+
+
+def test_later_exact_match_cannot_be_consumed_as_earlier_mismatch() -> None:
+    """The exact-match pass protects an entry even when an earlier day has no other candidate."""
+    days = (DailyDeposit("2026-09-01", 10000), DailyDeposit("2026-09-02", 6000))
+    flags = deposit_flags(days, (_entry(1, "2026-09-02", 6000),), Config())
+    assert len(flags) == 1 and flags[0].business_date == "2026-09-01"
+    assert flags[0].evidence["issue"] == "missing"
+
+
+def test_ambiguity_counts_only_entries_left_after_all_exact_matches() -> None:
+    """Several remaining candidates still require review after reserving later exact matches."""
+    days = (DailyDeposit("2026-09-01", 10000), DailyDeposit("2026-09-02", 6000))
+    entries = (
+        _entry(1, "2026-09-02", 6000),
+        _entry(2, "2026-09-02", 4000),
+        _entry(3, "2026-09-02", 3000),
+    )
+    flags = deposit_flags(days, entries, Config())
+    assert [flag.evidence["issue"] for flag in flags] == [
+        "ambiguous",
+        "unexpected",
+        "unexpected",
+    ]
+    assert flags[0].evidence["candidate_deposit_ids"] == [2, 3]
+    assert "2 nonmatching entries" in flags[0].message
+
+
+@pytest.mark.parametrize("difference", [-1, 1])
+def test_one_cent_demo_difference_uses_remaining_candidate(
+    demo_database: Path, difference: int
+) -> None:
+    """Ordinary daily deposits do not turn a one-cent difference into several review leads."""
+    original = reconcile(demo_database, Config())
+    with closing(db.connect(demo_database)) as con:
+        with con:
+            con.execute(
+                "UPDATE bank_deposits SET amount_cents = amount_cents + ? WHERE reference = ?",
+                (difference, "DEMO-DEPOSIT-2026-09-02"),
+            )
+    changed = reconcile(demo_database, Config())
+    assert changed == reconcile(demo_database, Config())
+    assert len(changed.flags) == 17
+    assert (
+        tuple(flag for flag in changed.flags if flag.business_date != "2026-09-02")
+        == original.flags
+    )
+    flags = tuple(flag for flag in changed.flags if flag.business_date == "2026-09-02")
+    assert len(flags) == 1 and flags[0].severity == "warn"
+    assert flags[0].evidence["issue"] == "mismatch"
+    assert flags[0].evidence["expected_cents"] == 248998
+    assert flags[0].evidence["difference_cents"] == difference
+    assert "$0.01" in flags[0].message
+    filtered = reconcile(demo_database, Config(), "2026-09-02", "2026-09-02")
+    assert filtered.flags == flags
+    report = load_report(demo_database, date="2026-09-02")
+    assert report.flags == flags
+    direction = "less" if difference < 0 else "more"
+    for render in (text.render, html.render):
+        assert f"{direction} than expected" in render(report)
+        assert "No unique deposit match" not in render(report)
+    (row,) = csv.DictReader(StringIO(csv_out.render(report)))
+    assert row["severity"] == "warn" and "$0.01" in row["message"]
 
 
 def test_exact_preference_and_date_then_identity_ties() -> None:
@@ -224,11 +293,14 @@ def test_bank_only_date_requires_completion(demo_database: Path) -> None:
         load_report(demo_database)
 
 
-def test_m4_saved_results_require_refresh(demo_database: Path) -> None:
+@pytest.mark.parametrize("old_policy", [2, 3])
+def test_older_saved_results_require_refresh(
+    demo_database: Path, old_policy: int
+) -> None:
     """Old report policies cannot silently claim that the new rules have run."""
     reconcile(demo_database, Config())
     snapshot = json.loads(Config().snapshot())
-    snapshot["policy_version"] = 2
+    snapshot["policy_version"] = old_policy
     with closing(db.connect(demo_database)) as con:
         with con:
             con.execute(

@@ -21,7 +21,7 @@ from drawercheck.reconcile import (
     parse_range_date,
 )
 
-STAGE_NOTICE = "Includes repeated-shortage checks (R04) and simplified bank-deposit matching (R08). Matching is greedy, does not combine deposits, and uses calendar-day windows. Expected deposits are calculated amounts; review bank flags for exceptions. Dates with zero shifts are bank-entry dates, not inferred business days."
+STAGE_NOTICE = "Includes repeated-shortage checks (R04) and simplified bank-deposit matching (R08). Matching reserves all exact matches first, then reviews remaining entries in date order. It does not combine deposits and uses calendar-day windows. Expected deposits are calculated amounts; review bank flags for exceptions. Dates with zero shifts are bank-entry dates, not inferred business days."
 REVIEW_NOTICE = "Flags are leads for review, not findings about a person."
 VARIANCE_NOTICE = "Cashier totals include every known signed difference, including differences within tolerance. Unknown and open shifts are excluded from money totals."
 
@@ -46,6 +46,13 @@ class DailySummary:
     warn: int
     review: int
     expected_deposit_cents: int | None
+
+    @property
+    def expected_deposit_text(self) -> str:
+        """Distinguish a bank-only date from a closing day with incomplete cash records."""
+        if self.shifts == 0:
+            return "Not calculated (no shifts)"
+        return format_amount(self.expected_deposit_cents)
 
 
 @dataclass(frozen=True)

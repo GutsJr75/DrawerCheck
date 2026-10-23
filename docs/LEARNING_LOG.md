@@ -355,3 +355,47 @@ resolved. Browser appearance, remote CI, the fresh-install version matrix, and
 public deployment are not claimed as verified in this milestone.
 
 Next milestone: **M6**, after the user says **next**.
+
+## M5 repair: Exact matches before leftover review
+
+- Built: The approved two-pass R08 policy: reserve every available exact match
+  first, then review unresolved dates against remaining entries. Added one-cent
+  and reservation regressions, plain less/more mismatch wording, a shared
+  bank-only date label, policy-version 4 refresh checks, and a current sample.
+- Learned: A day-by-day matching decision can describe ambiguity that later
+  exact matches would resolve. Reserving those matches first makes the remaining
+  review leads clearer while retaining the limits of greedy amount/date matching.
+  A date without shifts needs a different label from a day with missing counts.
+- Interview question: Why reserve exact deposit matches across all dates before
+  classifying the remaining entries, and what errors can this still leave?
+
+This is the separately authorized M5 repair approved on 2026-10-22, not the
+start of M6. Plan decision 49 amends the original brief's matching sequence;
+the original brief remains unchanged. No dependencies, database tables, fake
+input CSVs, optional rules, or frontend screens changed.
+
+| Command or check | Result |
+| --- | --- |
+| Focused deposit/bank-only regressions before the repair | Reproduced 13 failing and 19 passing cases covering matching order, mismatch wording, the initial M5 policy, and bank-only labels. |
+| `.venv/bin/pytest -q` | PASS: 547 tests, retaining ResourceWarning and cleanup-warning failures. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 547 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks passed. |
+| `.venv/bin/ruff format --check .` | PASS: 44 files already formatted. |
+| Golden scenarios and sample consistency | PASS: exactly the same 16 default flags, including the missing September 16 deposit and September 21's review mismatch. The regenerated sample matches a fresh export except for generation time. |
+| New matching-order regressions | PASS: later exact matches are reserved before an earlier mismatch or missing decision; ambiguity counts only remaining candidates. One-cent shortages and overages on September 2 each produce one warn mismatch, with other demo flags unchanged and filtered/repeated runs consistent. |
+| Wording and saved-policy checks | PASS: text/HTML distinguish bank-only dates from unknown incomplete cash; mismatch messages say less/more while evidence retains signed cents. Policy versions 2 and 3 require reconciliation again; a successful subset refresh clears all prior-policy results before saving the selected dates. |
+| Installed CLI subprocess default demo | PASS: 16 flags; text/HTML/CSV and `explain` use the new wording. `explain` already includes daily R08 leads, so no new explanation feature was needed. |
+| Installed CLI subprocess modified CSVs | PASS: both one-cent directions give one warn lead for September 2, with signed evidence in `explain`. Bank-only dates use the new label; September 25's incomplete cash stays unknown. Foreign-key checks pass. |
+| `git diff --check` and changed-source/document checks | PASS: no whitespace errors or prohibited punctuation; local Markdown links resolve; public functions have docstrings; the original brief, committed demo CSVs, and instruction-file constraints are preserved. |
+
+The exact-match pass still breaks ties by bank-entry date then ID, and both
+passes use full imported history before filtering output dates. The documented
+equal-amount greedy failure, no-combined-deposits limitation, and calendar-day
+lag remain. Reports keep unavailable cash as `None` internally and show
+`Not calculated (no shifts)` only when there are no shifts on the date.
+
+Run `drawercheck reconcile` without date filters to refresh earlier M3/M4 or
+initial M5 results under policy version 4. Browser appearance, remote CI, and
+public deployment are not claimed as verified by this repair.
+
+Next milestone: **M6**, after the user says **next**.

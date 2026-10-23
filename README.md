@@ -148,8 +148,8 @@ places. Deposit lag must be a whole number from 0 through 31 days. These are
 project limits. An empty date selection gives a specific error and preserves
 saved results. A database without the required tables gives import guidance.
 
-After updating from M3/M4, run `drawercheck reconcile` again without date filters
-to refresh all saved results under M5's policy version 3.
+After updating from M3/M4 or the initial M5 release, run `drawercheck reconcile`
+again without date filters to refresh all saved results under policy version 4.
 
 Missing counts remain unknown, while an actual count of zero stays zero. Open
 shifts are excluded from closing calculations. Daily expected deposit amounts
@@ -248,8 +248,11 @@ not industry standards.
 The supported closing model is one shift per listed register per imported
 business date. There is no register operating schedule or store calendar;
 a day absent from the shift inputs cannot be inferred automatically.
-Bank matching is deliberately simplified. It processes days in order and consumes
-each matched entry once. Equal-amount days and overlapping windows can assign an
+Bank matching is deliberately simplified. It first reserves exact matches for
+all days, then reviews unresolved days against the remaining entries. Each pass
+processes dates in order and consumes each matched entry once. This helps show
+an ordinary one-cent difference as one warning when later days have their own
+exact matches. Equal-amount days and overlapping windows can still assign an
 entry to the wrong day. For example, if September 1 and 2 each expect $100.00 and
 the only $100.00 entry is dated September 2, the earlier day takes it, even if its
 reference names September 2. The later day is then flagged as missing.

@@ -102,6 +102,12 @@ the September 21 entry is consumed as the single mismatched candidate. September
 so it is not matched. There are no ambiguous or unexpected entries in the default
 demo; separate deposit tests cover those branches and the greedy limitations.
 
+The approved two-pass M5 repair preserves all 16 rows above. It reserves exact
+matches for every day before reviewing remaining candidates. A separate
+regression changes only September 2's bank amount by one cent in either
+direction: the expected $2,489.98 then receives one warn mismatch, with no
+ambiguous or unexpected flag for that date. All other demo flags stay unchanged.
+
 R04 windows contain ten shifts on September 14 and September 18, with three and
 four qualifying shortages respectively. Earlier cashier shifts remain available
 when a report or reconciliation selects only one of those dates. In other

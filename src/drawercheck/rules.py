@@ -259,33 +259,47 @@ def evaluate_rules(
 def deposit_flags(
     days: tuple[DailyDeposit, ...], deposits: tuple[BankDeposit, ...], config: Config
 ) -> tuple[Flag, ...]:
-    """Match daily amounts greedily once, retaining ambiguous entries for review."""
+    """Reserve all exact matches before reviewing unmatched days and bank entries."""
     remaining = {
         entry.id: entry
         for entry in sorted(deposits, key=lambda entry: (entry.deposit_date, entry.id))
     }
     flags = []
+    unresolved = []
+    # First reserve exact matches across all dates, before consuming mismatches.
     for day in sorted(days, key=lambda item: item.business_date):
         expected = day.expected_cents
         if expected is None or expected <= 0:
             continue
         start = date.fromisoformat(day.business_date)
-        end = start + timedelta(days=min(config.max_lag_days, (date.max - start).days))
-        candidates = [
-            entry
-            for entry in remaining.values()
-            if day.business_date <= entry.deposit_date <= end.isoformat()
-        ]
+        end = (
+            start + timedelta(days=min(config.max_lag_days, (date.max - start).days))
+        ).isoformat()
         exact = next(
-            (entry for entry in candidates if entry.amount_cents == expected), None
+            (
+                entry
+                for entry in remaining.values()
+                if day.business_date <= entry.deposit_date <= end
+                and entry.amount_cents == expected
+            ),
+            None,
         )
         if exact is not None:
             del remaining[exact.id]
-            continue
+        else:
+            unresolved.append((day, end))
+    # Then review unresolved dates in order, using only the remaining entries.
+    for day, end in unresolved:
+        expected = day.expected_cents
+        candidates = [
+            entry
+            for entry in remaining.values()
+            if day.business_date <= entry.deposit_date <= end
+        ]
         evidence: dict[str, object] = {
             "expected_cents": expected,
             "window_start": day.business_date,
-            "window_end": end.isoformat(),
+            "window_end": end,
             "max_lag_days": config.max_lag_days,
         }
         severity: Literal["warn", "review"] = "review"
@@ -303,8 +317,9 @@ def deposit_flags(
                     "difference_cents": difference,
                 }
             )
+            direction = "less" if difference < 0 else "more"
             message = (
-                f"Bank deposit differs by {format_cents(difference)}: "
+                f"Bank deposit is {format_cents(abs(difference))} {direction} than expected: "
                 f"expected {format_cents(expected)}, recorded {format_cents(entry.amount_cents)}. "
                 "Review the imported records."
             )
@@ -312,7 +327,7 @@ def deposit_flags(
             evidence["issue"] = "missing"
             message = (
                 f"Missing deposit in imported records for expected {format_cents(expected)} "
-                f"from {day.business_date} through {end.isoformat()}. Review the records."
+                f"from {day.business_date} through {end}. Review the records."
             )
         else:
             evidence.update(

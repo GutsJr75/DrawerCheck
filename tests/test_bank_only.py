@@ -6,7 +6,7 @@ from pathlib import Path
 from drawercheck import db
 from drawercheck.config import Config
 from drawercheck.reconcile import reconcile
-from drawercheck.reports import html, load_report
+from drawercheck.reports import html, load_report, text
 
 
 def test_only_bank_entries_have_no_invented_cashier_or_business_day(
@@ -30,3 +30,12 @@ def test_only_bank_entries_have_no_invented_cashier_or_business_day(
     output = html.render(report)
     assert "<strong>0</strong><span>Incomplete deposit days</span>" in output
     assert "not inferred business days" in output
+    for render in (html.render, text.render):
+        assert "Not calculated (no shifts)" in render(report)
+    assert ">unknown</td>" not in output
+    row = next(
+        line
+        for line in text.render(report).splitlines()
+        if "2026-09-01" in line and "Not calculated" in line
+    )
+    assert "unknown" not in row

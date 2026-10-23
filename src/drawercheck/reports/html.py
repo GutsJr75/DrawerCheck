@@ -145,7 +145,7 @@ def render(report: ReportData) -> str:
                 day.info,
                 day.warn,
                 day.review,
-                format_amount(day.expected_deposit_cents),
+                day.expected_deposit_text,
             )
             for day in report.days
         ],

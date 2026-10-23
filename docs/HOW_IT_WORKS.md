@@ -133,14 +133,18 @@ demo. A date with no imported shifts at all is not inferred as a business day.
 **R08_DEPOSIT:** Calculate expected amounts first, then compare them with all
 imported bank entries using this simplified algorithm:
 
-1. Process business dates in order. Skip unknown, zero, and negative expected
-   amounts. Search unmatched bank entries from that date through the configured
-   lag, inclusive. Clamp the end to December 31, 9999 to avoid calendar overflow.
-2. Prefer an exact amount match. Break ties by bank-entry date, then database ID.
-   Consume that entry once and produce no flag for the match.
-3. With exactly one nonmatching candidate, consume it and flag the signed
+1. First reserve exact matches for all eligible business dates, in date order.
+   Skip unknown, zero, and negative expected amounts. Search unmatched bank
+   entries from each date through the configured lag, inclusive. Clamp the end
+   to December 31, 9999 to avoid calendar overflow. Break exact-match ties by
+   bank-entry date, then database ID. Consume the entry once, with no flag.
+2. Then process unresolved business dates in order. Search the same windows
+   using only entries left after the entire exact-match pass.
+3. With exactly one remaining candidate, consume it and flag the signed
    difference, recorded minus expected. Use review at or above `review_cents`
    in absolute value, otherwise warn. Sales percentages do not set this threshold.
+   Messages say how much less or more was recorded; evidence retains the signed
+   difference for inspection.
 4. With no candidates, produce a review flag for a missing deposit in the
    imported records. This does not claim a real-world deadline has passed.
 5. With multiple nonmatching candidates, produce a review flag for an ambiguous
@@ -153,6 +157,16 @@ Matching always uses the full imported history before selecting flags to save
 for a date range. This prevents a filtered run from reusing an entry consumed
 by an earlier day. References are retained as evidence for unexpected entries;
 they are not interpreted as authoritative matching instructions.
+
+This two-pass policy was approved on 2026-10-22 and supersedes the original
+brief's per-date matching order. For example, September 2 expects $2,489.98 in
+the fake demo. Changing its recorded deposit to $2,489.99 now produces one
+$0.01 mismatch warning after later days reserve their own exact entries. Under
+the original policy, that early day's window held four nonmatching entries,
+producing an ambiguous review plus an unexpected-entry note. The new policy
+still uses greedy choices within each pass and cannot prove deposit ownership.
+The second pass does not revisit an earlier ambiguous day after processing later
+unresolved days.
 
 ### A concrete greedy-matching limitation
 
@@ -188,8 +202,10 @@ reports `No shifts match the requested date range.` without changing saved
 results. Only explicitly reversed endpoints receive the reversed-range error.
 Missing date endpoints
 come from the earliest/latest imported shift or bank-entry dates, never today's
-date. Bank-only dates can be checked and reported with zero shifts and unknown
-expected cash. They do not create inferred business days or missing-register
+date. Bank-only dates can be checked and reported with zero shifts and an
+unavailable expected amount labelled `Not calculated (no shifts)`. Incomplete
+closing days still show `unknown`; a counted zero still displays as $0.00.
+Bank-only dates do not create inferred business days or missing-register
 flags, and they are not counted as incomplete closing days in the HTML summary.
 
 Flags and markers for the inclusive selected range are replaced in one
@@ -204,7 +220,7 @@ settings and flags, rather than rereading a possibly changed config file. It
 recalculates the displayed amounts from the imported records under those saved
 settings. Existing M2 databases gain the completion table on successful
 reconciliation, without changing imported data.
-Snapshots now include review-policy version 3. Earlier M3/M4 results need a fresh
+Snapshots now include review-policy version 4. Earlier M3/M4 and initial M5 results need a fresh
 `reconcile` before `explain` can use them. The next successful reconciliation
 clears old-policy results even if the numeric settings are unchanged. Run it
 without date filters after updating to refresh the full imported history.
@@ -270,5 +286,6 @@ used as the output file. By default the selected format goes to stdout.
 
 Reports include R04 and R08 leads alongside the original rules. Daily expected
 deposits remain calculated amounts; the bank flags describe matching exceptions.
-The report notice explains that matching is greedy, uses calendar-day windows,
-and does not combine entries. Reports load saved flags without rerunning matching.
+The report notice explains that matching reserves all exact matches first,
+uses calendar-day windows, and does not combine entries. Reports load saved
+flags without rerunning matching.

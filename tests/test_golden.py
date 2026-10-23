@@ -72,7 +72,7 @@ def test_full_demo_pipeline_exact_flags_and_documented_scenarios(
     for render in (text.render, html.render):
         output = render(report)
         assert "R04_REPEAT_SHORT" in output and "R08_DEPOSIT" in output
-        assert "Missing deposit" in output and "-$100.00" in output
+        assert "Missing deposit" in output and "$100.00 less than expected" in output
         assert "arrive in M5" not in output
     assert (
         next(
