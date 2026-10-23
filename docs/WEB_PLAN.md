@@ -1,9 +1,17 @@
 # Public frontend plan
 
-Status: M7 request handling is complete and locally verified after the user's
-2026-10-23 authorization. M0 through M6 include observed hosted CI; M7's updated
-CI workflow has not yet been observed remotely. M8 screens and deployment await
-the user's next instruction.
+## Where things stand
+
+- **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
+  verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
+  passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
+  including the web tests.
+- **M8, screens and public demo: not started.** It waits for the user's next
+  instruction.
+- **Quick map of this document:** the user decision and audience come first,
+  then the screens and wording, the architecture, hosting, milestones, the
+  definition of done, and finally the [M7 request contract](#m7-request-contract-and-handoff)
+  that M8 builds on.
 
 ## User decision
 
@@ -292,9 +300,10 @@ instead of repeatedly scanning every lead for each date or shift.
 
 Local verification and exact commands are recorded in the learning log. CI now
 tests the core before installing optional web packages, then runs the web tests
-on Python 3.12/3.13/3.14. This workflow change is not a claim of a new passing
-hosted run. M8 still needs the actual interface, browser and usability checks,
-and observed public deployment.
+on Python 3.12/3.13/3.14. The hosted [run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
+passed both stages on all three versions for the final M7 commit `2bdbb7a`.
+M8 still needs the actual interface, browser and usability checks, and observed
+public deployment.
 
 ## Dependency references rechecked on 2026-10-23
 

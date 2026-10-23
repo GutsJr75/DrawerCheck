@@ -654,3 +654,19 @@ relationship limits prevent the earlier uncontrolled amplification paths.
 
 This repair is verified locally. No new hosted CI, browser, or deployment result
 is claimed. M8, including timeout and CSP configuration, still awaits **next**.
+
+## Follow-up: Hosted CI for M7 and clearer status docs (2026-10-23)
+
+The earlier M7 notes said the updated workflow had not been observed on GitHub.
+It has now been observed through the GitHub Actions API:
+
+| Commit | Run | Result |
+| --- | --- | --- |
+| `7406cc3` M7 request layer | [39926469611](https://github.com/GutsJr75/DrawerCheck/actions/runs/39926469611) | success |
+| `3922a86` record caps and grouped lookups | [39928859925](https://github.com/GutsJr75/DrawerCheck/actions/runs/39928859925) | success |
+| `2bdbb7a` roster caps and response budget | [39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056) | success; the Python 3.12, 3.13, and 3.14 jobs each passed, including "Test optional web requests" |
+
+The README was reorganized for first-time readers: a status table, the
+three-step demo near the top, a plain table of what each rule looks for, and
+the web limits as a table. PLAN.md and WEB_PLAN.md now open with a short
+"Where things stand" section. No code or behavior changed.

@@ -1,17 +1,25 @@
 # DrawerCheck plan
 
-Status: M0 through M7 complete, including the authorized M7 workload, roster, and response-budget repairs on 2026-10-23, verified locally.
-The hosted Python 3.12/3.13/3.14 result recorded below covers M6, not the new M7 changes.
-Next: M8, browser screens and public demo delivery.
-Wait for the user's **next** before starting M8.
-See `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md` for actual results.
-Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
-after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
-Design direction clarified on 2026-10-22: a minimal, professional interface for
-beginners, with focused views and optional explanations. The audience, wording,
-and usability decisions are recorded in `docs/WEB_PLAN.md` and `DESIGN.md`.
-That design-only update did not authorize implementation; M5 was separately
-authorized afterward. Request handling is now built in M7; screens remain M8 work.
+## Where things stand
+
+- **Done:** M0 through M7. The command-line core (M1 to M6) and the web request
+  layer (M7, including its workload, roster, and response-size repairs on
+  2026-10-23) are complete.
+- **Verified on GitHub:** [run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
+  passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
+  including the web tests. M6's earlier run is recorded in `docs/CORE_CHECKLIST.md`.
+- **Next:** M8, the website screens and public demo. Wait for the user's
+  **next** before starting it.
+- **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
+
+How the scope grew:
+
+- 2026-10-22: the user approved a public interactive demo, built in M7 and M8
+  after the core milestones. `docs/WEB_PLAN.md` holds the agreed web scope.
+- 2026-10-22: the design direction was set: a minimal, professional interface
+  for beginners, with focused views and optional explanations. The audience,
+  wording, and usability decisions are in `docs/WEB_PLAN.md` and `DESIGN.md`.
+  That update was design only; each later milestone was authorized separately.
 
 ## Purpose and boundaries
 

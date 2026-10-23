@@ -1,9 +1,11 @@
 # Core verification checklist
 
 Status: M6 complete. Local checks and the hosted Python 3.12/3.13/3.14 matrix
-have passed. This is the historical M6 core checklist; M7's request layer is now
-locally verified, and M8's screens/deployment remain planned. See the learning
-log and web plan for M7 results.
+have passed. This is the historical M6 core checklist. The M7 request layer was
+later verified locally and on GitHub
+([run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
+for commit `2bdbb7a`); see the learning log and web plan for M7 results. M8's
+screens and deployment remain planned.
 
 This checklist follows the original core definition of done. PASS means the
 check was actually run successfully; FAIL includes checks not yet verified.

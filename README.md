@@ -2,27 +2,13 @@
 
 [![Core checks](https://github.com/GutsJr75/DrawerCheck/actions/workflows/ci.yml/badge.svg)](https://github.com/GutsJr75/DrawerCheck/actions/workflows/ci.yml)
 
-DrawerCheck is a personal learning project for checking end-of-shift cash drawers
-with fictional data from **Demo Store #001**. It imports CSV files, compares
-counted cash with POS totals, flags differences for human review, and explains
-each shift. It exports terminal text, a self-contained HTML report, and a CSV
-of review flags.
+DrawerCheck checks end-of-shift cash drawers. It compares the cash a register
+should hold, based on its sales records, with the cash that was actually
+counted. Differences become review leads for a person to look at, and the
+results can be saved as a text, web page (HTML), or spreadsheet (CSV) report.
 
-**Current milestone: M7 complete with local verification.** Installation, exact
-money handling, database tables, fake demo generation, validated imports, cash
-calculations, six required review rules, shift explanations, and three report
-formats are implemented, including repeated-shortage checks and simplified bank
-matching. The [observed CI run](https://github.com/GutsJr75/DrawerCheck/actions/runs/39912675717)
-passed 559 tests and both Ruff checks on Python 3.12, 3.13, and 3.14.
-That hosted run covers M6. M7 adds optional web requests with isolated temporary
-runs; its updated workflow has not yet been observed remotely.
-See the [core checklist](docs/CORE_CHECKLIST.md) for actual
-verification results. The badge reflects GitHub's status, not a local test run.
-
-A public browser demo is planned in M8. Visitors will
-be able to run the built-in fake-data example or upload synthetic CSVs, inspect
-the results, and download reports. This frontend is not implemented yet; see the
-[approved web plan](docs/WEB_PLAN.md).
+It is a personal learning project. Every store, person, and amount comes from
+the fictional **Demo Store #001**.
 
 ## Why I am building it
 
@@ -31,22 +17,238 @@ I compared the cash in my register with transaction records.
 This project lets me practice those careful checks in code and explain the work
 in a job interview.
 
-## Set up and check the project
+## Project status
 
-Use Python 3.12 or newer; Python 3.13 or 3.14 is recommended for development.
-The Python installation must include SQLite 3.37.0 or newer for STRICT tables,
-which reject values that cannot be stored using the table's declared types.
+| Part | Status |
+| --- | --- |
+| Command-line tool: imports, checks, explanations, and reports | Done |
+| Six review rules, including repeated shortages and bank deposits | Done |
+| Web request layer (the server side of the planned website) | Done |
+| Website screens and public hosting | Planned next (milestone M8) |
+| Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
-For a fresh checkout:
+**Automated checks:** the hosted run for the final web request code,
+[GitHub Actions run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
+on commit `2bdbb7a`, passed the tests and both Ruff checks on Python 3.12,
+3.13, and 3.14, including the web tests. The badge above shows the result of
+GitHub's most recent run. The [core checklist](docs/CORE_CHECKLIST.md) records what was verified
+and how.
+
+## Try it in 3 steps
+
+You need Python 3.12 or newer. All inputs below are fake.
+
+1. Install the command in a virtual environment:
+
+   ```sh
+   python -m venv .venv
+   source .venv/bin/activate        # Windows: .venv\Scripts\activate
+   pip install -e ".[dev]"
+   ```
+
+2. Create the example data, load it, and run the checks:
+
+   ```sh
+   drawercheck demo-data
+   drawercheck import --dir data/demo --db demo.db
+   drawercheck reconcile --db demo.db
+   ```
+
+3. Create the web page report, then open the file in a browser:
+
+   ```sh
+   drawercheck report --db demo.db --from 2026-09-01 --to 2026-09-30 --format html --out demo-report.html
+   ```
+
+Prefer not to install anything? Open the
+[committed sample report](examples/sample_report.html). It covers the same 60
+shifts and 16 review leads, and works offline with no external files or scripts.
+
+**Screenshot placeholder:** a real screenshot of the report will be added here.
+No screenshot or visual check has been recorded yet.
+
+## What the checks look for
+
+**Expected cash** = opening float + cash sales + paid-ins - cash refunds -
+paid-outs - safe drops. Card sales are not physical cash, so they are left out.
+
+**Counted cash** = each bill or coin value times how many were counted.
+
+**Difference** = counted cash - expected cash. Below zero means short; above
+zero means over.
+
+Each lead has a severity: **info** (worth a note), **warn** (worth checking),
+or **review** (needs a person to review it). The amounts below are the example
+settings in `config.toml`, not industry standards.
+
+| Rule | What it looks for |
+| --- | --- |
+| R01 Cash difference | A difference over $1.00. It becomes warn at $5.00, and review at $20.00 or 1% of cash sales, whichever is lower (but never below $5.00). |
+| R02 Single bill | A difference of exactly $1, $5, $10, $20, $50, or $100, which may be one miscounted bill. |
+| R04 Repeated shortages | A cashier short by $5.00 or more in at least 3 of their last 10 shifts. |
+| R05 Missing sign-off | A difference of $20.00 or more without both a verifier and a written note. |
+| R08 Bank deposit | Each day's expected deposit compared with bank entries dated that day or up to 3 days later: a missing deposit, a different amount, or an entry that matches no day. |
+| R09 Missing or inconsistent records | A shift with no cash count or sales totals, impossible times, overlapping shifts, two closing shifts for one register and day, negative expected cash, or a register with no shift that day. |
+
+Flags are leads for review, not findings about a person. Missing information
+stays "unknown" instead of being treated as zero. For the formulas, a worked
+example, and each rule in detail, see [how it works](docs/HOW_IT_WORKS.md).
+
+## Using the command line
+
+### Create and import data
+
+```sh
+drawercheck demo-data
+drawercheck import --dir data/demo --db demo.db
+```
+
+`demo-data` writes 30 days starting on 2026-09-01, for two registers, using
+seed 42. It replaces the seven demo CSV files in `data/demo` and leaves other
+files alone. For a separate dataset, choose another folder and database:
+
+```sh
+drawercheck demo-data --out data/another-demo --days 7 --seed 17
+drawercheck import --dir data/another-demo --db another-demo.db
+```
+
+Importing the same files again prints `already imported; skipped` and adds
+nothing. The [demo scenarios](docs/DEMO_SCENARIOS.md) list the deliberately
+planted problems and the 16 leads they produce. If you leave out `--db`, the
+database is `./drawercheck.db`.
+
+### Run the checks and explain one shift
+
+```sh
+drawercheck reconcile --db demo.db
+drawercheck explain 2026-09-03-R1 --db demo.db
+```
+
+This example shift expected $518.75, counted $498.75, and is $20.00 short. It
+gets a cash-difference lead and a single-bill hint. It has a verifier and a
+note, so there is no missing sign-off lead.
+
+- `reconcile` accepts `--from`, `--to`, `--db`, and `--config`. Running it again
+  replaces earlier results for those dates.
+- `config.toml` holds the example settings. If the file is missing, built-in
+  defaults are used and a notice says so. Changing settings, or importing new
+  records, clears earlier results so different settings are never mixed.
+- `explain` uses the settings saved when the checks ran, and also shows that
+  day's bank-deposit leads.
+- After upgrading from an older version, run `drawercheck reconcile` once without
+  dates to refresh saved results.
+
+### Export reports
+
+```sh
+drawercheck report --db demo.db
+drawercheck report --db demo.db --date 2026-09-03
+drawercheck report --db demo.db --format csv --out flags.csv
+drawercheck report --db demo.db --format html --out review.html
+```
+
+Text on the terminal is the default. Reports never rerun the checks; every
+date you ask for must already be checked, or the error names the first
+unchecked date. `--date` cannot be combined with `--from` or `--to`.
+
+Real output from the demo, shortened:
+
+```text
+DAILY SUMMARY
+Date       | Shifts | Balanced | Over | Short | Incomplete | Open | Info | Warn | Review | Expected deposit
+-----------+--------+----------+------+-------+------------+------+------+------+--------+-----------------
+2026-09-01 | 2      | 2        | 0    | 0     | 0          | 0    | 0    | 0    | 0      | $2,100.61
+2026-09-02 | 2      | 2        | 0    | 0     | 0          | 0    | 0    | 0    | 0      | $2,489.98
+2026-09-03 | 2      | 1        | 0    | 1     | 0          | 0    | 1    | 0    | 1      | $2,698.27
+
+REVIEW FLAGS
+[review] 2026-09-03 2026-09-03-R1 R01_VARIANCE: Short by $20.00. Recount recommended.
+[info] 2026-09-03 2026-09-03-R1 R02_SINGLE_DENOMINATION: Variance equals one $20 bill. Check for a miscounted or misplaced bill.
+```
+
+All formats share the same data:
+
+- **Text and web page:** a daily summary, every review lead, totals by
+  cashier, and each shift's amounts. Days with only bank entries show
+  `Not calculated (no shifts)` for expected cash.
+- **Web page:** a single offline file with light and dark modes, print
+  styling, and tables that scroll on narrow screens.
+- **Spreadsheet (CSV):** one row per lead. Every cell is protected so a
+  spreadsheet cannot run it as a formula.
+
+Report files are replaced safely: if writing fails, the previous file is kept.
+A report can never overwrite the database.
+
+## Preparing your own CSV files
+
+DrawerCheck needs seven files with the exact column names in the
+[input contract](docs/PROJECT_BRIEF.md#5-csv-input-contract-and-import-rules-folder-datademo):
+`cashiers.csv`, `registers.csv`, `shifts.csv`, `pos_totals.csv`,
+`safe_drops.csv`, `cash_counts.csv`, and `bank_deposits.csv`.
+
+- Money uses exactly two decimal places, such as `1250.75`.
+- Cash counts use one row per bill or coin value, with a whole-number quantity.
+- Column order can vary. Missing, extra, or repeated column names are errors.
+- Files saved from Excel as UTF-8 work, including quoted commas, quoted line
+  breaks, and Windows line endings.
+- IDs and shift codes cannot start or end with spaces. Invisible control
+  characters are rejected so text cannot disguise the output.
+- Each error names the file, line, column, and problem. A failed import changes
+  nothing, because all seven files are saved together or not at all.
+- Records already in the database cannot be overwritten. Import only new
+  records, or use a fresh database.
+
+The [troubleshooting guide](docs/TROUBLESHOOTING.md) explains ten common error
+messages, with checks and fixes.
+
+## Web request layer (for developers)
+
+The server side of the planned website is built; the screens are milestone M8.
+Install the optional packages and run the web tests:
+
+```sh
+pip install -e ".[dev,web]"
+pytest -q tests/test_web.py
+```
+
+Flask handles web requests using the same Python code as the command line.
+Gunicorn runs the app on Linux and macOS hosts, and is not installed on Windows.
+The app is created by `drawercheck.web:create_app()`.
+
+| Request | Sends | Returns |
+| --- | --- | --- |
+| `POST /api/demo` | Nothing | Full results for the built-in example |
+| `POST /api/check` | The seven CSV files | Full results for those files |
+
+Results come back as one JSON response containing summaries, shift
+explanations, review leads, and all three reports. Money is already formatted,
+so the browser never does cash arithmetic. Each request uses its own temporary
+database, which is deleted before the response is sent. Nothing is saved on the
+server.
+
+Limits keep the public demo responsive. They apply only to the website, not the
+command line:
+
+| Limit | Value |
+| --- | --- |
+| Whole upload | 2 MiB |
+| Registers / people | 5 / 100 |
+| Shifts and sales-total rows | 1,000 |
+| Cash-count rows | 12,000 |
+| Bank deposits / safe drops | 2,000 each |
+| Characters per value | 256 |
+| Whole response | 10 MB |
+
+Uploads over a limit get a short, plain error explaining what to change. The
+built-in example uses 2 registers, 5 people, and 60 shifts. See the
+[request details](docs/WEB_PLAN.md#m7-request-contract-and-handoff) for the
+full contract.
+
+## Project setup for development
 
 ```sh
 git clone https://github.com/GutsJr75/DrawerCheck.git
 cd DrawerCheck
-```
-
-Then, from the repository folder:
-
-```sh
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
@@ -55,299 +257,64 @@ ruff check . && ruff format --check .
 drawercheck --help
 ```
 
-If your system uses `python3` for a supported Python version, use that name in
-the first command. The `[dev]` extra installs the test runner and code checker;
-the installed application has no third-party runtime dependencies. Downloading
-development tools requires internet access during initial setup. The command-line
-core makes no network calls. The optional web installation handles requests
-using the same calculations.
+- Use Python 3.12 or newer (3.13 or 3.14 recommended). If your system calls it
+  `python3`, use that name in the `venv` command.
+- Python must include SQLite 3.37.0 or newer. DrawerCheck checks this and
+  explains how to fix an older version.
+- The `[dev]` extra adds the test runner (pytest) and code checker (Ruff). The
+  command-line tool itself needs nothing beyond Python and makes no network
+  calls.
+- Running `drawercheck` with no arguments prints help. Invalid input prints a
+  short message, never a Python traceback, and exits with code 1.
 
-Running `drawercheck` without arguments also prints help. An invalid argument
-prints a short error and returns exit code 1; successful help returns 0.
+Design choices worth knowing:
 
-## Optional web request layer (M7)
+- Money is stored and calculated as whole cents, never as decimals that can
+  round. For example, `parse_dollars("0.10")` returns `10`, and
+  `format_cents(125075)` returns `"$1,250.75"`.
+- Each run of checks uses the whole imported history before filtering by date,
+  so asking for one day gives the same leads as checking the whole month.
+- A date with no leads is marked as checked, so "no problems found" can be told
+  apart from "never checked".
 
-The request layer exists; browser screens and public hosting remain M8 work.
-Install the optional packages and run its in-process tests:
+## Limitations
 
-```sh
-pip install -e ".[dev,web]"
-pytest -q tests/test_web.py
-```
+- **Learning project with fake data.** This is not a tool for real cash
+  control, and it is not accounting or legal advice. The project claims no
+  banking, compliance, or accounting expertise.
+- **Example thresholds.** The settings are examples, not industry standards.
+- **One closing shift per register per day.** Every register listed in
+  `registers.csv` is expected on every date that has shifts. There is no store
+  calendar, so a day missing from the shift files cannot be detected.
+- **Simple bank matching.** Exact matches are reserved first for every day;
+  remaining days are then compared with the entries left over, in date order.
+  Equal amounts and overlapping date windows can still pick the wrong day. For
+  example, if September 1 and 2 each expect $100.00 and the only $100.00 entry
+  is dated September 2, September 1 takes it, even if its reference names
+  September 2. September 2 is then flagged as missing.
+- **Not handled:** one deposit covering several days, several deposits added
+  together, weekends and holidays (only a calendar-day window is used), and
+  real POS or bank connections. A missing-deposit lead describes the imported
+  files, not a real overdue payment.
 
-Flask connects requests to the existing Python core. Gunicorn serves the Flask
-application on Unix hosts and is excluded from installation on native Windows.
-The application factory is `drawercheck.web:create_app()`.
+## More documentation
 
-`POST /api/demo` accepts an empty body and checks the fixed example.
-`POST /api/check` accepts the seven synthetic CSVs as repeated multipart `files`
-fields. The whole request is limited to 2 MiB, including form overhead, and a
-run may contain at most 5 registers, 100 people, 1,000 shifts, 2,000 bank
-deposits, and 2,000 safe drops. Each field may contain up to 256 characters.
-The same early checks cap POS rows at 1,000 and cash-count rows at 12,000,
-following the one-POS-record and twelve-denomination rules for each shift.
-These record and field limits are checked before opening the database. Blank lines do
-not count, and a quoted value spanning several lines is still one record.
-Each request uses a separate temporary database that is closed and deleted
-before the response returns. Excessive overlap details are rejected before
-they expand into large lists. The full response, including all three reports,
-is limited to 10 MB; a larger result gets a short error asking for a smaller run.
-These are web demo limits, not restrictions on the CLI.
-
-The JSON response contains summaries, shift explanations, review leads, and
-all three complete reports. Money is formatted in Python. Results are not
-saved on the server; the future interface will keep the response while the
-page remains open. See the [request contract](docs/WEB_PLAN.md#m7-request-contract-and-handoff).
-
-## Try it in 3 steps
-
-Start in the project folder with Python 3.12 or newer. All inputs below are fake.
-
-1. Install the command in a virtual environment:
-
-   ```sh
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -e ".[dev]"
-   ```
-
-2. Generate, import, and reconcile the demo in a fresh example database:
-
-   ```sh
-   drawercheck demo-data
-   drawercheck import --dir data/demo --db demo.db
-   drawercheck reconcile --db demo.db
-   ```
-
-3. Create the HTML report, then open the file in a browser:
-
-   ```sh
-   drawercheck report --db demo.db --from 2026-09-01 --to 2026-09-30 --format html --out demo-report.html
-   ```
-
-The [committed sample report](examples/sample_report.html) contains the same
-60 shifts and 16 review flags. It works offline, with no external assets or scripts.
-The file includes daily summaries, review leads, cashier totals, and shift
-calculations, including repeated-shortage and bank-deposit review leads. It
-explains the limits of simplified bank matching.
-
-**Screenshot placeholder:** a real report screenshot will be added after a
-browser capture is available. The M4 browser preview was blocked by the tool's
-local-file security policy; no screenshot or visual verification is claimed.
-
-## Generate and import demo inputs
-
-After setup, run:
-
-```sh
-drawercheck init-db
-drawercheck demo-data
-drawercheck import --dir data/demo
-```
-
-The default generator writes 30 days starting at 2026-09-01, with seed 42 and two
-registers. It writes the seven named CSVs in `data/demo`; existing files with
-those names are replaced. Unrelated files in the folder are preserved.
-`init-db` preserves existing records and is optional because `import` also
-creates tables when needed. The default database is `./drawercheck.db`.
-
-Run the import command again to see an `already imported; skipped` line for
-each file. Identical inputs add no duplicate records and do not change the log.
-
-For a separate dataset, choose a different folder and database path:
-
-```sh
-drawercheck demo-data --out data/another-demo --days 7 --seed 17
-drawercheck import --dir data/another-demo --db another-demo.db
-```
-
-See the [demo scenarios](docs/DEMO_SCENARIOS.md) for the deliberately constructed
-shortages, overage, deposit inputs, and incomplete records. M2 verified the
-input conditions; M5 verifies all 16 required flags, including patterns and
-deposit exceptions, with no unexpected extras.
-
-## Reconcile and explain a shift
-
-After importing the demo data:
-
-```sh
-drawercheck reconcile
-drawercheck explain 2026-09-03-R1
-```
-
-The worked shift shows $518.75 expected, $498.75 counted, and a -$20.00
-difference. It receives a variance review flag and a single-bill hint. Both its
-verifier and note are present, so it has no missing-verification flag.
-
-`reconcile` accepts `--from`, `--to`, `--db`, and `--config`. `explain` accepts
-`--db` and uses the settings saved during reconciliation. For example:
-
-```sh
-drawercheck reconcile --from 2026-09-01 --to 2026-09-03 --db another-demo.db
-drawercheck explain 2026-09-03-R1 --db another-demo.db
-```
-
-`config.toml` contains example policies. A missing file uses defaults with an
-informational notice; an invalid existing file is an error. Repeating a run
-replaces that range's results. Changing settings clears earlier results so
-different policies cannot be mixed. New imported records also clear results.
-Percentages must be greater than 0 and at most 100, with at most six decimal
-places. Deposit lag must be a whole number from 0 through 31 days. These are
-project limits. An empty date selection gives a specific error and preserves
-saved results. A database without the required tables gives import guidance.
-
-After updating from M3/M4 or the initial M5 release, run `drawercheck reconcile`
-again without date filters to refresh all saved results under policy version 4.
-
-Missing counts remain unknown, while an actual count of zero stays zero. Open
-shifts are excluded from closing calculations. Daily expected deposit amounts
-are calculated only for complete days. Bank matching compares positive expected
-amounts with imported entries using the configured calendar-day lag.
-For this demo, every register listed in `registers.csv` is expected on every
-business date present in the shift inputs. A missing register's shift makes
-the daily deposit unknown and produces a date-level R09 review flag.
-See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
-
-## Export reports
-
-```sh
-drawercheck report --db demo.db
-drawercheck report --db demo.db --date 2026-09-03
-drawercheck report --db demo.db --format csv --out flags.csv
-drawercheck report --db demo.db --format text --out review.txt
-```
-
-The default format is text on the terminal. `--out` writes a file; its parent
-folder must already exist. CSV contains one row per saved flag, with a blank
-shift code for a date-level flag. Every CSV cell is protected against the
-specified spreadsheet-formula prefixes, and quoted commas/newlines are retained.
-
-The text and HTML formats share one report dataset. They show daily
-balanced/over/short/incomplete/open counts and flags by severity, then all review
-leads, exact cashier totals, and individual shift amounts. Unknown cash stays
-unknown. Cashier totals include known differences within tolerance and exclude
-unknown/open shifts; the number of known records is shown alongside each total.
-
-Reports use the saved reconciliation settings, even if `config.toml` changes.
-Every selected date containing shifts or bank entries must already be reconciled. A
-clean completed date is reportable; an unchecked date produces the documented
-`Run drawercheck reconcile first` guidance and names the first unchecked date.
-`--date` cannot combine with `--from` or `--to`. Reports never run reconciliation
-or change saved flags.
-
-Bank-only dates show `Not calculated (no shifts)` for expected cash. A closing
-day with missing inputs still shows `unknown`; a recorded count of zero remains
-zero. Bank-only dates are not inferred business days or incomplete closing days.
-
-Report files are written atomically, so a failed replacement preserves the
-previous file. Output paths cannot replace the database or its SQLite sidecars.
-New files respect the caller's umask; replacements keep the existing report's
-permission bits.
-The HTML file has inline CSS, light/dark preference, semantic tables, keyboard
-section links, and print styling. Narrow tables have labelled scroll regions.
-
-A real terminal excerpt for the worked shift's review leads:
-
-```text
-[review] 2026-09-03 2026-09-03-R1 R01_VARIANCE: Short by $20.00. Recount recommended.
-[info] 2026-09-03 2026-09-03-R1 R02_SINGLE_DENOMINATION: Variance equals one $20 bill. Check for a miscounted or misplaced bill.
-```
-
-## CSV import behavior
-
-- Supply all seven files with the exact column names in the
-  [input contract](docs/PROJECT_BRIEF.md#5-csv-input-contract-and-import-rules-folder-datademo).
-  Column order may vary. Missing, extra, and duplicate headers are errors.
-- UTF-8 files may include an Excel byte-order mark. Quoted commas, quoted
-  newlines, Windows line endings, and fully blank records are supported.
-- IDs and shift codes must not have surrounding whitespace, line breaks, or
-  tabs. Unsafe control and invisible formatting characters are rejected in
-  text fields. Multiline free text is preserved; terminal output displays its
-  line breaks and tabs as visible escapes, so a note cannot fake output lines.
-- Money must use exactly two decimal places. Quantities must be nonnegative
-  whole numbers, and counts may use only the specified bills and coins.
-- Each validation error names the file, physical starting line, column, and
-  reason. Header-only files are valid and report zero imported rows; an empty
-  file is an error.
-- All files and their import-log entries are saved in one transaction. A failed
-  import leaves existing data unchanged. An unsuccessful first import may leave
-  an empty database file, with no saved tables or records.
-- File hashes compare exact bytes. A changed file is checked again, even if its
-  only change is line endings. Existing records cannot be silently overwritten.
-  Use new-record-only files or a fresh database for regenerated demo data.
-- New imported records clear old flags and any completion markers. Identical
-  skipped imports leave results unchanged.
-
-## Foundation decisions
-
-- Money is stored and calculated as integer cents. `parse_dollars("0.10")`
-  returns the integer `10`, and `format_cents(125075)` returns `"$1,250.75"`.
-- Dollar inputs require exactly two decimal places. The shared parser accepts
-  negative amounts; import handlers enforce each column's sign rule.
-- Database connections enable foreign keys and return rows accessible by column
-  name. Use `contextlib.closing` to close a connection, with a separate inner
-  transaction block to save or roll back changes.
-- Tests treat leaked-connection warnings as errors.
-
-## How it works
-
-Reconciliation means comparing independently recorded amounts and checking the
-differences. DrawerCheck validates CSVs, stores records in SQLite, calculates
-expected versus counted cash, applies six required review rules, and exports the
-saved results. Paid-ins add cash; refunds, paid-outs, and safe drops remove cash
-from a drawer. Card sales do not add physical cash.
-
-Each rule returns a review lead with supporting values. Cashier history and bank
-matching use the full imported context before results are filtered by date.
-Completion markers distinguish a checked date with no flags from an unchecked
-date. The same inputs and settings produce the same flag content on repeated runs.
-
-- [How it works](docs/HOW_IT_WORKS.md): formulas, worked example, and each rule.
-- [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact CLI symptoms, with checks and fixes.
-- [Demo scenarios](docs/DEMO_SCENARIOS.md): the complete expected fake-data flags.
-- [Core checklist](docs/CORE_CHECKLIST.md): observed validation and remaining gaps.
-- [Interview notes](docs/INTERVIEW_NOTES.md): pitches, honest answers, resume options, and suggested repository text.
-
-## Limitations and progress
-
-This is a learning project using fake data, not a tool for real cash control.
-Flags are neutral leads for human review. The project does not claim
-banking, compliance, or accounting expertise, and it is not accounting or legal
-advice. Configurable thresholds are examples,
-not industry standards.
-
-The supported closing model is one shift per listed register per imported
-business date. There is no register operating schedule or store calendar;
-a day absent from the shift inputs cannot be inferred automatically.
-Bank matching is deliberately simplified. It first reserves exact matches for
-all days, then reviews unresolved days against the remaining entries. Each pass
-processes dates in order and consumes each matched entry once. This helps show
-an ordinary one-cent difference as one warning when later days have their own
-exact matches. Equal-amount days and overlapping windows can still assign an
-entry to the wrong day. For example, if September 1 and 2 each expect $100.00 and
-the only $100.00 entry is dated September 2, the earlier day takes it, even if its
-reference names September 2. The later day is then flagged as missing.
-Combined deposits, several deposits added together, and real banking calendars
-are outside the MVP. Weekends and holidays use calendar-day lag. Missing-deposit
-flags describe the imported dataset, not a real-world overdue payment. There
-are no real POS or bank integrations.
-
-See the [milestone plan](docs/PLAN.md) for scope and decisions, and the
-[learning log](docs/LEARNING_LOG.md) for completed work and verification.
-The [original project brief](docs/PROJECT_BRIEF.md) preserves the input contracts
-and scenario requirements for future work. Its original web/hosting exclusions
-were superseded by the public-frontend amendment in the current plan.
-The six required core rules and M7 request layer are implemented. M8 browser
-screens/public hosting and optional R03/R06/R07 rules remain future work.
-See the checklist for M6 verification and the hosted GitHub CI evidence.
-M8 awaits a separate user instruction.
+- [How it works](docs/HOW_IT_WORKS.md): formulas, a worked example, and every rule.
+- [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact error messages, with checks and fixes.
+- [Demo scenarios](docs/DEMO_SCENARIOS.md): the planted problems and their expected leads.
+- [Core checklist](docs/CORE_CHECKLIST.md): what was verified, and how.
+- [Interview notes](docs/INTERVIEW_NOTES.md): pitches, honest answers, and resume options.
+- [Milestone plan](docs/PLAN.md) and [website plan](docs/WEB_PLAN.md): scope and decisions.
+- [Learning log](docs/LEARNING_LOG.md): what was built and checked at each step.
+- [Original project brief](docs/PROJECT_BRIEF.md): the starting requirements.
+  Its website and hosting exclusions were later replaced by the approved
+  website plan.
 
 ## Further reading
 
-These are background sources, not standards implemented or certified by this
-learning project. The [original brief](docs/PROJECT_BRIEF.md) preserves the
-supplied references, and the [plan](docs/PLAN.md#reference-review) records access
-limitations and replacements.
+These are background sources, not standards this project implements or is
+certified against. The [plan](docs/PLAN.md#reference-review) notes any access
+problems and replacements.
 
 - [WCPOS reconciliation reports](https://docs.wcpos.com/reports/reconciliation): expected drawer amounts.
 - [Shopify cash-drawer balancing](https://www.shopify.com/blog/balancing-a-cash-drawer): closing practices.
