@@ -670,3 +670,23 @@ The README was reorganized for first-time readers: a status table, the
 three-step demo near the top, a plain table of what each rule looks for, and
 the web limits as a table. PLAN.md and WEB_PLAN.md now open with a short
 "Where things stand" section. No code or behavior changed.
+
+## Design rules for M8 (2026-10-23, documentation only)
+
+- Built: a WCAG 2.2 AA target, colour tokens with calculated contrast, IBM Plex
+  typography, spacing and component rules, and signature elements in
+  `DESIGN.md`; navigation, upload, loading, data, and security-header rules in
+  `WEB_PLAN.md`; and decision 59 in `PLAN.md`. No code changed.
+- Learned: a minimal design looks generic when it has no point of view. Drawing
+  the visual identity from the task itself (a till tape and a count sheet) adds
+  character and teaches beginners at the same time. Form-control borders need
+  their own darker colour, because divider colours rarely reach 3:1 contrast.
+- Interview question: How did you make the website feel distinctive while
+  keeping it accessible and keeping all money calculations on the server?
+
+Review refinements applied the same day: the first-visit wait belongs to
+Render's own loading page (about one minute, per its documentation), Cancel
+only stops the browser waiting, 400% desktop zoom is checked separately from
+200% text resizing, and the combined-limits response (measured at 8,196,971
+bytes, about 1.8 MB under the 10 MB budget) must stay within budget after the
+M8 additions. Labels will be sent once as a lookup to save roughly 400 KB.

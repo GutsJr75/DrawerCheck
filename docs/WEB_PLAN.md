@@ -8,6 +8,9 @@
   including the web tests.
 - **M8, screens and public demo: not started.** It waits for the user's next
   instruction.
+- **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
+  should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
+  says how it should behave, including navigation, uploads, and loading.
 - **Quick map of this document:** the user decision and audience come first,
   then the screens and wording, the architecture, hosting, milestones, the
   definition of done, and finally the [M7 request contract](#m7-request-contract-and-handoff)
@@ -67,8 +70,14 @@ terms briefly; do not require visitors to understand rule codes or commands.
 | Reconcile | Check drawers |
 | Variance | Cash difference |
 | R01_VARIANCE | Cash difference to check |
+| R02_SINGLE_DENOMINATION | Possible single bill |
+| R04_REPEAT_SHORT | Repeated shortages |
+| R05_MISSING_VERIFIER_OR_NOTE | Missing sign-off |
+| R08_DEPOSIT | Bank deposit to check |
 | R09_DATA_INTEGRITY | Missing or inconsistent records |
 | info / warn / review | Note / Check / Needs review |
+| balanced / over / short | Balanced (within $1.00) / Over / Short |
+| incomplete / open | Missing records / Still open |
 | Exact net | Total over/short |
 | HTML / CSV / text download | Web page (.html) / Spreadsheet (.csv) / Text (.txt) |
 
@@ -85,8 +94,122 @@ unreliable. The website runs the pipeline itself, so do not ask visitors to run
 CLI commands. Keep the existing validation and shared calculations unchanged.
 
 This design decision originally recorded future M7/M8 behaviour without authorizing
-implementation. M7 was subsequently authorized and completed. Detailed visual
-choices and browser checks remain M8 work. See [DESIGN.md](../DESIGN.md).
+implementation. M7 was subsequently authorized and completed. The visual system,
+WCAG 2.2 AA target, and signature elements were added to [DESIGN.md](../DESIGN.md)
+on 2026-10-23. The behaviour rules below were added at the same time. Browser
+checks remain M8 work.
+
+### Navigation, addresses, and the Back button
+
+Each view has its own address after `#`, so the browser's Back and Forward
+buttons, refresh, and copied links behave the way people expect:
+
+| Address | View |
+| --- | --- |
+| `#/` | Start |
+| `#/prepare` | Prepare files |
+| `#/results?date=2026-09-03&show=review` | Results, with optional date and severity filters (`show` is `all`, `review`, `check`, or `note`) |
+| `#/drawer/2026-09-03-R1` | Drawer details for one shift (the shift code is URL-encoded) |
+
+- Moving to another view adds a history entry. Changing a filter replaces the
+  current entry, so Back does not step through every filter click.
+- After each view change, update the page title (for example
+  "Drawer 2026-09-03-R1 | DrawerCheck") and move keyboard focus to the view's
+  main heading.
+- Results live only in the open page. If someone refreshes, or opens a results
+  or drawer address with no results loaded, show Start with: "Results are not
+  saved. Run the example again or upload your files."
+- An address for a shift that is not in the current results shows "This drawer
+  is not in the current results" with a link back to Results.
+- Do not block leaving the page with a browser warning. The demo notice already
+  says results disappear when the page closes.
+
+### Uploading files
+
+- Use a normal labelled file input that accepts several `.csv` files at once.
+  Dragging files onto the list is optional extra help, never the only way.
+- Show a checklist of the seven required filenames. Each row shows Waiting,
+  Ready (with file size), or Problem (with the message). Choosing a file again
+  replaces the one with the same name.
+- Before sending, the browser checks only the filenames, the number of files,
+  and the total size. It never reads or judges the file contents; the server
+  does that.
+- When the server reports a problem, show an error summary at the top of the
+  view titled "There is a problem with your files", move focus to it, and link
+  each message to the matching checklist row. Use the `file_name` returned with
+  CSV errors to find that row.
+- Beside the chooser, say plainly: "Use example data only. Files are checked
+  and then deleted; nothing is saved."
+
+### Loading and slow starts
+
+There are two different waits, and only the second one is ours to design:
+
+1. **Opening the site while the server sleeps.** Render's free service sleeps
+   after 15 minutes without traffic. On the next visit, Render shows its own
+   loading page in the browser while the server wakes, which
+   [Render's documentation](https://render.com/docs/free) says takes about one
+   minute. Our page has not loaded yet, so none of our messages can appear.
+   README and the Start view's help text should warn about this first-visit
+   delay.
+2. **Waiting for a check after our page has loaded.** The server may still be
+   slow if it fell asleep while the page stayed open. Our page handles this:
+
+- After a button is pressed, disable it and change its text to say what is
+  happening ("Checking the example..." or "Checking your files..."). Announce
+  the same text to screen readers.
+- After 5 seconds with no response, add: "The demo server may be waking up.
+  This usually takes about a minute." Do not promise a maximum time.
+- Offer a "Cancel" button while waiting. Cancel stops the browser waiting
+  (using an `AbortController`), returns the view to its previous state, and
+  ignores any response that arrives afterwards. It does not stop the server:
+  the check may still finish in Python, which is harmless because each run is
+  bounded and its temporary files are deleted. Do not word Cancel as if it
+  stops processing.
+- After 90 seconds with no response, stop waiting in the same way and show a
+  short error with "Try again".
+- No percentage bars, shimmering placeholders, or spinners without words.
+
+### Data the screens need from Python
+
+The browser only displays values; it never calculates money or counts leads.
+M8 must add these to the M7 JSON, computed in Python with integer cents:
+
+- `line_total_amount` for each count row (denomination x quantity), for the
+  count sheet. Add only this one field per count row.
+- A `summary` block for the Results line: drawers checked, drawers with at least
+  one "Needs review" lead, leads by severity, and days with bank-deposit leads.
+  For the demo this gives 60 drawers, 4 needing review, and 16 leads in total.
+- One `labels` lookup per response that maps each rule code, severity, and
+  shift status to its public words from the wording table above. Define it once
+  in Python so every screen uses the same words. Send it once rather than
+  repeating the words on every flag; the browser looks each label up by its
+  code, which is not a calculation. Keep the rule code as secondary detail.
+
+Add tests that compare these new fields with the CLI results for the demo.
+
+**These additions must not undo the M7 workload fixes.** The existing test
+`test_combined_caps_keep_the_full_response_within_budget` fills every web limit
+at once and must still succeed under the 10 MB response budget. Measured on
+2026-10-23 before M8, that response was 8.2 MB (8,196,971 bytes, with 12,000
+count rows and 6,019 flags), leaving about 1.8 MB. Estimates: line totals add
+roughly 360 KB; repeating labels on every flag would add roughly 400 KB more,
+which the single lookup avoids. Keep that test unchanged as the guard, record
+the new measured size in the learning log, and do not raise the budget to make
+room.
+
+### Security headers for the public site
+
+Serve every page with a Content-Security-Policy that allows only the site
+itself: `default-src 'self'; script-src 'self'; style-src 'self';
+font-src 'self'; img-src 'self' data: blob:; connect-src 'self';
+object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`.
+Keep `X-Content-Type-Options: nosniff` and `Cache-Control: no-store`, and add
+`Referrer-Policy: no-referrer`. No inline scripts or styles are needed. Keep a
+tight Gunicorn worker timeout, such as 30 seconds: a full-size check takes about
+a second, and the browser's 90-second wait covers the host waking up, not
+processing. Confirm the final values against the host's documentation during
+deployment.
 
 ## Experience to build
 
@@ -170,7 +293,7 @@ required correctness or data-isolation checks to meet the earlier time estimate.
 | Milestone | Work blocks | Main files |
 | --- | --- | --- |
 | M7: Web request handling | Optional package setup and application entry point; upload/demo pipeline with temporary cleanup; errors, limits, isolation, and parity tests. | `src/drawercheck/web.py`, `errors.py`, `pyproject.toml`, `tests/test_web.py`, CI updates |
-| M8: Screens and delivery | Upload/demo screen; summary and shift details; filtering/downloads and user states; browser verification; hosting configuration and public smoke check; README/screenshots and interview update. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data setup, `render.yaml`, `README.md`, `docs/INTERVIEW_NOTES.md` |
+| M8: Screens and delivery | Python additions for the screens (summary, count line totals, public labels) and the base layout with tokens and fonts; Start and upload screens; Results and Drawer details; filtering, downloads, navigation, and user states; accessibility and browser verification; hosting configuration and public smoke check; README/screenshots and interview update. | `src/drawercheck/web.py`, `src/drawercheck/templates/`, `src/drawercheck/static/` (including fonts and their license), package-data setup, `render.yaml`, `README.md`, `docs/INTERVIEW_NOTES.md` |
 
 M2 through M6 still complete the core first. Stop after each authorized milestone
 for review. Optional rules R03, R06, and R07 move to M9 and remain opt-in.
@@ -194,6 +317,21 @@ for review. Optional rules R03, R06, and R07 move to M9 and remain opt-in.
   run the example, find and explain an item needing review, and download a report
   without coaching? Record observed difficulties and repairs; if no participant
   is available, record the missing check rather than claiming it passed.
+- Check WCAG 2.2 AA on every view in light and dark mode: an automated
+  accessibility scan with no violations, plus a manual pass covering the
+  keyboard, focus visibility, a 320-pixel-wide screen, text resized to 200%,
+  browser zoom at 400% in a 1,280-pixel-wide desktop window (equivalent to a
+  320 CSS-pixel viewport), reduced motion, and screen-reader announcements for
+  loading, results, and errors. Report which tools were actually used.
+- Check Cancel during a deliberately slowed check: the view returns to its
+  previous state, and a response arriving afterwards is ignored.
+- Check the Back and Forward buttons, refresh, and a copied drawer address,
+  including the "Results are not saved" message. Check that the browser makes
+  no requests to other websites and that the performance budget in DESIGN.md
+  is met.
+- Compare each view with DESIGN.md: tokens, fonts, the drawer tape, the count
+  sheet, the plain-facts summary, and the "What to avoid" list. Record
+  screenshots of each view on desktop and phone widths.
 - Keep the core install working without web dependencies. Run pytest and both
   Ruff checks; add web coverage to CI and report only observed CI results.
 - Verify a real public URL from a fresh browser session before marking M8 done.
