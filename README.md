@@ -1,16 +1,20 @@
 # DrawerCheck
 
+[![Core checks](https://github.com/GutsJr75/DrawerCheck/actions/workflows/ci.yml/badge.svg)](https://github.com/GutsJr75/DrawerCheck/actions/workflows/ci.yml)
+
 DrawerCheck is a personal learning project for checking end-of-shift cash drawers
 with fictional data from **Demo Store #001**. It imports CSV files, compares
 counted cash with POS totals, flags differences for human review, and explains
 each shift. It exports terminal text, a self-contained HTML report, and a CSV
 of review flags.
 
-**Current milestone: M5, patterns and deposits complete.** Installation, exact
+**Current milestone: M6 local work verified; hosted CI pending.** Installation, exact
 money handling, database tables, fake demo generation, validated imports, cash
 calculations, six required review rules, shift explanations, and three report
 formats are implemented, including repeated-shortage checks and simplified bank
-matching. M6 core polish is next.
+matching. The CI workflow checks Python 3.12, 3.13, and 3.14; no remote run has
+been observed yet. See the [core checklist](docs/CORE_CHECKLIST.md) for actual
+verification results. The badge reflects GitHub's status, not a local test run.
 
 A public browser demo is now planned after the core is complete. Visitors will
 be able to run the built-in fake-data example or upload synthetic CSVs, inspect
@@ -30,7 +34,14 @@ Use Python 3.12 or newer; Python 3.13 or 3.14 is recommended for development.
 The Python installation must include SQLite 3.37.0 or newer for STRICT tables,
 which reject values that cannot be stored using the table's declared types.
 
-From the repository folder:
+For a fresh checkout:
+
+```sh
+git clone https://github.com/GutsJr75/DrawerCheck.git
+cd DrawerCheck
+```
+
+Then, from the repository folder:
 
 ```sh
 python -m venv .venv
@@ -67,14 +78,14 @@ Start in the project folder with Python 3.12 or newer. All inputs below are fake
 
    ```sh
    drawercheck demo-data
-   drawercheck import --dir data/demo --db demo-m4.db
-   drawercheck reconcile --db demo-m4.db
+   drawercheck import --dir data/demo --db demo.db
+   drawercheck reconcile --db demo.db
    ```
 
 3. Create the HTML report, then open the file in a browser:
 
    ```sh
-   drawercheck report --db demo-m4.db --from 2026-09-01 --to 2026-09-30 --format html --out demo-report.html
+   drawercheck report --db demo.db --from 2026-09-01 --to 2026-09-30 --format html --out demo-report.html
    ```
 
 The [committed sample report](examples/sample_report.html) contains the same
@@ -163,10 +174,10 @@ See [how it works](docs/HOW_IT_WORKS.md) for formulas and rule explanations.
 ## Export reports
 
 ```sh
-drawercheck report --db demo-m4.db
-drawercheck report --db demo-m4.db --date 2026-09-03
-drawercheck report --db demo-m4.db --format csv --out flags.csv
-drawercheck report --db demo-m4.db --format text --out review.txt
+drawercheck report --db demo.db
+drawercheck report --db demo.db --date 2026-09-03
+drawercheck report --db demo.db --format csv --out flags.csv
+drawercheck report --db demo.db --format text --out review.txt
 ```
 
 The default format is text on the terminal. `--out` writes a file; its parent
@@ -181,11 +192,15 @@ unknown. Cashier totals include known differences within tolerance and exclude
 unknown/open shifts; the number of known records is shown alongside each total.
 
 Reports use the saved reconciliation settings, even if `config.toml` changes.
-Every selected business date containing shifts must already be reconciled. A
+Every selected date containing shifts or bank entries must already be reconciled. A
 clean completed date is reportable; an unchecked date produces the documented
 `Run drawercheck reconcile first` guidance and names the first unchecked date.
 `--date` cannot combine with `--from` or `--to`. Reports never run reconciliation
 or change saved flags.
+
+Bank-only dates show `Not calculated (no shifts)` for expected cash. A closing
+day with missing inputs still shows `unknown`; a recorded count of zero remains
+zero. Bank-only dates are not inferred business days or incomplete closing days.
 
 Report files are written atomically, so a failed replacement preserves the
 previous file. Output paths cannot replace the database or its SQLite sidecars.
@@ -237,6 +252,25 @@ A real terminal excerpt for the worked shift's review leads:
   transaction block to save or roll back changes.
 - Tests treat leaked-connection warnings as errors.
 
+## How it works
+
+Reconciliation means comparing independently recorded amounts and checking the
+differences. DrawerCheck validates CSVs, stores records in SQLite, calculates
+expected versus counted cash, applies six required review rules, and exports the
+saved results. Paid-ins add cash; refunds, paid-outs, and safe drops remove cash
+from a drawer. Card sales do not add physical cash.
+
+Each rule returns a review lead with supporting values. Cashier history and bank
+matching use the full imported context before results are filtered by date.
+Completion markers distinguish a checked date with no flags from an unchecked
+date. The same inputs and settings produce the same flag content on repeated runs.
+
+- [How it works](docs/HOW_IT_WORKS.md): formulas, worked example, and each rule.
+- [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact CLI symptoms, with checks and fixes.
+- [Demo scenarios](docs/DEMO_SCENARIOS.md): the complete expected fake-data flags.
+- [Core checklist](docs/CORE_CHECKLIST.md): observed validation and remaining gaps.
+- [Interview notes](docs/INTERVIEW_NOTES.md): pitches, honest answers, resume options, and suggested repository text.
+
 ## Limitations and progress
 
 This is a learning project using fake data, not a tool for real cash control.
@@ -266,5 +300,21 @@ See the [milestone plan](docs/PLAN.md) for scope and decisions, and the
 The [original project brief](docs/PROJECT_BRIEF.md) preserves the input contracts
 and scenario requirements for future work. Its original web/hosting exclusions
 were superseded by the public-frontend amendment in the current plan.
-M5's required rules are complete. M6 core polish and the M7/M8 public app remain
-future work.
+The six required core rules are implemented. The M7/M8 public app and optional
+R03/R06/R07 rules remain future work. See the checklist for M6 verification and
+any outstanding GitHub CI evidence.
+
+## Further reading
+
+These are background sources, not standards implemented or certified by this
+learning project. The [original brief](docs/PROJECT_BRIEF.md) preserves the
+supplied references, and the [plan](docs/PLAN.md#reference-review) records access
+limitations and replacements.
+
+- [WCPOS reconciliation reports](https://docs.wcpos.com/reports/reconciliation): expected drawer amounts.
+- [Shopify cash-drawer balancing](https://www.shopify.com/blog/balancing-a-cash-drawer): closing practices.
+- [Beancount end-of-day close guide](https://beancount.io/blog/2026/09/14/end-of-day-close-z-reports-cash-drawer-daily-sales-reconciliation-guide): background on separate close records.
+- [Beancount daily cash and deposit guide](https://beancount.io/blog/2026/10/12/daily-sales-reconciliation-cash-heavy-business-pos-till-bank-deposit-guide): background on the deposit handoff.
+- [Manifestly cash-handling checklist](https://app.manifest.ly/public/checklists/cash-handling-checklist): examples of review steps.
+- [HotSchedules mobile cash reconciliation](https://help.hotschedules.com/hc/en-us/articles/28816788225293-MacromatiX-Mobile-Cash-Reconciliation): the official replacement reviewed when the original supplied link could not be retrieved.
+- [AccountingTools cash over and short](https://www.accountingtools.com/articles/what-is-the-cash-over-and-short-account.html): terminology background.

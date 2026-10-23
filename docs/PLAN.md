@@ -1,9 +1,9 @@
 # DrawerCheck plan
 
-Status: M0 through M5 complete, including the approved two-pass matching repair verified locally on 2026-10-22.
-Next: M6, core polish and delivery.
-Wait for the user's **next** before starting M6. See `docs/LEARNING_LOG.md`
-for the checks actually run.
+Status: M0 through M5 complete. M6 local deliverables and checks are complete on 2026-10-22; hosted CI verification remains pending.
+Next: publish the reviewed M6 commit and observe its GitHub Actions matrix before
+closing M6. M7 requires a separate user instruction after M6 verification.
+See `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md` for actual results.
 Scope expanded on 2026-10-22: a public interactive demo is planned in M7 and M8,
 after the core milestones. See `docs/WEB_PLAN.md` for the agreed web scope.
 Design direction clarified on 2026-10-22: a minimal, professional interface for
@@ -177,6 +177,10 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 49. **Reserve all exact matches before reviewing leftovers (approved 2026-10-22).** The user approved option (b) after a reproduced one-cent deposit change produced an ambiguous flag plus an unexpected-entry flag. This deliberately amends the original brief's section 7 per-date greedy sequence and decision 14; keep the original brief unchanged as history. Pass one reserves exact matches across all dates, in date order with bank-date/ID tie breaks. Pass two applies the unique-mismatch, missing, and ambiguous branches to unresolved days, also in date order. Keep full-history context before filtering in both passes. This produces one warning for September 2's $2,489.98 expected amount versus $2,489.99 recorded, while preserving all 16 default demo flags. Bump saved-policy version to 4, describe differences as less/more than expected while retaining signed evidence, and retain the documented equal-amount and calendar limitations. This is an M5 repair; M6 remains awaiting authorization.
 
 50. **Make daily deposit leads easy to find in `explain`.** Display saved R08 leads directly below the expected daily deposit under `Daily deposit review for YYYY-MM-DD`, including severity, message, and evidence. Keep other daily record leads separate and show each deposit lead once. This improves the visibility of existing saved flags without changing reconciliation, policy version 4, or milestone progress.
+
+51. **Finish local M6 work without claiming unobserved CI.** Add ten exact troubleshooting symptoms tied to real CLI paths and central error messages, honest interview/sharing material, a README CI badge and concept links, and `docs/CORE_CHECKLIST.md` with PASS/FAIL evidence. Use fresh local clones of the candidate source snapshot for separate Python 3.12/3.13 installs and a core-only install; no Python 3.14 interpreter is available locally. The connected GitHub repository grants read access but no push access and currently reports zero workflow runs. Keep hosted CI FAIL until the local commit is published and all jobs are observed passing. This is the only remaining M6 delivery check; do not start M7 automatically.
+
+52. **Use verified current Actions releases for the M6 matrix.** Follow the linked GitHub Python workflow structure, using `actions/checkout@v7.0.1` and `actions/setup-python@v7.1.0` verified from their release pages on 2026-10-22. The tutorial still shows older majors, so the release checks supersede those sample tags. Test Python 3.12, 3.13, and 3.14 with editable dev installation, both Ruff checks, pytest, and installed CLI help. Grant only `contents: read`, disable persisted checkout credentials, and keep publishing/deployment out of this workflow. Primary references are linked in `docs/CORE_CHECKLIST.md`.
 
 ## Math and test commitments
 

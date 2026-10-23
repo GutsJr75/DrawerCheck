@@ -417,3 +417,55 @@ deposit and September 21's mismatch, each printed once under the correct date.
 `git diff --check` and prohibited-punctuation checks passed. Reconciliation,
 saved policy version 4, the sample report, and the 16 golden flags are unchanged.
 This is a small M5 presentation follow-up; M6 remains unstarted.
+
+## M6: Core polish and local verification
+
+- Built: A ten-entry troubleshooting guide with tests tied to exact CLI messages,
+  a three-version GitHub Actions workflow, README setup/navigation/concept links
+  and CI badge, a PASS/FAIL core checklist, and honest pitches, eight interview
+  answers, three resume options, and suggested GitHub description/topics.
+- Learned: A passing existing environment does not prove a fresh install works.
+  Separate local clones and environments can test packaging and dependencies,
+  while a configured hosted matrix still needs an observed remote run. Exact
+  troubleshooting examples can be tested against the same messages users see.
+- Interview question: How would you distinguish evidence from local tests,
+  fresh-install checks, and a hosted CI run when describing project readiness?
+
+The user authorized M6 on 2026-10-22. All local deliverables are complete, but the
+required hosted CI observation is pending, so M6 is not declared fully closed.
+No reconciliation logic, money calculations, saved-policy version 4, demo CSVs,
+optional rules, or web features changed.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q tests/test_troubleshooting.py` | PASS: all ten exact guide symptoms reproduced. SQLite lock/read-only and report replacement permission failures are simulated for platform independence; the real CLI translation paths are exercised. |
+| `.venv/bin/pytest -q` | PASS: 559 tests with resource/cleanup warnings still treated as errors. |
+| `.venv/bin/pytest --collect-only -q` through a captured subprocess | PASS: 559 tests collected. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both checks clean. |
+| Fresh local clone plus new Python 3.12.9 environment, SQLite 3.45.3 | PASS: editable `.[dev]` install, 559 tests, both Ruff checks, installed help, and `pip check`. |
+| Independent fresh local clone plus new Python 3.13.5 environment, SQLite 3.47.1 | PASS: editable `.[dev]` install, 559 tests, both Ruff checks, installed help, and `pip check`. |
+| Exact default demo/import/reconcile/date-range-report chain in both clones | PASS: 60 shifts, 30 completion dates, and 16 expected flags. Repeated imports skip all seven files and repeated reconciliation preserves results. |
+| Installed S1 explanation in both clones | PASS: $518.75 expected, $498.75 counted, -$20.00 variance, and $1,198.75 contribution; R01/R02 present, R05 absent. |
+| Installed text/HTML/CSV exports and foreign-key checks in both clones | PASS: 16 CSV rows, no broken references, all six required rule codes, and offline HTML matching the committed sample apart from generation time. Default demo CSV bytes remain unchanged. |
+| Separate core-only fresh installation | PASS: no unconditional third-party runtime requirements, no pytest/Ruff/Flask installed, and the complete demo/import/reconcile/HTML command flow works. |
+| CI workflow YAML parsing | PASS: YAML parses and declares Python 3.12/3.13/3.14. Release pages verified checkout v7.0.1 and setup-python v7.1.0; links are in the core checklist. |
+| Hosted GitHub Actions run | FAIL: not observed. The connected repository has pull access but no push access; its workflow-runs API returned zero runs. The new local workflow has not been published. |
+| Final source/document checks | PASS: `git diff --check`, local Markdown links, prohibited punctuation, and instruction-file limits. Runtime files, committed fake CSVs, the sample, and the original brief are unchanged. All source/test bytes match the verified snapshot; the ten troubleshooting tests and both Ruff checks passed again after the documentation results were recorded. |
+
+Fresh verification used separate local clones of an isolated Git snapshot of
+the M6 candidate files under a temporary directory. No existing environment or
+cache was copied into the clones. Wheels were downloaded into the temporary
+wheel folder, then the installs ran with `--no-index --find-links`. Fresh tools
+were pytest 9.1.1 and Ruff 0.17.2, with setuptools 84.2.1 used during builds.
+The existing repository environment retains Ruff 0.17.1. All runtime code and
+tests match the verified snapshot; subsequent edits only record documentation
+results. The isolated verification did not change the committed sample report.
+
+`docs/CORE_CHECKLIST.md` lists seven PASS rows and one FAIL row for the original
+core definition of done. Interview/sharing material is in
+`docs/INTERVIEW_NOTES.md`; it makes no production-use or unobserved CI claims.
+The screenshot remains an explicit placeholder. No local Python 3.14 run,
+browser verification, public app, or deployment result is claimed.
+
+Remaining M6 step: publish the reviewed local commit and observe all three CI
+jobs. M7 remains unstarted and requires the user's separate instruction.

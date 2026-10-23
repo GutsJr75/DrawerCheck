@@ -5,6 +5,11 @@ fictional records. It compares expected closing cash with an independent cash
 count and saves neutral leads for review. Reports are available as text, HTML,
 and CSV. M5 adds repeated-shortage checks and simplified bank-deposit matching.
 
+Reconciliation means comparing independently recorded amounts and checking the
+differences. For setup, see the [README](../README.md); for exact error messages
+and fixes, see [troubleshooting](TROUBLESHOOTING.md). The
+[core checklist](CORE_CHECKLIST.md) records what was actually verified.
+
 ## Follow the cash
 
 The opening float is the cash left in a register to make change. POS totals are
