@@ -24,7 +24,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
 | Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | In progress (milestone M8, blocks 1 to 4 of 7 done: every screen, addresses, filters, downloads, and waiting states; checks and hosting next) |
+| Website screens and public hosting | In progress (milestone M8, blocks 1 to 5 of 7 done: every screen, plus accessibility checks in Chrome and Safari's engine; hosting next) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
 **Automated checks:** the hosted run for the final web request code,
@@ -207,7 +207,10 @@ The server side of the planned website is built; the screens are milestone M8,
 built in blocks. The site now has every screen: Start with the example
 button, Prepare files for uploads, Results with filters and report downloads,
 and Drawer details. Back, Forward, and copied links work, and results are kept
-only while the page is open. Accessibility checks and hosting come next.
+only while the page is open. An automated WCAG 2.2 AA scan found no problems in
+Chrome or WebKit, and keyboard, zoom, and text-size checks pass; see the
+[block 5 results](docs/WEB_PLAN.md#verification-and-expanded-definition-of-done).
+Public hosting comes next.
 Install the optional packages and run the web tests:
 
 ```sh

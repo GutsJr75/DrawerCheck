@@ -82,6 +82,8 @@
   --radius-control: 4px;
   --radius-panel: 8px;
   --gutter: 16px;
+  /* The drop-down arrow, drawn in the theme's text colour. */
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23162b35' stroke-width='2'/%3E%3C/svg%3E");
 }
 
 /* Dark theme, following the visitor's system setting. */
@@ -103,6 +105,7 @@
     --review-bg: #45292b;
     --ready: #9ad8a8;
     --ready-bg: #20402c;
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23eff5f7' stroke-width='2'/%3E%3C/svg%3E");
   }
 }
 
@@ -240,7 +243,8 @@ h1[tabindex="-1"]:focus,
   border-bottom: 1px solid var(--line);
 }
 
-.site-header .wrap {
+/* The notice sits inside the header landmark; only the wordmark row is a flex row. */
+.site-header > .wrap {
   display: flex;
   align-items: center;
   min-height: 3.5rem;
@@ -806,15 +810,18 @@ main {
   font-weight: 600;
 }
 
+/* Without its native look, WebKit honours the 44px height like other browsers. */
 .field select {
   min-height: 2.75rem;
   max-width: 100%;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-7) var(--space-2) var(--space-3);
   border: 1px solid var(--control);
   border-radius: var(--radius-control);
-  background: var(--surface);
+  background: var(--surface) var(--select-arrow) no-repeat right var(--space-3) center / 0.75rem;
   color: var(--text);
   font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .choices {
@@ -883,17 +890,15 @@ main {
 }
 
 /* Drawer details: the tape beside the count sheet on wide screens. */
+/* Two columns only when both fit, so larger text falls back to one column
+   instead of widening the page. */
 .drawer-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 28rem));
+  align-items: start;
+  justify-content: start;
   gap: var(--space-6) var(--space-8);
   margin: var(--space-5) 0 var(--space-6);
-}
-
-@media (min-width: 64em) {
-  .drawer-grid {
-    grid-template-columns: 24rem minmax(0, 28rem);
-    align-items: start;
-  }
 }
 
 .drawer-grid h2 {

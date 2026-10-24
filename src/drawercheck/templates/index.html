@@ -8,6 +8,7 @@
   <title>Check a cash drawer | DrawerCheck</title>
   <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-Regular-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-SemiBold-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
   <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </head>
@@ -20,7 +21,8 @@
     <tbody>
       {% for line in tape_lines %}
       <tr data-line="{{ line.key }}"{% if line.key in ("expected", "difference") %} class="tape-rule tape-total"{% endif %}>
-        <th scope="row"><div class="tape-label"><span class="tape-op" aria-hidden="true">{{ line.sign }}</span>{% if line.spoken %}<span class="visually-hidden">{{ line.spoken }} </span>{% endif %}
+        {#- A label inside a details element does not name its row header, so Drawer details names it here. -#}
+        <th scope="row"{% if explain %} aria-label="{{ (line.spoken ~ ' ' ~ line.label)|trim }}"{% endif %}><div class="tape-label"><span class="tape-op" aria-hidden="true">{{ line.sign }}</span>{% if line.spoken %}<span class="visually-hidden">{{ line.spoken }} </span>{% endif %}
           {%- if explain %}<details class="term"><summary>{{ line.label }}</summary><p>{{ line.definition }}</p></details>{% else %}{{ line.label }}{% endif %}</div></th>
         <td class="money">{{ amounts[line.key] if amounts else "" }}</td>
       </tr>
@@ -30,12 +32,12 @@
   </table>
   {%- endmacro %}
   <a class="skip-link" href="#main">Skip to main content</a>
-  <div class="notice">
-    <div class="wrap">
-      <p>Example data only. Do not upload real store records.</p>
-    </div>
-  </div>
   <header class="site-header">
+    <div class="notice">
+      <div class="wrap">
+        <p>Example data only. Do not upload real store records.</p>
+      </div>
+    </div>
     <div class="wrap">
       <a class="wordmark" href="#/">DrawerCheck</a>
     </div>

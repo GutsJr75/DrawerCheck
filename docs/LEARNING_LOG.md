@@ -881,3 +881,43 @@ Screenshots are in `docs/screenshots/2026-10-23-m8-block4/` (12 images, about
 2.6 MB). Screen-reader announcements, 200% text, 400% zoom, and an automated
 accessibility scan remain block 5. No hosted CI or deployment result is
 claimed. Block 5 waits for **next**.
+
+## M8 block 5: Accessibility and browser checks
+
+- Built: An automated WCAG 2.2 AA scan of every view and state in Chrome and
+  WebKit, both themes and both widths, plus scripted keyboard, zoom, text-size,
+  motion, announcement, and request checks. Fixed the Drawer details row-header
+  names, the WebKit date-list height, the two-column drawer layout at large
+  text, and the notice landmark; added a favicon and ignored Playwright's
+  snapshot folder.
+- Learned: A clean automated scan is not the whole story. axe passed while the
+  accessibility tree showed tape rows named only "Minus", and Safari's engine
+  sized the drop-down differently from Chrome. Reading the tree and testing a
+  second engine found what the scanner could not.
+- Interview question: Your site passes an automated accessibility scan. What
+  else would you check before calling it accessible, and why?
+
+The user authorized block 5 on 2026-10-23 after restarting to load the
+Playwright plugin, installing Google Chrome, and choosing to download WebKit.
+Tools: Playwright 1.64 (the plugin's copy), Google Chrome 156, Playwright WebKit
+26.6, and axe-core 4.14.0 with its registry checksum verified. Same Python,
+Flask, Gunicorn, pytest, and Ruff versions as earlier blocks.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 684 tests in 11.1 seconds; page tests now check the drawer tape's row-header names and that the stylesheet's only non-font `url()` is an inline SVG image. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. |
+| axe-core WCAG 2.0 to 2.2 A/AA scan, final page | PASS: 0 violations and 0 best-practice findings in 136 scans (17 views and states x 2 themes x 2 widths x 2 engines). First run: 0 violations, 1 best-practice finding (the notice outside a landmark), fixed. |
+| Keyboard | PASS in Chrome (Tab) and WebKit (Option+Tab): skip link first, a solid 3 px ring at every stop, and the example, filters, drawer links, line meanings, back link, download, error links, and Cancel all work by keyboard. Typing "Septem" on the date list selects September 3 and filters. |
+| Reflow, zoom, and text | PASS: every scanned view is 320 px wide at 320 px, and 320 px at 400% zoom (320 x 200 CSS px). With 200% text at 1,280 px, no view widens or clips; Drawer details first measured 1,469 px wide and was fixed. |
+| Motion, announcements, and requests | PASS: transitions go from 0.15 s to 0 s under reduced motion; the live region announces readiness, waiting, the slow start, and Cancel; every request went to the local site only. |
+| Accessibility tree review | Found and fixed: Drawer details tape rows were named "Plus", "Minus", or "Equals" without the label; they now read, for example, "Minus Cash refunds $12.00" in both engines. |
+| WebKit date list | Found and fixed: 25 px tall in WebKit against 44 px in Chrome; now 44 px in both. |
+| Console | Only the deliberate 400 and blocked-request messages, plus one WebKit message about its own select styling under the strict style policy (accepted; the list works). |
+| Budgets | PASS: CSS 20,466 bytes and JavaScript 32,857 bytes (53,323 together) against 60 KB. |
+
+Screenshots are in `docs/screenshots/2026-10-23-m8-block5/` (24 images, about
+7.3 MB). Not done: a real screen reader (VoiceOver or NVDA) and a usability
+check with someone new to the project. The check scripts live outside the
+repository. No hosted CI or deployment result is claimed. Block 6 (hosting)
+waits for **next**.

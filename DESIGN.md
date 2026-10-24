@@ -5,8 +5,8 @@ M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in
 `src/drawercheck/static/app.css`. Block 2 added the Start view with the example
 tape and the Prepare files view with its checklist. Block 3 added Results and
 Drawer details with the count sheet. Block 4 added filters, report downloads,
-and the waiting states. The full accessibility check is block 5. The report's
-styles are unchanged.
+and the waiting states. Block 5 checked WCAG 2.2 AA in Chrome and WebKit and
+made the small fixes noted below. The report's styles are unchanged.
 
 Read this file for how the website should **look**. Read
 [WEB_PLAN.md](docs/WEB_PLAN.md) for how it should **behave**: views, wording,
@@ -143,7 +143,9 @@ from the stylesheet, so a token change that breaks contrast fails the tests.
 | Status label | Short word on its tinted background: Note, Check, Needs review, Ready, Missing, Problem. "Waiting" uses `muted` text with a `line` outline. |
 | File chooser | A normal labelled "Choose files" button; dragging files onto the list is optional extra help. |
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
-| Filters | A native `select` (44 px tall, `control` border) and native radio buttons with `accent-color`, each with a visible label; no custom dropdowns. |
+| Filters | A native `select` and native radio buttons with `accent-color`, each with a visible label; no custom dropdown widget. The select drops its native look and draws its own arrow in the `text` colour, because WebKit ignores the 44 px height on native-looking selects. |
+| Demo notice placement | Inside the `header` landmark, above the wordmark row, so every piece of content belongs to a landmark. |
+| Favicon | `static/favicon.svg`: a teal till receipt with a torn edge and three lines, echoing the drawer tape. |
 | Downloads | Three labelled buttons under the facts: "Web page (.html)" as the main button, then "Spreadsheet (.csv)" and "Text (.txt)". |
 | Waiting | The busy button's own words, a Cancel button beside it, and after 5 seconds a sentence with a `control` left rule. Failures show in `review` text with a "Try again" button. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |
@@ -176,7 +178,12 @@ line separates the inputs from the result, and the result line is emphasised.
 ```
 
 - Build it as a table with row headers, so screen readers read each line as
-  "Minus cash refunds, $12.00". The `+` and `-` symbols are visual only.
+  "Minus cash refunds, $12.00". The `+` and `-` symbols are visual only. On
+  Drawer details each label sits inside its definition toggle, which does not
+  count toward the row header's name, so each header also carries an
+  `aria-label` with the whole line.
+- Drawer details shows the tape and count sheet side by side only when both
+  columns fit; with large text or a narrow window they stack.
 - The paper is a `surface` panel whose bottom edge is torn like a till roll,
   drawn with a CSS gradient in the same colour. Rules are dashed `control`
   lines. This edge is the site's one decorative flourish; nothing else on the

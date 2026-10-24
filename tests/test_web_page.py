@@ -196,6 +196,9 @@ def test_both_tapes_share_one_set_of_lines_and_meanings(client) -> None:
     for line in web.TAPE_LINES:
         # Each Drawer details label opens its meaning; the Start tape lists them below.
         assert f"<summary>{line.label}</summary><p>{line.definition}</p>" in drawer
+        # Screen readers announce the row header, so it carries the whole line's words.
+        spoken = f"{line.spoken} {line.label}".strip()
+        assert f'<th scope="row" aria-label="{spoken}">' in drawer
         assert (
             f"<dt>{line.label}</dt>" in html and f"<dd>{line.definition}</dd>" in html
         )
@@ -321,7 +324,12 @@ def test_security_headers_on_every_response(client, method: str, path: str) -> N
 
 def test_stylesheet_fonts_are_local_and_served(client) -> None:
     css = (STATIC / "app.css").read_text(encoding="utf-8")
-    urls = re.findall(r'url\("([^"]+)"\)', css)
+    every_url = re.findall(r'url\("([^"]+)"\)', css)
+    # Anything that is not a font file must be an inline image, never a remote address.
+    urls = [url for url in every_url if not url.startswith("data:")]
+    assert all(
+        url.startswith("data:image/svg+xml,") for url in every_url if url not in urls
+    )
     assert len(urls) == 4 and css.count("font-display: swap") == 4
     page, _ = _page(client)
     preloads = {

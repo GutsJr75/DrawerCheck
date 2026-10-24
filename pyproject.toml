@@ -27,6 +27,7 @@ drawercheck = [
     "templates/*.html",
     "static/*.css",
     "static/*.js",
+    "static/*.svg",
     "static/fonts/*.woff2",
     "static/fonts/LICENSE.txt",
 ]
