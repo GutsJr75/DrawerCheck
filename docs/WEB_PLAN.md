@@ -7,9 +7,9 @@
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
 - **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
-  to 5 are done (including the block 5 repair on 2026-10-24). Block 6's
-  `render.yaml` Blueprint is ready and awaits the user's push and live Render
-  deploy check. Block 7 needs the user's go-ahead.
+  to 6 are done, including the live public deployment at
+  [drawercheck.onrender.com](https://drawercheck.onrender.com) verified on
+  2026-10-24. Block 7 (wrap-up) needs the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
@@ -21,7 +21,7 @@
 | 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Done |
 | 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Done |
 | 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Done |
-| 6 | Hosting: Render setup (`render.yaml` ready) and a check of the live public site (awaiting deploy) | In progress |
+| 6 | Hosting: Render setup and a check of the live public site (`https://drawercheck.onrender.com`) | Done |
 | 7 | Wrap-up: README screenshots and interview notes | Not started |
 - **Quick map of this document:** the user decision and audience come first,
   then the screens and wording, the architecture, hosting, milestones, the
@@ -416,8 +416,25 @@ Rechecked [Render's Flask guide](https://render.com/docs/deploy-flask),
   30-second worker timeout.
 - `test_render_blueprint_matches_stateless_gunicorn_contract` in
   `tests/test_web_page.py` checks `render.yaml` and runs `gunicorn --check-config`
-  with those exact flags. The live public URL check remains pending until the
-  repository is pushed and connected on Render.
+  with those exact flags.
+- Verified on the live public URL
+  [https://drawercheck.onrender.com](https://drawercheck.onrender.com) on
+  2026-10-24 after [GitHub Actions run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)
+  passed on Python 3.12, 3.13, and 3.14:
+  - `GET /` returned 200 with the exact planned `Content-Security-Policy`,
+    `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, and
+    `Cache-Control: no-store`.
+  - `POST /api/demo` and `POST /api/check` (with all seven synthetic CSVs)
+    returned identical results (60 drawers, 4 needing review, 16 leads, 2
+    deposit-lead days) and reports matching the local CLI.
+  - All seven `GET /examples/<file>` downloads matched `data/demo/*.csv`
+    byte-for-byte.
+  - In a fresh browser session, `Try the example`, the 7-file upload on Prepare
+    files, downloading `drawercheck.html`, `drawercheck.csv`, and
+    `drawercheck.txt`, opening `2026-09-03-R1`, and opening a drawer address in
+    a fresh tab (`"Results are not saved"`) all worked with zero console errors
+    and zero requests to other domains. Live screenshots are in
+    `docs/screenshots/2026-10-24-m8-block6/`.
 
 ## Milestones and files
 

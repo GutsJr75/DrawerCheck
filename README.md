@@ -24,12 +24,12 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
 | Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | In progress (milestone M8, blocks 1 to 5 done; block 6 `render.yaml` ready and awaiting live Render deploy) |
+| Website screens and public hosting | In progress (milestone M8, blocks 1 to 6 of 7 done: live at [drawercheck.onrender.com](https://drawercheck.onrender.com); wrap-up next) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
-**Automated checks:** the hosted run for the final web request code,
-[GitHub Actions run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
-on commit `2bdbb7a`, passed the tests and both Ruff checks on Python 3.12,
+**Automated checks:** the hosted run for the M8 block 6 deployment commit,
+[GitHub Actions run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)
+on commit `0ec9baf`, passed the tests and both Ruff checks on Python 3.12,
 3.13, and 3.14, including the web tests. The badge above shows the result of
 GitHub's most recent run. The [core checklist](docs/CORE_CHECKLIST.md) records what was verified
 and how.
@@ -210,8 +210,8 @@ and Drawer details. Back, Forward, and copied links work, and results are kept
 only while the page is open. An automated WCAG 2.2 AA scan found no problems in
 Chrome or WebKit, and keyboard, zoom, and text-size checks pass; see the
 [block 5 results](docs/WEB_PLAN.md#verification-and-expanded-definition-of-done).
-The [Render Blueprint](render.yaml) is ready for deployment; the live public
-URL will be added once the deployed site is checked.
+The public demo is deployed from the [Render Blueprint](render.yaml) and live at
+[https://drawercheck.onrender.com](https://drawercheck.onrender.com).
 Install the optional packages and run the web tests:
 
 ```sh

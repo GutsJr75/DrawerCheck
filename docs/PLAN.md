@@ -5,15 +5,15 @@
 - **Done:** M0 through M7. The command-line core (M1 to M6) and the web request
   layer (M7, including its workload, roster, and response-size repairs on
   2026-10-23) are complete.
-- **Verified on GitHub:** [run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
-  passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
-  including the web tests. M6's earlier run is recorded in `docs/CORE_CHECKLIST.md`.
+- **Verified on GitHub:** [run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)
+  passed for the M8 block 6 commit `0ec9baf` on Python 3.12, 3.13, and 3.14,
+  including all 685 core and web tests. M6's earlier run is recorded in
+  `docs/CORE_CHECKLIST.md`.
 - **In progress:** M8, the website screens and public demo, in seven blocks
-  (listed in `docs/WEB_PLAN.md`). Blocks 1 to 5 (including the block 3 and
-  block 5 review repairs) are done, and block 6's `render.yaml` Blueprint is
-  configured and verified locally (decisions 60 to 68). Block 6's live public
-  URL smoke check awaits the user's push and Render deploy. Wait for **next**
-  before block 7.
+  (listed in `docs/WEB_PLAN.md`). Blocks 1 to 6 (including the block 3 and
+  block 5 review repairs, and the live public deployment at
+  [drawercheck.onrender.com](https://drawercheck.onrender.com)) are done
+  (decisions 60 to 68). Wait for **next** before block 7, wrap-up.
 - **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
 
 How the scope grew:
@@ -225,7 +225,7 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 67. **Repair the block 5 checks after an outside review (authorized 2026-10-24).** The user brought a review of block 5; each claim was checked before any change. Confirmed: the two WebKit screenshots at 390 px of Results and Drawer details were identical pictures of Start, because Playwright's `page.goto` to the address the page is already on reloads it in WebKit (not in Chrome) and clears the in-memory results. The same step made WebKit's 400% zoom check measure Start for Results, Drawer details, and the missing-drawer view. The app behaved as designed; only the checks were wrong. Fixed in the scratch scripts: moves inside the app change `location.hash`, and every scan, measurement, and screenshot first confirms the one visible view and its address. A guard test shows the old step now fails in WebKit. All block 5 checks were rerun with the guard and match block 5's results, and WebKit's 400% zoom now confirms 320 px on every view. New pictures are in `docs/screenshots/2026-10-24-m8-block5-repair/`; the block 5 folder is unchanged, with a note in its index row. Not changed yet: the hidden "Minus" inside each Drawer details row header, which is also named in full ("Minus Cash refunds"). Whether it is spoken twice depends on the screen reader, and removing it risks losing the operator, so decide after a VoiceOver check. The check scripts stay outside the repository, as in decision 66. No site code changed.
 
-68. **Configure M8 block 6: Render Blueprint and Gunicorn runtime (authorized 2026-10-24).** Rechecked Render's official Flask, Free tier, Python version, and Blueprint docs on 2026-10-24. Render's Free web service provides 0.1 CPU and 512 MB RAM, sleeps after 15 minutes of idle time (waking in about one minute with Render's loading page), and has an ephemeral filesystem. Added `render.yaml` with `type: web`, `name: drawercheck`, `runtime: python`, `plan: free`, `buildCommand: pip install ".[web]"`, `startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"`, `healthCheckPath: /`, and `PYTHON_VERSION: 3.13.5`, with no disk or database. Using one worker with four threads keeps memory safely within 512 MB RAM while handling concurrent requests in separate temporary directories. Added `test_render_blueprint_matches_stateless_gunicorn_contract` in `tests/test_web_page.py`, which checks the Blueprint fields and runs `gunicorn --check-config` with those exact options. The user chose to push to GitHub and connect the Render service from their dashboard; the live public URL smoke check remains pending until that URL is provided.
+68. **Configure and verify M8 block 6: Render Blueprint and live public deployment (authorized 2026-10-24).** Rechecked Render's official Flask, Free tier, Python version, and Blueprint docs on 2026-10-24. Render's Free web service provides 0.1 CPU and 512 MB RAM, sleeps after 15 minutes of idle time (waking in about one minute with Render's loading page), and has an ephemeral filesystem. Added `render.yaml` with `type: web`, `name: drawercheck`, `runtime: python`, `plan: free`, `buildCommand: pip install ".[web]"`, `startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"`, `healthCheckPath: /`, and `PYTHON_VERSION: 3.13.5`, with no disk or database. Using one worker with four threads keeps memory safely within 512 MB RAM while handling concurrent requests in separate temporary directories. Added `test_render_blueprint_matches_stateless_gunicorn_contract` in `tests/test_web_page.py`, which checks the Blueprint fields and runs `gunicorn --check-config` with those exact options. After the user pushed `0ec9baf` and deployed on Render, GitHub Actions [run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849) passed on Python 3.12, 3.13, and 3.14, and the live site at `https://drawercheck.onrender.com` passed the full smoke check (security headers, `Try the example`, all seven `/examples/<file>` downloads, synthetic seven-CSV upload, all three report downloads matching local CLI output, `"Results are not saved"` on a fresh tab/reload, cold-start messaging, zero console errors, and zero third-party requests). Screenshots of the live site are in `docs/screenshots/2026-10-24-m8-block6/`. Block 7 (wrap-up) awaits **next**.
 
 ## Math and test commitments
 

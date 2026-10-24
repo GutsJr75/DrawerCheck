@@ -989,11 +989,10 @@ documentation, and Blueprint YAML specification on 2026-10-24.
 | `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. |
 | `.venv/bin/python -m gunicorn --check-config --bind 127.0.0.1:0 --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"` | PASS: Gunicorn validates the exact command and flags from `render.yaml`. |
 | Local Gunicorn subprocess smoke check (`--workers 1 --threads 4 --timeout 30`) | PASS: `GET /` returned 200 with `Content-Security-Policy`, `POST /api/demo` returned 60 drawers and 16 leads, and `GET /examples/shifts.csv` matched `data/demo/shifts.csv`. |
+| Hosted GitHub Actions [run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849) on `0ec9baf` | PASS: [Python 3.12](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849/job/120818848226), [Python 3.13](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849/job/120818848034), and [Python 3.14](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849/job/120818848224) jobs all succeeded. |
+| Live public URL check at `https://drawercheck.onrender.com` (HTTP + Playwright Chromium) | PASS: `GET /` returned 200 with all four security headers and cold-start messaging; `POST /api/demo` and `POST /api/check` returned identical results (60 drawers, 4 needing review, 16 leads, 2 deposit-lead days); all seven `/examples/<file>` CSVs matched `data/demo/*.csv` byte-for-byte; browser upload and `.html`/`.csv`/`.txt` downloads matched local CLI output; a fresh tab on `#/drawer/2026-09-03-R1` redirected to `#/` with `"Results are not saved"`; zero console errors and zero third-party requests. |
 | Source and document checks | PASS: `git diff --check`, no prohibited punctuation, and `AGENTS.md` under 150 lines. |
 
-No visual changes were made to the website in this step, so no new local
-screenshot folder was added. The live public URL smoke check (opening the
-deployed Render URL, running the example and a synthetic upload, downloading
-reports, and capturing live screenshots) remains pending until the user pushes
-to GitHub, connects the repository on Render, and shares the live URL.
-Block 7 waits until the live deployment is verified and the user says **next**.
+Screenshots of the live Render site are in `docs/screenshots/2026-10-24-m8-block6/`
+(6 images, each verified by SHA-256 and dimensions). Block 6 is complete.
+Block 7 (wrap-up: README screenshots and interview notes) waits for **next**.
