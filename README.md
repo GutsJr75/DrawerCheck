@@ -212,11 +212,15 @@ Chrome or WebKit, and keyboard, zoom, and text-size checks pass; see the
 [block 5 results](docs/WEB_PLAN.md#verification-and-expanded-definition-of-done).
 The public demo is deployed from the [Render Blueprint](render.yaml) and live at
 [https://drawercheck.onrender.com](https://drawercheck.onrender.com).
+The block 6 repair updates the Blueprint to two single-threaded sync workers
+with a 30-second processing watchdog. This repair is verified locally; the live
+service still needs the revised command and a new deployment check. See the
+[repair notes](docs/M8_BLOCK6_REPAIR.md).
 Install the optional packages and run the web tests:
 
 ```sh
 pip install -e ".[dev,web]"
-pytest -q tests/test_web.py tests/test_web_page.py
+pytest -q tests/test_web.py tests/test_web_page.py tests/test_web_server.py
 ```
 
 To look at the page on your own computer, run

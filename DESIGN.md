@@ -26,6 +26,13 @@ Results, and Drawer details; example users skip file preparation. Keep summaries
 brief and reveal definitions, calculation steps, and preparation guidance when
 requested. Keep navigation and labels consistent across views.
 
+Start's upload action says "Upload demo CSVs" to reinforce the fake-data-only
+boundary. Beside report downloads, remind visitors that refreshing or closing
+the page removes its results and that a download keeps a copy. Use the existing
+button and hint styles. The date filter remains a native HTML select; its
+popup geometry and keyboard behavior belong to the browser and operating
+system, while the page supplies its label and options.
+
 Show the example-data notice, input errors, missing records, and unknown amounts
 clearly. Use text as well as colour for statuses. Prefer familiar labelled
 buttons, forms, and tables, with visible keyboard focus and usable narrow-screen

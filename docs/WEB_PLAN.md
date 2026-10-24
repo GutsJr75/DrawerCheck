@@ -13,6 +13,9 @@
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
+- **Block 6 repair:** locally verified on 2026-10-24; deploying the revised sync
+  worker command and checking it publicly remain pending. See
+  [repair evidence](M8_BLOCK6_REPAIR.md).
 
 | M8 block | What gets built | Status |
 | --- | --- | --- |
@@ -410,13 +413,22 @@ Rechecked [Render's Flask guide](https://render.com/docs/deploy-flask),
 - Build command: `pip install ".[web]"` (installs Flask and Gunicorn without
   `pytest` or `ruff`).
 - Start command:
-  `gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"`.
-  Using one worker process with four threads keeps memory safely within 512 MB
-  RAM while handling concurrent isolated requests, and enforces the planned
-  30-second worker timeout.
+  `gunicorn --bind 0.0.0.0:$PORT --workers 2 --worker-class sync --threads 1 --timeout 30 "drawercheck.web:create_app()"`.
+  Updated during the block 6 repair: two sync workers handle two visitors at
+  once, and Gunicorn can stop and replace a stalled worker after roughly
+  30 seconds. The old threaded setting checked worker liveness and did not
+  limit each check. This is a processing watchdog, not an exact deadline from
+  when a visitor clicks: time spent waking the host or queued is separate.
+  Local concurrent workload and memory evidence is in
+  [the repair notes](M8_BLOCK6_REPAIR.md); Render memory was not measured.
 - `test_render_blueprint_matches_stateless_gunicorn_contract` in
   `tests/test_web_page.py` checks `render.yaml` and runs `gunicorn --check-config`
   with those exact flags.
+- `tests/test_web_server.py` also runs a real server over a local Unix socket,
+  with a shorter timeout, and checks cancellation of stalled work, another
+  visitor's success, cleanup, and recovery. The test does not use the network.
+- The revised command and wording are verified locally only. The live-site
+  checks below describe the original block 6 deployment, before this repair.
 - Verified on the live public URL
   [https://drawercheck.onrender.com](https://drawercheck.onrender.com) on
   2026-10-24 after [GitHub Actions run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)

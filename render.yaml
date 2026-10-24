@@ -6,7 +6,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install ".[web]"
-    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --worker-class sync --threads 1 --timeout 30 "drawercheck.web:create_app()"
     healthCheckPath: /
     envVars:
       - key: PYTHON_VERSION

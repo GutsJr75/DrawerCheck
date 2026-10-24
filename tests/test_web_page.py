@@ -132,6 +132,11 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
     assert "Example data only. Do not upload real store records." in text
     assert "It is not for real cash control." in text
     assert "Uploaded files are checked and then deleted. Nothing is saved." in text
+    assert "Upload demo CSVs" in text
+    assert (
+        "Results disappear when you refresh or close this page. "
+        "Download a report to keep a copy."
+    ) in text
 
 
 def test_page_has_no_inline_code_or_remote_assets(client) -> None:
@@ -382,7 +387,8 @@ def test_render_blueprint_matches_stateless_gunicorn_contract() -> None:
     """The Render Blueprint uses the free Python plan, 30s timeout, and no disk or DB."""
     blueprint = (ROOT / "render.yaml").read_text(encoding="utf-8")
     expected_start = (
-        "gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "
+        "gunicorn --bind 0.0.0.0:$PORT --workers 2 --worker-class sync "
+        "--threads 1 --timeout 30 "
         '"drawercheck.web:create_app()"'
     )
     for line in (

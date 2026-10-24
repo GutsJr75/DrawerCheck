@@ -1018,3 +1018,28 @@ The native file chooser could not be completed by automation, so this run does
 not claim a full browser upload. Cold-start timing, traffic capacity, Render
 memory usage, and full accessibility checks were not rerun. See the review for
 the exact scope and remaining medium-priority concern.
+
+## M8 block 6 repair (2026-10-24)
+
+- Built: Replaced threaded hosting with two single-threaded sync workers and
+  added a real Gunicorn timeout, cleanup, concurrent-visitor, and recovery
+  regression test to optional-web CI. Renamed the upload action and added the
+  refresh reminder, with four new dated screenshots. See `M8_BLOCK6_REPAIR.md`.
+- Learned: A worker's heartbeat timeout and a request's processing limit differ
+  when threads are involved. Sync workers let the server stop stalled work;
+  two independent workers preserve concurrent service. Local memory evidence
+  supports the choice but cannot establish Render's actual peak usage.
+- Interview question: How would you test that a timed-out check really stopped
+  and cleaned up, rather than only testing that the browser stopped waiting?
+
+Verification: the new integration test failed against the old command, then
+the targeted server/page run passed all 18 tests. The full suite passed 686
+tests in 22.19 seconds, and both Ruff checks and `git diff --check` passed.
+Two concurrent combined workloads of 1,000 drawers each succeeded in 2.36 and
+2.30 seconds locally, with a sampled 152.6 MiB sum of server-process RSS.
+Browser checks covered the local example, the two messages at desktop and
+320 px, keyboard activation of the upload link, and missing-file recovery.
+The generic frontend static audit still reports eight pre-existing findings;
+its limitations and raw output are recorded in the repair notes. No new
+hosted CI success, Render deployment, full accessibility audit, or Render
+memory measurement is claimed. Block 7 still waits for **next**.
