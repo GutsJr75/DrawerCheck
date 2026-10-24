@@ -15,6 +15,11 @@
   [drawercheck.onrender.com](https://drawercheck.onrender.com)) are done
   (decisions 60 to 68). Wait for **next** before block 7, wrap-up.
 - **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
+- **Block 6 review (2026-10-24):** normal tested flows passed. A medium-priority
+  follow-up remains: the threaded Gunicorn worker's timeout does not impose a
+  deadline on each check. See `docs/M8_BLOCK6_REVIEW.md` for the reproduction,
+  wording suggestions, screenshots, and verification limits. No runtime fix was
+  made during the review.
 
 How the scope grew:
 

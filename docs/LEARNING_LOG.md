@@ -996,3 +996,25 @@ documentation, and Blueprint YAML specification on 2026-10-24.
 Screenshots of the live Render site are in `docs/screenshots/2026-10-24-m8-block6/`
 (6 images, each verified by SHA-256 and dimensions). Block 6 is complete.
 Block 7 (wrap-up: README screenshots and interview notes) waits for **next**.
+
+## M8 block 6 review (2026-10-24)
+
+- Built: Recorded the requested code review and debug session in
+  `docs/M8_BLOCK6_REVIEW.md`, with five new dated screenshots. No runtime or
+  deployment configuration changes were made, and block 7 has not started.
+- Learned: Gunicorn switches to its threaded worker with `--threads 4`.
+  `--timeout 30` checks worker liveness and does not guarantee an individual
+  request finishes within 30 seconds. A local controlled comparison confirmed
+  the distinction; the processing-deadline follow-up remains open.
+- Interview question: Why does a browser timeout or Cancel button not guarantee
+  that work on the server has stopped?
+
+Verification: 685 local tests passed in 18.38 seconds, both Ruff checks passed,
+and hosted run 40075833849 was observed passing on Python 3.12, 3.13, and 3.14.
+The live demo, direct seven-file upload, all example downloads, bundled assets,
+and all three actual browser report downloads passed comparison with the local
+core. Drawer navigation, refresh recovery, and missing-file guidance worked.
+The native file chooser could not be completed by automation, so this run does
+not claim a full browser upload. Cold-start timing, traffic capacity, Render
+memory usage, and full accessibility checks were not rerun. See the review for
+the exact scope and remaining medium-priority concern.
