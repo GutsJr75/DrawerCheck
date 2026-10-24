@@ -921,3 +921,45 @@ Screenshots are in `docs/screenshots/2026-10-23-m8-block5/` (24 images, about
 check with someone new to the project. The check scripts live outside the
 repository. No hosted CI or deployment result is claimed. Block 6 (hosting)
 waits for **next**.
+
+Correction (2026-10-24): two WebKit screenshots showed Start, and WebKit's 400%
+zoom row above measured Start for three views. See the block 5 repair below.
+
+## M8 block 5 repair: checks that confirm the view
+
+- Built: Reran every block 5 browser check with a guard that confirms the
+  expected view and address before each scan, measurement, and screenshot,
+  and replaced the two WebKit screenshots that showed Start by mistake. No
+  site code changed.
+- Learned: The same test step can mean different things in different
+  browsers. Opening the address the page was already on did nothing in Chrome
+  but reloaded the page in WebKit, which cleared the results, so the check
+  quietly measured Start. A check should prove it is looking at the right
+  thing before it reports a pass.
+- Interview question: Your browser test passed in two browsers, but in one of
+  them it was testing the wrong page. How would you design tests so that
+  cannot happen silently?
+
+The user authorized the repair on 2026-10-24 after an outside review of block
+5. Each claim was checked before any change. Same tools as block 5: Playwright
+1.64, Google Chrome 156, WebKit 26.6, and axe-core 4.14.0.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 684 tests in 17.1 seconds. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. |
+| Review claim 1: two WebKit screenshots | Confirmed: `results-webkit-light-390.png` and `drawer-2026-09-03-R1-webkit-light-390.png` in the block 5 folder are byte-identical (SHA-256 starting `e8768f12`) and both show Start with "Results are not saved". |
+| Cause | Reproduced: after the example run, opening `#/results` again with Playwright's `page.goto` kept Results in Chrome (1 page load) but reloaded in WebKit (2 loads). The reload cleared the in-memory results, so the router showed Start, as designed. |
+| What it affected | WebKit's 400% zoom figures for Results, Drawer details, and the missing-drawer view, and the two screenshots. Not affected: every Chrome check, the 136 axe scans, keyboard, 200% text, the accessibility tree, and the one-off date-list, layout, and row-name checks, none of which reopened the address already open. |
+| Guard test | PASS: with the new view check, the old step now fails in WebKit instead of passing silently; changing the address's `#` part inside the page passes in both engines. |
+| Rerun, axe | PASS: 136 scans, 0 violations, 0 best-practice findings, each on its confirmed view (Start, Prepare files, Results, Drawer details, or the missing-drawer view). |
+| Rerun, 400% zoom | PASS in Chrome and WebKit: Start, Results, Drawer details, Prepare files, and the missing-drawer view are each confirmed and 320 px wide. |
+| Rerun, keyboard, text, motion, announcements | PASS: keyboard results are identical to block 5 in both engines; with 200% text all four views stay 1,280 px wide with nothing clipped; reduced motion and the live region behave as before. |
+| Console and requests | Same as block 5: the deliberate 400 and blocked request, WebKit's select styling message, and local requests only. |
+| Review claim 2: "Minus" read twice | Partly confirmed: in both engines each Drawer details row header is named, for example, "Minus Cash refunds" and also contains the hidden word "Minus". Not changed: whether a listener hears it twice depends on the screen reader, and removing the word could leave a reader that reads cell contents saying "Cash refunds" with no operator. Decide after a VoiceOver check. |
+
+Screenshots are in `docs/screenshots/2026-10-24-m8-block5-repair/` (4 images,
+about 0.9 MB). The block 5 folder is unchanged, as the screenshot rule
+requires; its index row now notes the two wrong files. The repair scripts are
+scratch files outside the repository, as in block 5. No hosted CI or
+deployment result is claimed. Block 6 (hosting) waits for **next**.

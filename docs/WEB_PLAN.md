@@ -7,8 +7,8 @@
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
 - **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
-  to 5 are done; block 5 (accessibility and browser checks) waits for the
-  user's review. Blocks 6 and 7 each need the user's go-ahead.
+  to 5 are done; block 5's checks were repaired and rerun on 2026-10-24 after
+  a review. Blocks 6 and 7 each need the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
@@ -431,17 +431,22 @@ for review. Optional rules R03, R06, and R07 move to M9 and remain opt-in.
 - Check Cancel during a deliberately slowed check: the view returns to its
   previous state, and a response arriving afterwards is ignored.
 
-Checked in M8 block 5 (2026-10-23). Tools actually used: Playwright 1.64 (the
-copy the Playwright plugin installed) driving Google Chrome 156 and Playwright's
-WebKit 26.6 build, and axe-core 4.14.0 (checksum verified) for the automated
-scan. No real screen reader was run, and no usability participant has tried
-the site yet.
+Checked in M8 block 5 (2026-10-23) and rerun in the block 5 repair
+(2026-10-24). Tools actually used: Playwright 1.64 (the copy the Playwright
+plugin installed) driving Google Chrome 156 and Playwright's WebKit 26.6 build,
+and axe-core 4.14.0 (checksum verified) for the automated scan. No real screen
+reader was run, and no usability participant has tried the site yet.
+
+Every check confirms the expected view and address before it scans, measures,
+or takes a screenshot. Moves inside the app change the address's `#` part in
+the page, because WebKit reloads the page when asked to open the address it is
+already on, which clears the results.
 
 | Check | Result |
 | --- | --- |
 | axe-core, WCAG 2.0 to 2.2 A and AA rules | 0 violations in 136 scans: 17 views and states (Start, waiting, time-out, not saved; Prepare files empty, missing files, a file problem, a connection failure; Results plain, filtered, no matches, all sections open; four drawers and the missing-drawer view) in both themes, at 1,280 and 320 px, in Chrome and WebKit. axe's best-practice rules also report 0. |
 | Keyboard, in Chrome (Tab) and WebKit (Option+Tab, Safari's default for links and buttons) | Every Tab stop shows the 3 px ring. The example run, filters (arrow keys on the levels, typing on the date list), drawer links, line meanings (Enter and Space), Back to results, a report download, the error summary links, and Cancel all work without a mouse. |
-| Reflow and zoom | No view scrolls sideways at 320 px; 400% zoom in a 1,280 x 800 window (320 x 200 CSS px) stays 320 px wide on every view. |
+| Reflow and zoom | No view scrolls sideways at 320 px; 400% zoom in a 1,280 x 800 window (320 x 200 CSS px) stays 320 px wide on every view in both engines. Block 5 had measured Start in place of three WebKit views; the repair confirmed each view first. |
 | Text at 200% | With the root text doubled at 1,280 px, no view widens or clips text. |
 | Reduced motion | The 150 ms colour transitions drop to 0 seconds. |
 | Announcements and tree | The live region says "Results are ready.", the busy text, the slow-start sentence, and "Stopped waiting."; errors use alert regions and the summary takes focus. The accessibility tree names every region, heading, table, control, and link. |
@@ -462,6 +467,12 @@ and looks right, and loosening the policy to silence it is not worth it.
 Pressing the down arrow on a closed date list opens the menu on macOS rather
 than changing the date. Text at 200% on a 320 px screen (beyond WCAG's
 separate 200% text and 320 px tests) still widens Drawer details to 509 px.
+
+Open from the block 5 repair: each Drawer details tape row header is named,
+for example, "Minus Cash refunds" and also contains the hidden word "Minus".
+Check with VoiceOver whether it is spoken twice before changing it, because
+removing the hidden word could drop the operator in screen readers that read a
+cell's contents rather than its name.
 - Check the Back and Forward buttons, refresh, and a copied drawer address,
   including the "Results are not saved" message. Check that the browser makes
   no requests to other websites and that the performance budget in DESIGN.md
