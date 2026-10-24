@@ -1,0 +1,13 @@
+# Render Blueprint for the stateless DrawerCheck public demo.
+# Each request uses its own temporary workspace; no database or persistent disk is used.
+services:
+  - type: web
+    name: drawercheck
+    runtime: python
+    plan: free
+    buildCommand: pip install ".[web]"
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5

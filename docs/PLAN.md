@@ -9,14 +9,11 @@
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests. M6's earlier run is recorded in `docs/CORE_CHECKLIST.md`.
 - **In progress:** M8, the website screens and public demo, in seven blocks
-  (listed in `docs/WEB_PLAN.md`). Blocks 1 to 3 (screen data and layout, Start
-  and Prepare files, and Results and Drawer details) were each authorized and
-  built on 2026-10-23 (decisions 60, 61, and 63), block 3 was repaired after
-  an outside review (decision 64), block 4 added navigation and states
-  (decision 65), and block 5 checked accessibility in Chrome and WebKit
-  (decision 66), with its check scripts repaired and rerun after a review on
-  2026-10-24 (decision 67). Wait for the user's **next** before block 6,
-  hosting.
+  (listed in `docs/WEB_PLAN.md`). Blocks 1 to 5 (including the block 3 and
+  block 5 review repairs) are done, and block 6's `render.yaml` Blueprint is
+  configured and verified locally (decisions 60 to 68). Block 6's live public
+  URL smoke check awaits the user's push and Render deploy. Wait for **next**
+  before block 7.
 - **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
 
 How the scope grew:
@@ -227,6 +224,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 66. **Check M8 block 5: accessibility and browsers (authorized 2026-10-23).** After a session restart loaded the Playwright plugin, the user installed Google Chrome and chose to download Playwright's WebKit build (296 MB in `~/Library/Caches/ms-playwright/webkit-2368`, removable) to cover Safari's engine. Checks used the plugin's Playwright 1.64 copy and axe-core 4.14.0 (released 2026-10-05, SHA-512 matched the registry), run as scratch scripts rather than committed tooling, so the project gains no Node dependency. Results: 0 WCAG 2.0 to 2.2 A/AA violations and 0 best-practice findings in 136 scans; keyboard, 400% zoom, 200% text, reduced motion, live regions, and local-only requests all pass. Fixes: full row-header names on the Drawer details tape, a 44 px date list in WebKit, a two-column Drawer details layout only when it fits, the notice inside the header landmark, a favicon, and `.playwright-mcp/` in `.gitignore`. Accepted: WebKit's console message about its own select styling under the strict style policy, macOS opening the date list on the down arrow, and 200% text at 320 px (beyond WCAG's separate tests). WebKit reaches links and buttons with Option+Tab, as Safari does by default. No real screen reader or usability participant has been used; both remain open before M8 is done.
 
 67. **Repair the block 5 checks after an outside review (authorized 2026-10-24).** The user brought a review of block 5; each claim was checked before any change. Confirmed: the two WebKit screenshots at 390 px of Results and Drawer details were identical pictures of Start, because Playwright's `page.goto` to the address the page is already on reloads it in WebKit (not in Chrome) and clears the in-memory results. The same step made WebKit's 400% zoom check measure Start for Results, Drawer details, and the missing-drawer view. The app behaved as designed; only the checks were wrong. Fixed in the scratch scripts: moves inside the app change `location.hash`, and every scan, measurement, and screenshot first confirms the one visible view and its address. A guard test shows the old step now fails in WebKit. All block 5 checks were rerun with the guard and match block 5's results, and WebKit's 400% zoom now confirms 320 px on every view. New pictures are in `docs/screenshots/2026-10-24-m8-block5-repair/`; the block 5 folder is unchanged, with a note in its index row. Not changed yet: the hidden "Minus" inside each Drawer details row header, which is also named in full ("Minus Cash refunds"). Whether it is spoken twice depends on the screen reader, and removing it risks losing the operator, so decide after a VoiceOver check. The check scripts stay outside the repository, as in decision 66. No site code changed.
+
+68. **Configure M8 block 6: Render Blueprint and Gunicorn runtime (authorized 2026-10-24).** Rechecked Render's official Flask, Free tier, Python version, and Blueprint docs on 2026-10-24. Render's Free web service provides 0.1 CPU and 512 MB RAM, sleeps after 15 minutes of idle time (waking in about one minute with Render's loading page), and has an ephemeral filesystem. Added `render.yaml` with `type: web`, `name: drawercheck`, `runtime: python`, `plan: free`, `buildCommand: pip install ".[web]"`, `startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"`, `healthCheckPath: /`, and `PYTHON_VERSION: 3.13.5`, with no disk or database. Using one worker with four threads keeps memory safely within 512 MB RAM while handling concurrent requests in separate temporary directories. Added `test_render_blueprint_matches_stateless_gunicorn_contract` in `tests/test_web_page.py`, which checks the Blueprint fields and runs `gunicorn --check-config` with those exact options. The user chose to push to GitHub and connect the Render service from their dashboard; the live public URL smoke check remains pending until that URL is provided.
 
 ## Math and test commitments
 

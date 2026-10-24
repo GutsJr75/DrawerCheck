@@ -7,8 +7,9 @@
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
 - **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
-  to 5 are done; block 5's checks were repaired and rerun on 2026-10-24 after
-  a review. Blocks 6 and 7 each need the user's go-ahead.
+  to 5 are done (including the block 5 repair on 2026-10-24). Block 6's
+  `render.yaml` Blueprint is ready and awaits the user's push and live Render
+  deploy check. Block 7 needs the user's go-ahead.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
@@ -20,7 +21,7 @@
 | 3 | Results and Drawer details: the plain-facts summary, review list, drawer tape, and count sheet | Done |
 | 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Done |
 | 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Done |
-| 6 | Hosting: Render setup and a check of the live public site | Not started |
+| 6 | Hosting: Render setup (`render.yaml` ready) and a check of the live public site (awaiting deploy) | In progress |
 | 7 | Wrap-up: README screenshots and interview notes | Not started |
 - **Quick map of this document:** the user decision and audience come first,
   then the screens and wording, the architecture, hosting, milestones, the
@@ -389,6 +390,34 @@ availability or call the app suitable for real cash control.
 GitHub Pages can show a static report but cannot run the Python reconciliation
 service. A Pages-only deployment would not satisfy the interactive-public-app
 request.
+
+### Built in M8 block 6 (2026-10-24)
+
+Rechecked [Render's Flask guide](https://render.com/docs/deploy-flask),
+[Free tier limits](https://render.com/docs/free),
+[Python version rules](https://render.com/docs/python-version), and
+[Blueprint YAML reference](https://render.com/docs/blueprint-spec) on
+2026-10-24:
+
+- Render's `free` compute plan provides 0.1 CPU, 512 MB RAM, and 750 free
+  instance hours per month. It spins down after 15 minutes without inbound
+  traffic and takes about one minute to wake (showing Render's own loading
+  page on the first visit), and its local filesystem is wiped on every spin-down
+  or deploy.
+- `render.yaml` defines one stateless web service (`name: drawercheck`,
+  `runtime: python`, `plan: free`, `healthCheckPath: /`, and
+  `PYTHON_VERSION: 3.13.5`) with no persistent disk or external database.
+- Build command: `pip install ".[web]"` (installs Flask and Gunicorn without
+  `pytest` or `ruff`).
+- Start command:
+  `gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"`.
+  Using one worker process with four threads keeps memory safely within 512 MB
+  RAM while handling concurrent isolated requests, and enforces the planned
+  30-second worker timeout.
+- `test_render_blueprint_matches_stateless_gunicorn_contract` in
+  `tests/test_web_page.py` checks `render.yaml` and runs `gunicorn --check-config`
+  with those exact flags. The live public URL check remains pending until the
+  repository is pushed and connected on Render.
 
 ## Milestones and files
 

@@ -24,7 +24,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
 | Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | In progress (milestone M8, blocks 1 to 5 of 7 done: every screen, plus accessibility checks in Chrome and Safari's engine; hosting next) |
+| Website screens and public hosting | In progress (milestone M8, blocks 1 to 5 done; block 6 `render.yaml` ready and awaiting live Render deploy) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
 **Automated checks:** the hosted run for the final web request code,
@@ -210,7 +210,8 @@ and Drawer details. Back, Forward, and copied links work, and results are kept
 only while the page is open. An automated WCAG 2.2 AA scan found no problems in
 Chrome or WebKit, and keyboard, zoom, and text-size checks pass; see the
 [block 5 results](docs/WEB_PLAN.md#verification-and-expanded-definition-of-done).
-Public hosting comes next.
+The [Render Blueprint](render.yaml) is ready for deployment; the live public
+URL will be added once the deployed site is checked.
 Install the optional packages and run the web tests:
 
 ```sh

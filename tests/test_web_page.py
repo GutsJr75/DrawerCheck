@@ -1,7 +1,11 @@
 """Check the page shell, its local assets, and the colour tokens without a browser."""
 
 import importlib
+import importlib.util
 import re
+import shlex
+import subprocess
+import sys
 import tomllib
 from fnmatch import fnmatch
 from html.parser import HTMLParser
@@ -372,6 +376,39 @@ def test_package_data_includes_every_template_and_static_file() -> None:
     assert files
     for name in files:
         assert any(fnmatch(name, pattern) for pattern in patterns), name
+
+
+def test_render_blueprint_matches_stateless_gunicorn_contract() -> None:
+    """The Render Blueprint uses the free Python plan, 30s timeout, and no disk or DB."""
+    blueprint = (ROOT / "render.yaml").read_text(encoding="utf-8")
+    expected_start = (
+        "gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "
+        '"drawercheck.web:create_app()"'
+    )
+    for line in (
+        "type: web",
+        "name: drawercheck",
+        "runtime: python",
+        "plan: free",
+        'buildCommand: pip install ".[web]"',
+        f"startCommand: {expected_start}",
+        "healthCheckPath: /",
+        "key: PYTHON_VERSION",
+        "value: 3.13.5",
+    ):
+        assert line in blueprint, line
+    for forbidden in ("disk:", "databases:", "keyvalue"):
+        assert forbidden not in blueprint, forbidden
+    if sys.platform != "win32" and importlib.util.find_spec("gunicorn") is not None:
+        command = shlex.split(expected_start.replace("0.0.0.0:$PORT", "127.0.0.1:0"))
+        assert command[0] == "gunicorn"
+        completed = subprocess.run(
+            [sys.executable, "-m", "gunicorn", "--check-config", *command[1:]],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert completed.returncode == 0, completed.stderr
 
 
 def _luminance(colour: str) -> float:

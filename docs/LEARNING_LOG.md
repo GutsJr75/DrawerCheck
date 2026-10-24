@@ -963,3 +963,37 @@ about 0.9 MB). The block 5 folder is unchanged, as the screenshot rule
 requires; its index row now notes the two wrong files. The repair scripts are
 scratch files outside the repository, as in block 5. No hosted CI or
 deployment result is claimed. Block 6 (hosting) waits for **next**.
+
+## M8 block 6: Render Blueprint and hosting setup
+
+- Built: Added `render.yaml` for Render's free Python web service (`drawercheck`,
+  Python 3.13.5, `pip install ".[web]"`, and Gunicorn with 1 worker, 4 threads,
+  and a 30-second timeout), plus a test that checks the Blueprint and runs
+  `gunicorn --check-config` with those exact options.
+- Learned: Render's free web service has 0.1 CPU, 512 MB RAM, and an ephemeral
+  filesystem that resets on idle spin-down. Running one Gunicorn worker with
+  four threads keeps memory inside 512 MB while still serving concurrent
+  requests in separate temporary folders.
+- Interview question: Why run one Gunicorn worker with multiple threads instead
+  of several worker processes on a 512 MB free hosting instance?
+
+The user authorized block 6 on 2026-10-24 and chose to commit locally first,
+then push to GitHub and create the Render service from their dashboard.
+Rechecked Render's official Flask guide, Free tier limits, Python version
+documentation, and Blueprint YAML specification on 2026-10-24.
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q` | PASS: 685 tests, including `test_render_blueprint_matches_stateless_gunicorn_contract`. |
+| `.venv/bin/pytest --collect-only -q` | PASS: 685 tests collected. |
+| `.venv/bin/ruff check .` and `.venv/bin/ruff format --check .` | PASS: both clean. |
+| `.venv/bin/python -m gunicorn --check-config --bind 127.0.0.1:0 --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"` | PASS: Gunicorn validates the exact command and flags from `render.yaml`. |
+| Local Gunicorn subprocess smoke check (`--workers 1 --threads 4 --timeout 30`) | PASS: `GET /` returned 200 with `Content-Security-Policy`, `POST /api/demo` returned 60 drawers and 16 leads, and `GET /examples/shifts.csv` matched `data/demo/shifts.csv`. |
+| Source and document checks | PASS: `git diff --check`, no prohibited punctuation, and `AGENTS.md` under 150 lines. |
+
+No visual changes were made to the website in this step, so no new local
+screenshot folder was added. The live public URL smoke check (opening the
+deployed Render URL, running the example and a synthetic upload, downloading
+reports, and capturing live screenshots) remains pending until the user pushes
+to GitHub, connects the repository on Render, and shares the live URL.
+Block 7 waits until the live deployment is verified and the user says **next**.
