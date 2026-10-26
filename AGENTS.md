@@ -1,6 +1,6 @@
 # DrawerCheck
 
-An offline Python reconciliation core with a planned public demo, using fake data.
+An offline Python reconciliation core and public web demo, using fake data.
 
 ## Start every task
 

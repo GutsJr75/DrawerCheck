@@ -10,6 +10,15 @@ results can be saved as a text, web page (HTML), or spreadsheet (CSV) report.
 It is a personal learning project. Every store, person, and amount comes from
 the fictional **Demo Store #001**.
 
+**[Try the public demo](https://drawercheck.onrender.com)** without installing
+anything. Select **Try the example**, open a drawer from the results, and
+download a report. The example checks 60 drawers and produces 16 review leads.
+To try uploads, select **Upload demo CSVs** and use the seven example files
+provided on that screen. Use fictional data only.
+
+Results disappear when you refresh or close the page. Download a report to keep
+a copy. The free server may take about a minute to wake up after inactivity.
+
 ## Why I am building it
 
 I worked two POS registers at a busy convenience store and counted cash at close.
@@ -23,18 +32,19 @@ in a job interview.
 | --- | --- |
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Six review rules, including repeated shortages and bank deposits | Done |
-| Web request layer (the server side of the planned website) | Done |
-| Website screens and public hosting | In progress (milestone M8, blocks 1 to 6 of 7 done: live at [drawercheck.onrender.com](https://drawercheck.onrender.com); wrap-up next) |
+| Web request layer, website screens, public hosting, and documentation | Delivered through M8 block 7; live at [drawercheck.onrender.com](https://drawercheck.onrender.com) |
 | Optional extra rules (R03, R06, R07) | Not planned unless requested |
 
-**Automated checks:** the hosted run for the M8 block 6 deployment commit,
-[GitHub Actions run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)
-on commit `0ec9baf`, passed the tests and both Ruff checks on Python 3.12,
-3.13, and 3.14, including the web tests. The badge above shows the result of
-GitHub's most recent run. The [core checklist](docs/CORE_CHECKLIST.md) records what was verified
-and how.
+**Automated checks:** [GitHub Actions run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
+for repair commit `332f01b` passed on Python 3.12, 3.13, and 3.14, including
+both Ruff checks and the optional web/server tests. This run was inspected on
+2026-10-26; it does not test the later documentation commit. The badge above
+shows GitHub's most recent result. The [M8 checklist](docs/M8_CHECKLIST.md)
+separates observed checks, user-reported checks, and remaining validation.
+A real screen-reader session and a usability check with a new participant
+remain unverified; no full accessibility certification is claimed.
 
-## Try it in 3 steps
+## Try the command line in 3 steps
 
 You need Python 3.12 or newer. All inputs below are fake.
 
@@ -60,12 +70,25 @@ You need Python 3.12 or newer. All inputs below are fake.
    drawercheck report --db demo.db --from 2026-09-01 --to 2026-09-30 --format html --out demo-report.html
    ```
 
-Prefer not to install anything? Open the
+For an offline example, open the
 [committed sample report](examples/sample_report.html). It covers the same 60
 shifts and 16 review leads, and works offline with no external files or scripts.
 
-**Screenshot placeholder:** a real screenshot of the report will be added here.
-No screenshot or visual check has been recorded yet.
+## Screenshots
+
+Results with report downloads, captured locally in Chrome on 2026-10-24 after
+the block 6 wording repair, in dark mode:
+
+![Results showing 60 drawers checked, 4 needing review, 16 leads, and report downloads](docs/screenshots/2026-10-24-m8-block6-repair/2026-10-24-m8-block6-repair-results-dark-1222.png)
+
+The public demo's drawer explanation, captured on Render on 2026-10-24 in
+light mode. The worked drawer expected $518.75 and counted $498.75:
+
+![Drawer explanation and denomination count sheet showing a twenty-dollar shortage](docs/screenshots/2026-10-24-m8-block6/2026-10-24-m8-block6-drawer-2026-09-03-R1-light-1280.png)
+
+These are pictures of the interactive app. The downloadable HTML report has
+its own layout. See the [screenshot timeline](docs/screenshots/README.md) for
+Start, upload guidance, narrow screens, and earlier versions.
 
 ## What the checks look for
 
@@ -203,19 +226,20 @@ messages, with checks and fixes.
 
 ## Web request layer (for developers)
 
-The server side of the planned website is built; the screens are milestone M8,
-built in blocks. The site now has every screen: Start with the example
+The public site has four views: Start with the example
 button, Prepare files for uploads, Results with filters and report downloads,
 and Drawer details. Back, Forward, and copied links work, and results are kept
-only while the page is open. An automated WCAG 2.2 AA scan found no problems in
-Chrome or WebKit, and keyboard, zoom, and text-size checks pass; see the
+only while the page is open. The recorded automated accessibility scans found
+no violations in the tested Chrome and WebKit states, and the recorded
+keyboard, zoom, and text-size checks passed; see the
 [block 5 results](docs/WEB_PLAN.md#verification-and-expanded-definition-of-done).
 The public demo is deployed from the [Render Blueprint](render.yaml) and live at
 [https://drawercheck.onrender.com](https://drawercheck.onrender.com).
-The block 6 repair updates the Blueprint to two single-threaded sync workers
-with a 30-second processing watchdog. This repair is verified locally; the live
-service still needs the revised command and a new deployment check. See the
-[repair notes](docs/M8_BLOCK6_REPAIR.md).
+The block 6 repair uses two single-threaded sync workers with a 30-second
+processing watchdog. User-provided deployment logs show commit `332f01b`,
+`Using worker: sync`, and two workers starting. The user reported the other
+deployment checks passing on 2026-10-26. See the
+[repair notes](docs/M8_BLOCK6_REPAIR.md#public-deployment-confirmation-2026-10-26).
 Install the optional packages and run the web tests:
 
 ```sh
@@ -295,12 +319,28 @@ Design choices worth knowing:
 - A date with no leads is marked as checked, so "no problems found" can be told
   apart from "never checked".
 
+Libraries and tools, in plain language:
+
+| Tool | Why it is here |
+| --- | --- |
+| Python standard library and SQLite | Read CSVs, check exact amounts, and save the command-line records in a local database; the core needs no extra runtime packages. |
+| Flask and its Jinja templates | Receive uploads and serve the website using the same Python calculations as the command line. |
+| Gunicorn | Run Flask on the public host with separate workers that can be replaced if stalled. |
+| Bundled JavaScript | Change views, choose files, filter results, and download reports; it does not calculate cash amounts. |
+| pytest and Ruff | Run automated checks and check Python code style and formatting. |
+| setuptools | Package the Python code and website assets for installation. |
+
 ## Limitations
 
 - **Learning project with fake data.** This is not a tool for real cash
   control, and it is not accounting or legal advice. The project claims no
   banking, compliance, or accounting expertise.
 - **Example thresholds.** The settings are examples, not industry standards.
+- **Temporary public runs.** The website has no accounts or saved run history.
+  Request workspaces are normally removed before the response is sent; a forced
+  process kill cannot guarantee Python cleanup runs. The free host can sleep,
+  and the worker watchdog is not an exact deadline measured from your click.
+  Uptime, traffic capacity, and Render peak memory have not been established.
 - **One closing shift per register per day.** Every register listed in
   `registers.csv` is expected on every date that has shifts. There is no store
   calendar, so a day missing from the shift files cannot be detected.
@@ -321,6 +361,7 @@ Design choices worth knowing:
 - [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact error messages, with checks and fixes.
 - [Demo scenarios](docs/DEMO_SCENARIOS.md): the planted problems and their expected leads.
 - [Core checklist](docs/CORE_CHECKLIST.md): what was verified, and how.
+- [M8 delivery checklist](docs/M8_CHECKLIST.md): website evidence and remaining manual checks.
 - [Interview notes](docs/INTERVIEW_NOTES.md): pitches, honest answers, and resume options.
 - [Milestone plan](docs/PLAN.md) and [website plan](docs/WEB_PLAN.md): scope and decisions.
 - [Learning log](docs/LEARNING_LOG.md): what was built and checked at each step.

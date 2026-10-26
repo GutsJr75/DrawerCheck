@@ -5,7 +5,8 @@ have passed. This is the historical M6 core checklist. The M7 request layer was
 later verified locally and on GitHub
 ([run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
 for commit `2bdbb7a`); see the learning log and web plan for M7 results. M8's
-screens and deployment remain planned.
+screens and deployment were subsequently delivered; the separate
+[M8 checklist](M8_CHECKLIST.md) records their evidence and remaining checks.
 
 This checklist follows the original core definition of done. PASS means the
 check was actually run successfully; FAIL includes checks not yet verified.

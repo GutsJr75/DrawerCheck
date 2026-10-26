@@ -1043,3 +1043,57 @@ The generic frontend static audit still reports eight pre-existing findings;
 its limitations and raw output are recorded in the repair notes. No new
 hosted CI success, Render deployment, full accessibility audit, or Render
 memory measurement is claimed. Block 7 still waits for **next**.
+
+## M8 block 7: README screenshots and interview wrap-up (2026-10-26)
+
+- Built: Updated README with the public-demo entry point, temporary-run and
+  hosting limits, two inspected existing screenshots with local/public captions,
+  and plain explanations of the tools. Updated interview pitches, core and web
+  questions, three resume options, and suggested repository description/topics.
+  Added `M8_CHECKLIST.md`, refreshed current plan status, and recorded the
+  repair's deployment follow-up without rewriting earlier verification history.
+- Learned: A deployment source SHA, startup worker logs, a passing CI run, and
+  a working browser flow answer different questions. Keep their evidence
+  separate, especially when some checks were reported by the user. Automated
+  accessibility checks also cannot replace a real screen reader or a person
+  unfamiliar with the project.
+- Interview question: What evidence would you show to explain what your public
+  demo can do, what has been tested, and which claims you are not making?
+
+The user authorized block 7 after supplying Render screenshots identifying
+repair commit `332f01b`, `Using worker: sync`, and two workers (PIDs 59/60) on
+the same instance at 03:17:27 PDT on 2026-10-24. The images were reviewed on
+2026-10-26 and remain conversation attachments. The other step-by-step repair
+checks were reported complete by the user; they were not replayed in a browser
+by the agent during this documentation block.
+
+GitHub's connected API independently showed that
+[run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
+on `332f01b39d2b822c2171fd5e3d48ed0b78503409` completed successfully on
+2026-10-24. All job steps, including the optional web/server tests, were
+inspected on 2026-10-26:
+
+- [Python 3.12](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045/job/120846585681)
+- [Python 3.13](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045/job/120846585714)
+- [Python 3.14](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045/job/120846585706)
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q`, initial sandbox run | FAIL: 685 passed; the local Gunicorn test could not start its Unix socket under sandbox restrictions. |
+| `.venv/bin/pytest -q`, with local-socket permission | PASS: 686 tests in 13.51 seconds. No source change was needed. |
+| `.venv/bin/pytest --collect-only -q` | PASS: 686 tests collected. |
+| `.venv/bin/ruff check .` | PASS: all checks clean. |
+| `.venv/bin/ruff format --check .` | PASS: 56 files already formatted. |
+| `.venv/bin/drawercheck --help` | PASS: installed command prints its six subcommands. |
+| Documentation links, embedded image paths, and punctuation | PASS: relative file links and heading targets in changed Markdown resolve; embedded images exist and were visually inspected; no prohibited punctuation in the changed documents; AGENTS.md stays below 150 lines. |
+| `git diff --check` | PASS: no whitespace errors. |
+
+No runtime, UI, workflow, or hosting configuration changed. Existing screenshot
+folders were reused without modification, so there is no new screenshot folder.
+No push, deployment, or hosted CI result for this documentation commit is
+claimed. On 2026-10-26 the user confirmed that no unfamiliar participant has
+tried the site and deferred a possible friend check. A real screen-reader
+session, including checking whether the tape operator is spoken twice, also
+remains unverified. All seven M8 delivery blocks are complete with these manual
+validation gaps recorded; this is not a claim that every acceptance check passed.
+No further feature milestone is started.

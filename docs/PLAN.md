@@ -2,23 +2,25 @@
 
 ## Where things stand
 
-- **Done:** M0 through M7. The command-line core (M1 to M6) and the web request
-  layer (M7, including its workload, roster, and response-size repairs on
-  2026-10-23) are complete.
-- **Verified on GitHub:** [run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)
-  passed for the M8 block 6 commit `0ec9baf` on Python 3.12, 3.13, and 3.14,
-  including all 685 core and web tests. M6's earlier run is recorded in
-  `docs/CORE_CHECKLIST.md`.
-- **In progress:** M8, the website screens and public demo, in seven blocks
-  (listed in `docs/WEB_PLAN.md`). Blocks 1 to 6 (including the block 3 and
-  block 5 review repairs, and the live public deployment at
-  [drawercheck.onrender.com](https://drawercheck.onrender.com)) are done
-  (decisions 60 to 68). Wait for **next** before block 7, wrap-up.
-- **Results and evidence:** `docs/CORE_CHECKLIST.md` and `docs/LEARNING_LOG.md`.
-- **Block 6 repair (2026-10-24):** the review's timeout concern and both wording
-  suggestions are repaired and verified locally (decision 69). The updated
-  Render command still needs to be deployed and checked publicly. See
-  `docs/M8_BLOCK6_REPAIR.md`; the earlier review remains a historical record.
+- **Delivered:** M0 through M8 block 7, including the command-line core, web
+  request layer, four website views, public hosting, and documentation wrap-up.
+  The public learning demo is at
+  [drawercheck.onrender.com](https://drawercheck.onrender.com).
+- **Verified on GitHub:** [run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
+  passed for repair commit `332f01b` on Python 3.12, 3.13, and 3.14, including
+  optional web/server tests. Inspected on 2026-10-26; no hosted result is
+  claimed for the later documentation commit.
+- **Block 6 deployment follow-up closed:** user-supplied Render screenshots
+  show `332f01b`, sync workers, and processes 59/60 at one startup. The user
+  reports the other checks passing. See `docs/M8_BLOCK6_REPAIR.md` for the
+  separation between screenshot, user-reported, local, and hosted evidence.
+- **Remaining manual validation:** no real screen reader has been run. The
+  user confirmed on 2026-10-26 that no unfamiliar participant has tried the
+  app and deferred a possible friend usability check. These are not passes or
+  full accessibility certification. See `docs/M8_CHECKLIST.md`.
+- **Results and evidence:** `docs/CORE_CHECKLIST.md`, `docs/M8_CHECKLIST.md`,
+  and `docs/LEARNING_LOG.md`. No further feature milestone is authorized;
+  optional M9 rules still require an explicit request.
 
 How the scope grew:
 
@@ -232,6 +234,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 68. **Configure and verify M8 block 6: Render Blueprint and live public deployment (authorized 2026-10-24).** Rechecked Render's official Flask, Free tier, Python version, and Blueprint docs on 2026-10-24. Render's Free web service provides 0.1 CPU and 512 MB RAM, sleeps after 15 minutes of idle time (waking in about one minute with Render's loading page), and has an ephemeral filesystem. Added `render.yaml` with `type: web`, `name: drawercheck`, `runtime: python`, `plan: free`, `buildCommand: pip install ".[web]"`, `startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30 "drawercheck.web:create_app()"`, `healthCheckPath: /`, and `PYTHON_VERSION: 3.13.5`, with no disk or database. Using one worker with four threads keeps memory safely within 512 MB RAM while handling concurrent requests in separate temporary directories. Added `test_render_blueprint_matches_stateless_gunicorn_contract` in `tests/test_web_page.py`, which checks the Blueprint fields and runs `gunicorn --check-config` with those exact options. After the user pushed `0ec9baf` and deployed on Render, GitHub Actions [run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849) passed on Python 3.12, 3.13, and 3.14, and the live site at `https://drawercheck.onrender.com` passed the full smoke check (security headers, `Try the example`, all seven `/examples/<file>` downloads, synthetic seven-CSV upload, all three report downloads matching local CLI output, `"Results are not saved"` on a fresh tab/reload, cold-start messaging, zero console errors, and zero third-party requests). Screenshots of the live site are in `docs/screenshots/2026-10-24-m8-block6/`. Block 7 (wrap-up) awaits **next**.
 
 69. **Repair the block 6 review findings (authorized 2026-10-24).** The user asked to implement the three review suggestions. Replaced one threaded Gunicorn worker with two explicit sync workers, each with one thread and a 30-second worker timeout. This handles two checks concurrently while allowing a stalled worker to be stopped and replaced; it avoids adding timers or subprocesses to the reconciliation code. A new Unix-socket integration test uses the deployment command with a shortened two-second timeout: it failed with the old threaded settings, then passed with sync workers, proving another visitor can finish, stalled Python work stops, its temporary workspace is deleted, and a later demo succeeds. Two simultaneous combined-workload uploads, each with 1,000 drawers, passed locally in 2.36 and 2.30 seconds; the sampled sum of master and worker RSS peaked at 152.6 MiB on macOS, not Render. Changed the Start link to "Upload demo CSVs" and added a refresh/close reminder beside report downloads. Added the runtime test to optional-web CI. New screenshots are in `docs/screenshots/2026-10-24-m8-block6-repair/`. No push, Render setting change, live deployment, or new hosted CI result is claimed. Block 7 still waits for **next**.
+
+70. **Finish M8 block 7 documentation (authorized 2026-10-26).** The user explicitly requested block 7 after supplying deployment screenshots and reporting the remaining repair checks passing. Independently observed repair CI run 40085196045, including successful optional-web steps on Python 3.12/3.13/3.14. The screenshots identify source `332f01b`, sync workers, and two worker PIDs at the same startup; they do not prove an effective timeout value. README now leads with the public demo, temporary results and host wake-up behavior, embeds two existing dated screenshots with local/public provenance, and explains each tool. Interview notes now describe the delivered website, shared Python calculations, isolation, Cancel versus server timeout, and honest project-sharing text. Added the M8 checklist with explicit unverified items. The user says no unfamiliar participant has tried the site and defers a possible friend check until later. Screen-reader validation also remains open, including whether the tape operator is spoken twice. Block 7 delivery is complete with these gaps recorded, not a claim that all validation passed. No UI code, new screenshots, hosting settings, repository metadata, push, or new feature milestone is included.
 
 ## Math and test commitments
 

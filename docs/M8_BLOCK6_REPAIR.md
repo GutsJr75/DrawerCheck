@@ -1,8 +1,9 @@
 # M8 block 6 repair, 2026-10-24
 
 The user authorized all three suggestions from the block 6 review. They are
-implemented and verified locally. No push or Render deployment was performed.
-M8 block 7 has not started.
+implemented and verified locally on 2026-10-24. No push or Render deployment was
+performed during that repair session. The public deployment was subsequently
+confirmed as described below; block 7 was authorized on 2026-10-26.
 
 ## Server processing limit
 
@@ -113,3 +114,35 @@ Then inspect the deployment logs for sync workers, verify both new messages,
 run the public example and a fake-data upload, and check report downloads.
 Observe the new GitHub Actions result before claiming hosted verification.
 Do not send deliberately stalled test requests to the public site.
+
+## Public deployment confirmation, 2026-10-26
+
+The user supplied Render dashboard screenshots in the conversation showing:
+
+- Deployment source commit `332f01b`.
+- `Using worker: sync` at 03:17:27 PDT on 2026-10-24.
+- Two `Booting worker with pid` entries, for processes 59 and 60, at the same
+  startup time and on the same instance (`kqsbl`).
+- Successful `GET /` health-check responses and successful static asset
+  requests in the runtime log view.
+
+These screenshots were reviewed on 2026-10-26; the startup event they show is
+dated 2026-10-24. They confirm the deployed commit, worker type, and two workers.
+They do not directly establish the effective timeout value or test a timeout
+on Render. The command and local regression supply that separate evidence.
+The dashboard images remain conversation attachments, not repository image
+files. No new app screenshot was captured for this documentation block.
+
+The user reported that the remaining step-by-step checks were complete and
+working, covering CI, configuration/deployment, the example, synthetic upload,
+report downloads, refresh recovery, and the local timeout test. This is
+user-reported evidence, not a fresh agent browser run or transcript of those
+commands. No deliberate stall was sent to the public service by this agent.
+
+GitHub Actions was independently inspected through the connected GitHub API on
+2026-10-26: [run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
+for `332f01b39d2b822c2171fd5e3d48ed0b78503409` completed successfully on
+2026-10-24. Python 3.12, 3.13, and 3.14 all passed lint, formatting, core tests,
+installed CLI help, and optional web requests (including the new server test).
+This closes the repair's deployment follow-up with the evidence distinctions
+above. The [M8 checklist](M8_CHECKLIST.md) retains remaining manual checks.

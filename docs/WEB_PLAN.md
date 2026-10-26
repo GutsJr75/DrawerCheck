@@ -6,15 +6,19 @@
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
   including the web tests.
-- **M8, screens and public demo: in progress, built in seven blocks.** Blocks 1
-  to 6 are done, including the live public deployment at
+- **M8, screens and public demo: all seven delivery blocks complete.** Includes
+  the live public deployment at
   [drawercheck.onrender.com](https://drawercheck.onrender.com) verified on
-  2026-10-24. Block 7 (wrap-up) needs the user's go-ahead.
+  2026-10-24 and the documentation wrap-up authorized on 2026-10-26. The
+  [M8 checklist](M8_CHECKLIST.md) records verification gaps: a real screen-reader
+  check remains open, and the user deferred a friend usability check.
 - **Design rules for M8: ready.** [DESIGN.md](../DESIGN.md) says how the site
   should look (WCAG 2.2 AA, colours, fonts, and signature elements). This file
   says how it should behave, including navigation, uploads, and loading.
-- **Block 6 repair:** locally verified on 2026-10-24; deploying the revised sync
-  worker command and checking it publicly remain pending. See
+- **Block 6 repair:** locally verified on 2026-10-24. On 2026-10-26, reviewed
+  user-provided Render screenshots confirming repair commit `332f01b` and two
+  sync workers; the user reported the other checks passing. Independently
+  observed successful hosted CI run 40085196045. See
   [repair evidence](M8_BLOCK6_REPAIR.md).
 
 | M8 block | What gets built | Status |
@@ -25,7 +29,8 @@
 | 4 | Navigation and states: addresses, filters, downloads, loading, Cancel, and the slow-start message | Done |
 | 5 | Checks: WCAG 2.2 AA, 320 px and 400% zoom, keyboard, dark mode, and screenshots | Done |
 | 6 | Hosting: Render setup and a check of the live public site (`https://drawercheck.onrender.com`) | Done |
-| 7 | Wrap-up: README screenshots and interview notes | Not started |
+| 7 | Wrap-up: README screenshots and interview notes | Done, with remaining manual checks recorded |
+
 - **Quick map of this document:** the user decision and audience come first,
   then the screens and wording, the architecture, hosting, milestones, the
   definition of done, and finally the [M7 request contract](#m7-request-contract-and-handoff)
@@ -427,8 +432,11 @@ Rechecked [Render's Flask guide](https://render.com/docs/deploy-flask),
 - `tests/test_web_server.py` also runs a real server over a local Unix socket,
   with a shorter timeout, and checks cancellation of stalled work, another
   visitor's success, cleanup, and recovery. The test does not use the network.
-- The revised command and wording are verified locally only. The live-site
-  checks below describe the original block 6 deployment, before this repair.
+- The revised command and wording passed local checks. Repair deployment
+  follow-up was confirmed on 2026-10-26 through user-provided Render logs and
+  reported live checks; [the repair notes](M8_BLOCK6_REPAIR.md#public-deployment-confirmation-2026-10-26)
+  distinguish this evidence from direct agent observation. The detailed
+  live-site checks below describe the original deployment before the repair.
 - Verified on the live public URL
   [https://drawercheck.onrender.com](https://drawercheck.onrender.com) on
   2026-10-24 after [GitHub Actions run 40075833849](https://github.com/GutsJr75/DrawerCheck/actions/runs/40075833849)
@@ -493,7 +501,10 @@ Checked in M8 block 5 (2026-10-23) and rerun in the block 5 repair
 (2026-10-24). Tools actually used: Playwright 1.64 (the copy the Playwright
 plugin installed) driving Google Chrome 156 and Playwright's WebKit 26.6 build,
 and axe-core 4.14.0 (checksum verified) for the automated scan. No real screen
-reader was run, and no usability participant has tried the site yet.
+reader was run. On 2026-10-26 the user confirmed no unfamiliar participant has
+tried the site and deferred a possible friend usability check until later.
+Neither manual check is claimed as passed; [the M8 checklist](M8_CHECKLIST.md)
+records how to finish them.
 
 Every check confirms the expected view and address before it scans, measures,
 or takes a screenshot. Moves inside the app change the address's `#` part in
@@ -650,8 +661,9 @@ Local verification and exact commands are recorded in the learning log. CI now
 tests the core before installing optional web packages, then runs the web tests
 on Python 3.12/3.13/3.14. The hosted [run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
 passed both stages on all three versions for the final M7 commit `2bdbb7a`.
-M8 still needs the actual interface, browser and usability checks, and observed
-public deployment.
+At the M7 handoff, the interface, browser/usability checks, and observed public
+deployment were still M8 work. The delivery status and remaining manual checks
+are now recorded at the top of this document and in the [M8 checklist](M8_CHECKLIST.md).
 
 ## Dependency references rechecked on 2026-10-23
 
