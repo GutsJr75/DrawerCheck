@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "case": "day-link-outsider",
+      "nextVisible": false,
+      "dailyLeadsAvailable": true
+    },
+    {
+      "case": "all-drawers-member-and-keyboard-next",
+      "ring": "3px"
+    },
+    {
+      "case": "tape-availability-legend",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-tape-dark-320.png"
+    },
+    {
+      "case": "expanded-source-zero-rows",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-zeros-expanded-dark-320.png"
+    },
+    {
+      "case": "lead-limits",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-lead-limits-light-1280.png"
+    },
+    {
+      "case": "next-and-details",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-navigation-dark-320.png"
+    },
+    {
+      "case": "full-report-downloads-and-forced-colors",
+      "formats": [
+        "html",
+        "csv",
+        "text"
+      ]
+    },
+    {
+      "case": "long-title-and-encoded-address",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-long-title-dark-320.png"
+    },
+    {
+      "case": "multi-year-next",
+      "passed": true
+    },
+    {
+      "case": "refresh-recovery",
+      "passed": true
+    }
+  ],
+  "downloads": [
+    {
+      "kind": "html",
+      "path": "/tmp/drawercheck-block4-report.html",
+      "expectedSha256": "b4389ac2ddedf0d009937359a47530968020c35e6129601f8be3c486bac11729",
+      "matched": true
+    },
+    {
+      "kind": "csv",
+      "path": "/tmp/drawercheck-block4-report.csv",
+      "expectedSha256": "4297343396c28bbd8d4b506157b2c5a7cf04d7d18428ad5079545b0470efec1c",
+      "matched": true
+    },
+    {
+      "kind": "text",
+      "path": "/tmp/drawercheck-block4-report.text",
+      "expectedSha256": "2f39c053026376efa019e63bdf4cf3871ba6b2c96743a1fc735828de69684210",
+      "matched": true
+    }
+  ]
+}

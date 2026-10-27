@@ -22,6 +22,7 @@
       <tr data-line="{{ line.key }}"{% if line.key in ("expected", "difference") %} class="tape-rule tape-total"{% endif %}>
         {#- A label inside a details element does not name its row header, so Drawer details names it here. -#}
         <th scope="row"{% if explain %} aria-label="{{ (line.spoken ~ ' ' ~ line.label)|trim }}"{% endif %}><div class="tape-label"><span class="tape-op" aria-hidden="true">{{ line.sign }}</span>{% if line.spoken %}<span class="visually-hidden">{{ line.spoken }} </span>{% endif %}
+          {%- if explain and line.key in ("opening_float", "cash_sales", "paid_ins", "cash_refunds", "paid_outs", "safe_drops") %}<svg class="input-tick" viewBox="0 0 32 32" aria-hidden="true" focusable="false" hidden><path d="m5 17 7 7L27 7"/></svg>{% endif %}
           {%- if explain %}<details class="term"><summary>{{ line.label }}</summary><p>{{ line.definition }}</p></details>{% else %}{{ line.label }}{% endif %}</div></th>
         <td class="money">{{ amounts[line.key] if amounts else "" }}</td>
       </tr>
@@ -321,24 +322,30 @@
       </div>
     </section>
 
-    <section id="view-drawer" class="view" aria-labelledby="drawer-heading" data-title-template="Drawer {code} | DrawerCheck" hidden>
+    <section id="view-drawer" class="view" aria-labelledby="drawer-heading" data-title-template="{title} | DrawerCheck" hidden>
       {{ breadcrumbs("Drawer details", from_results=true) }}
-      <h1 id="drawer-heading" tabindex="-1" data-template="Drawer {code}"></h1>
+      <h1 id="drawer-heading" tabindex="-1" data-template="Register {register}, {date}"></h1>
       <p class="lead" id="drawer-about"
-         data-template="Register {register} on {date}. Cashier ID {cashier}."
+         data-template="Drawer {code}. Cashier ID {cashier}."
          data-times="Opened {opened}, closed {closed}."
          data-still-open="Opened {opened}, still open."></p>
 
+      <dl class="outcome-strip" id="drawer-outcome" aria-label="Drawer outcome">
+        <div><dt>Expected cash</dt><dd data-outcome="expected"></dd></div>
+        <div><dt>Counted cash</dt><dd data-outcome="counted"></dd></div>
+        <div><dt>Difference</dt><dd data-outcome="difference"></dd><dd class="outcome-status"><span data-role="word"></span> <span data-role="level" hidden></span></dd></div>
+      </dl>
+
       <div class="drawer-grid" id="drawer-grid" data-unknown="unknown">
         <div>
-          <h2>How expected cash is worked out</h2>
-          <figure class="tape-figure">
+          <h2 id="tape-heading">How expected cash is worked out</h2>
+          <figure class="tape-figure" role="region" aria-labelledby="tape-heading" tabindex="0">
             <div class="tape-paper">
               {% call tape("drawer", explain=true, caption_class="visually-hidden") -%}
                 Drawer tape. Select a line's name to see what it means.
               {%- endcall %}
             </div>
-            <figcaption>Select a line's name to see what it means.</figcaption>
+            <figcaption>Ticked values are available for this calculation. A zero for safe drops does not prove a source row was supplied.</figcaption>
           </figure>
           <p class="note" id="tape-note"
              data-open="This drawer is still open, so it has no closing count or difference yet."
@@ -348,7 +355,7 @@
 
         <div>
           <h2 id="count-heading">Count sheet</h2>
-          <div class="sheet-paper">
+          <div class="sheet-paper" role="region" aria-labelledby="count-heading" tabindex="0">
           <table class="count-sheet" id="count-sheet">
             <caption class="visually-hidden">Bills and coins counted at closing</caption>
             <thead>
@@ -358,7 +365,7 @@
                 <th scope="col" class="number">Line total</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="count-rows"></tbody>
             <tfoot>
               <tr>
                 <th scope="row" colspan="2">Counted cash</th>
@@ -367,13 +374,15 @@
             </tfoot>
           </table>
           </div>
+          <button id="count-toggle" type="button" class="button button-secondary" aria-expanded="false" aria-controls="count-rows" hidden
+                  data-open="Show bills and coins with none counted" data-close="Hide bills and coins with none counted">Show bills and coins with none counted</button>
           <p class="note" id="count-missing" hidden
              data-none="No cash count was recorded for this drawer, so there is no count sheet. Counted cash is unknown, not $0.00."
              data-open="This drawer is still open, so it has not been counted yet."></p>
         </div>
       </div>
 
-      <h2 id="drawer-leads-heading">Leads for this drawer</h2>
+      <h2 id="drawer-leads-heading">What to look at</h2>
       <ol class="lead-list" id="drawer-leads" aria-labelledby="drawer-leads-heading"></ol>
       <p id="drawer-no-leads" hidden>This drawer has no leads.</p>
 
@@ -383,20 +392,25 @@
         <ol class="lead-list" id="day-leads" aria-labelledby="day-leads-heading"></ol>
       </div>
 
+      <h2>More about this drawer</h2>
       <details class="help">
-        <summary>How the limits work</summary>
+        <summary>How the limits work<span class="help-preview">The tolerance and review limit for this drawer.</span></summary>
         <p id="limits-text"
            data-template="A difference of {tolerance} or less counts as balanced. On this drawer, a difference of {review} or more needs review; this limit depends on the drawer's cash sales."
            data-unknown="A difference of {tolerance} or less counts as balanced. The review limit for this drawer is unknown because its sales totals are missing."></p>
       </details>
       <details class="help">
-        <summary>How this drawer adds to the bank deposit</summary>
+        <summary>How this drawer adds to the bank deposit<span class="help-preview">Counted cash, safe drops, and retained float.</span></summary>
         <p id="deposit-text"
            data-template="This drawer adds {contribution} to the expected bank deposit for {date}: counted cash {counted}, plus safe drops {drops}, minus {retained} left in the drawer for the next shift. The whole day's expected deposit is {daily}."
            data-open="This drawer is still open, so its part of the bank deposit cannot be worked out yet, and the day's expected deposit is unknown."
            data-no-count="This drawer's part of the bank deposit is unknown because no cash count was recorded, so the day's expected deposit is unknown too."
            data-day-incomplete="This drawer was counted, but the whole day's expected bank deposit is unknown because some of that day's records are missing, inconsistent, or still open. So this drawer's share is not calculated."></p>
       </details>
+      <div class="actions">
+        <a id="next-drawer" class="button button-primary" href="#/results" hidden>Next drawer with leads</a>
+        <a class="button button-secondary" href="#/results" data-role="back-to-results">Back to results</a>
+      </div>
     </section>
 
     <section id="view-missing" class="view" aria-labelledby="missing-heading" data-title="Drawer not found | DrawerCheck" hidden>

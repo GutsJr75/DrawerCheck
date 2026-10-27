@@ -5,7 +5,9 @@ authorized on 2026-10-26, applies the approved "Tick and tie" shared palette,
 fonts, type/spacing, logo, header, breadcrumbs, and footer. M10 block 2 adds the
 Full run Results slip and responsive review/sidebar layout. Block 3, authorized
 on 2026-10-27, groups the review list by drawer and whole-day date and adds
-More detail previews. Other M8 view structures remain until their later blocks. See
+More detail previews. Block 4 updates Drawer details with a human title, outcome
+strip, zero-row disclosure, input-availability ticks, rule limits, and Next.
+Start and Prepare files await their own blocks. See
 [REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
 
 The original M8 delivery history follows.
@@ -323,6 +325,37 @@ review area, More detail introduces four closed native disclosures: lead counts,
 day totals, cashier totals, and all drawers, each with a plain preview. Tables
 still fill only when opened. No new tokens, controls, or reconciliation math
 are introduced. M9's swapped-digit Notes retain their Hint only wording.
+
+### Drawer details outcome and review flow
+
+M10 block 4 uses "Register R1, Thursday, September 3, 2026" as the title and
+browser title. Drawer code, cashier ID, and opening/closing times sit below;
+identifiers wrap and overnight clock dates retain their weekday/year labels.
+A single surface strip presents Expected cash, Counted cash, and Difference.
+The difference has Python's written status and the highest own-lead level;
+a balanced amount with a record problem can still say Needs review.
+Unknown stays unknown. Long amounts wrap without changing their text.
+
+The existing tape and count sheet remain beside each other when they fit.
+Known tape inputs receive the shared green tick, with a visible availability
+legend and the qualification about an aggregate zero for safe drops. Unknown
+inputs and calculated outputs get no tick. Marks are hidden from assistive
+technology because the visible legend supplies their meaning. The named tape
+and count-sheet regions can scroll internally for long amounts; the page
+itself keeps narrow-screen reflow.
+
+Count sheets fold only supplied zero-quantity rows when a positive quantity
+also exists. A native secondary button expands those same rows, names their
+IDs with aria-controls, and exposes aria-expanded. All-zero sheets show every
+supplied row and the real $0.00 total, with no toggle. Missing sheets stay
+unknown; no missing denominations are invented. Reset the toggle on each drawer.
+
+What to look at retains every own lead, including its level, message, rule
+code, and applicable Python-provided limit. Whole-day leads remain separate.
+More about this drawer holds the two existing explanations with previews.
+At the bottom, Next drawer with leads follows the unique drawers in the active
+Results filter order and never wraps. Back to results is always available.
+A drawer outside that list has no Next link. No review checkboxes were added.
 
 ## What to avoid
 

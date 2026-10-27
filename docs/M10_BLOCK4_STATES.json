@@ -1,0 +1,127 @@
+{
+  "checks": [
+    {
+      "case": "mixed",
+      "outcomes": [
+        "$200.00",
+        "$200.00",
+        "$0.00"
+      ],
+      "rows": 2,
+      "toggle": true,
+      "ticks": 6,
+      "flags": [],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-mixed-dark-320.png"
+    },
+    {
+      "case": "all-zero",
+      "outcomes": [
+        "$200.00",
+        "$0.00",
+        "-$200.00"
+      ],
+      "rows": 1,
+      "toggle": false,
+      "ticks": 6,
+      "flags": [
+        {
+          "rule": "R01_VARIANCE",
+          "limit": "Balanced up to $1.00; Check at $5.00; Needs review at $5.00."
+        },
+        {
+          "rule": "R05_MISSING_VERIFIER_OR_NOTE",
+          "limit": "Sign-off required for differences of $20.00 or more."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-all-zero-dark-320.png"
+    },
+    {
+      "case": "no-zero",
+      "outcomes": [
+        "$200.00",
+        "$200.00",
+        "$0.00"
+      ],
+      "rows": 1,
+      "toggle": false,
+      "ticks": 6,
+      "flags": [],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-no-zero-dark-320.png"
+    },
+    {
+      "case": "missing-count",
+      "outcomes": [
+        "$200.00",
+        "unknown",
+        "unknown"
+      ],
+      "rows": 0,
+      "toggle": false,
+      "ticks": 6,
+      "flags": [
+        {
+          "rule": "R09_DATA_INTEGRITY",
+          "limit": ""
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-missing-count-dark-320.png"
+    },
+    {
+      "case": "missing-pos",
+      "outcomes": [
+        "unknown",
+        "$200.00",
+        "unknown"
+      ],
+      "rows": 1,
+      "toggle": false,
+      "ticks": 2,
+      "flags": [
+        {
+          "rule": "R09_DATA_INTEGRITY",
+          "limit": ""
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-missing-pos-dark-320.png"
+    },
+    {
+      "case": "open",
+      "outcomes": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "rows": 0,
+      "toggle": false,
+      "ticks": 6,
+      "flags": [],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-open-dark-320.png"
+    },
+    {
+      "case": "huge",
+      "outcomes": [
+        "$9,000,000,000,000.00",
+        "$900,000,000,000.00",
+        "-$8,100,000,000,000.00"
+      ],
+      "rows": 1,
+      "toggle": false,
+      "ticks": 6,
+      "flags": [
+        {
+          "rule": "R01_VARIANCE",
+          "limit": "Balanced up to $1.00; Check at $5.00; Needs review at $5.00."
+        },
+        {
+          "rule": "R03_TRANSPOSITION_HINT",
+          "limit": ""
+        },
+        {
+          "rule": "R05_MISSING_VERIFIER_OR_NOTE",
+          "limit": "Sign-off required for differences of $20.00 or more."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-huge-dark-320.png"
+    }
+  ]
+}

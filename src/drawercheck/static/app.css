@@ -1,4 +1,4 @@
-/* DrawerCheck site styles. DESIGN.md lists every token and its checked contrast. */
+/* Runtime tokens and visual rules: DESIGN.md. */
 
 /* Atkinson Latin variable fonts, Fontsource 5.3.0. See fonts/LICENSE-*.txt. */
 @font-face {
@@ -23,7 +23,6 @@
     U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* Light theme. tests/test_web_page.py recalculates contrast for these values. */
 :root {
   color-scheme: light dark;
   --page: #e8eee5;
@@ -47,7 +46,6 @@
     sans-serif;
   --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas, monospace;
 
-  /* Spacing scale: 4, 8, 12, 16, 24, 32, 48, and 64 px at the default text size. */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -64,11 +62,10 @@
   --space-group: var(--space-5);
   --space-topic: var(--space-6);
   --gutter: 16px;
-  /* The drop-down arrow, drawn in the theme's text colour. */
+
   --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231c2a23' stroke-width='2'/%3E%3C/svg%3E");
 }
 
-/* Dark theme, following the visitor's system setting. */
 @media (prefers-color-scheme: dark) {
   :root {
     --page: #121a16;
@@ -182,7 +179,6 @@ h1[tabindex="-1"]:focus,
   outline: none;
 }
 
-/* Layout */
 .wrap {
   width: 100%;
   max-width: calc(1200px + 2 * var(--gutter));
@@ -208,7 +204,6 @@ h1[tabindex="-1"]:focus,
   transform: none;
 }
 
-/* The notice reverses the text and surface colours so it stays visible in both themes. */
 .notice {
   background: var(--text);
   color: var(--surface);
@@ -227,7 +222,6 @@ h1[tabindex="-1"]:focus,
   border-bottom: 1px solid var(--line);
 }
 
-/* The notice sits inside the header landmark; only the wordmark row is a flex row. */
 .site-header > .wrap {
   display: flex;
   align-items: center;
@@ -254,7 +248,6 @@ main {
   flex: 1 0 auto;
   padding-block: var(--space-topic);
 }
-
 
 .lead {
   font-size: 1.125rem;
@@ -287,7 +280,6 @@ main {
   display: none !important;
 }
 
-/* Buttons: one primary per view; 44px tall. */
 .button {
   display: inline-flex;
   align-items: center;
@@ -335,7 +327,6 @@ main {
   cursor: progress;
 }
 
-/* Links that stand alone get a full 24px target; links inside sentences do not need one. */
 .back-link,
 .lead-open,
 .lead-drawers a,
@@ -376,13 +367,11 @@ main {
   margin-bottom: var(--space-2);
 }
 
-/* Shown after five seconds of waiting; words, not a spinner. */
 .waiting-slow {
   padding-left: var(--space-3);
   border-left: 4px solid var(--control);
 }
 
-/* Status labels always carry a word; the colour only repeats it. */
 .status {
   display: inline-block;
   padding: 0 var(--space-2);
@@ -420,7 +409,6 @@ main {
   color: var(--muted);
 }
 
-/* Optional explanations, opened by click, tap, or keyboard. */
 .help {
   margin-top: var(--space-5);
 }
@@ -458,7 +446,6 @@ main {
   margin: 0 0 var(--space-3);
 }
 
-/* Start view: words and actions first, the example tape beside them on wide screens. */
 .start-grid {
   display: grid;
   gap: var(--space-7);
@@ -472,7 +459,6 @@ main {
   }
 }
 
-/* The drawer tape: an adding-machine receipt with a torn bottom edge. */
 .tape-figure {
   max-width: 24rem;
   margin: 0;
@@ -547,7 +533,6 @@ main {
   font-weight: 600;
 }
 
-/* The status word and its label may wrap, so long statuses fit 320px screens. */
 .tape .tape-result td {
   padding-top: var(--space-2);
   white-space: normal;
@@ -559,7 +544,6 @@ main {
   font-size: 0.9375rem;
 }
 
-/* Prepare files view */
 .view-narrow {
   max-width: 48rem;
 }
@@ -609,7 +593,6 @@ main {
   border-top: 1px solid var(--line);
 }
 
-/* Error summary links focus a row; show where focus landed. */
 .file-row[tabindex]:focus {
   outline: 3px solid var(--accent);
   outline-offset: -3px;
@@ -657,7 +640,6 @@ main {
   font-size: 0.9375rem;
 }
 
-/* Full-run ledger slip, then filters, review, and quiet report controls. */
 .run-summary {
   margin-block: var(--space-group) var(--space-topic);
 }
@@ -686,7 +668,8 @@ main {
   font-size: 0.9375rem;
 }
 
-#summary-tick {
+#summary-tick,
+.input-tick {
   width: 1.5rem;
   height: 1.5rem;
   margin-right: var(--space-item);
@@ -816,7 +799,6 @@ main {
   margin-right: var(--space-3);
 }
 
-/* Each ruled sheet groups unique drawers; nested rows are individual leads. */
 .lead-section + .lead-section {
   margin-top: var(--space-topic);
 }
@@ -903,7 +885,6 @@ main {
   font-weight: 400;
 }
 
-/* Sidebar controls follow the list in the narrow-screen reading order. */
 .downloads-heading,
 .filters h2 {
   font-size: 1.1875rem;
@@ -974,7 +955,6 @@ main {
   accent-color: var(--accent);
 }
 
-/* Optional tables scroll inside their own labelled region on narrow screens. */
 .table-scroll {
   margin-top: var(--space-3);
   overflow-x: auto;
@@ -1018,7 +998,6 @@ main {
   text-align: right;
 }
 
-/* Drawer details: the tape beside the count sheet on wide screens. */
 /* Two columns only when both fit, so larger text falls back to one column
    instead of widening the page. */
 .drawer-grid {
@@ -1043,8 +1022,6 @@ main {
   flex: none;
 }
 
-/* A tape label opens its one-sentence meaning in place. */
-/* Inline-block makes the clickable box the full 24px line, not just the letters. */
 .term summary {
   display: inline-block;
   min-height: 1.5rem;
@@ -1066,7 +1043,6 @@ main {
   font-weight: 400;
 }
 
-/* The count sheet: ruled rows, a single rule above the total and a double rule below. */
 .sheet-paper {
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-panel);
@@ -1163,14 +1139,11 @@ main {
   list-style: none;
 }
 
-/* Padding keeps each footer link at least 24px tall. */
 .footer-links a {
   display: inline-block;
   padding-block: var(--space-1);
 }
 
-
-/* The drawer-and-tick mark is decorative; the adjacent word names the link. */
 .brand-mark {
   width: 2rem;
   height: 2rem;
@@ -1186,7 +1159,6 @@ main {
   stroke: var(--ready);
 }
 
-/* Breadcrumbs describe the view hierarchy, with the current view as plain text. */
 .breadcrumbs {
   margin-bottom: var(--space-group);
   color: var(--muted);
@@ -1299,4 +1271,54 @@ html {
     transition: none !important;
     animation: none !important;
   }
+}
+
+#drawer-heading,
+#drawer-about {
+  overflow-wrap: anywhere;
+}
+
+.outcome-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-group);
+  margin: var(--space-group) 0 var(--space-topic);
+  padding: var(--space-group);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+
+.outcome-strip dt {
+  color: var(--muted);
+}
+
+.outcome-strip dd {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  margin: var(--space-item) 0 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.outcome-strip .outcome-status {
+  font-size: 1rem;
+}
+
+.input-tick {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.sheet-paper {
+  overflow-x: auto;
+}
+
+#count-toggle {
+  margin-top: var(--space-group);
+}
+
+.drawer-grid .tape-figure {
+  overflow-x: auto;
 }

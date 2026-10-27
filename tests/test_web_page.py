@@ -113,7 +113,7 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
         "hidden" in views[name]
         for name in ("view-prepare", "view-results", "view-drawer", "view-missing")
     )
-    # Drawer details builds its title from the shift code, so it has a template.
+    # Drawer details builds its human title from the loaded result.
     assert all(
         (attrs.get("data-title") or attrs["data-title-template"]).endswith(
             " | DrawerCheck"
@@ -255,11 +255,37 @@ def test_results_detail_previews_and_group_units(client) -> None:
     previews = [
         attrs for tag, attrs in page.tags if attrs.get("class") == "help-preview"
     ]
-    assert len(previews) == 4
+    assert len(previews) == 6
     assert all("open" not in attrs for tag, attrs in page.tags if tag == "details")
     assert (
         "More detail" in text and "Every drawer, including those without leads." in text
     )
+
+
+def test_drawer_outcomes_toggle_and_availability_ticks_have_semantics(client) -> None:
+    """Drawer controls distinguish supplied zero rows and decorative input availability."""
+    page, text = _page(client)
+    slots = [
+        attrs["data-outcome"] for tag, attrs in page.tags if "data-outcome" in attrs
+    ]
+    assert slots == ["expected", "counted", "difference"]
+    toggle = next(
+        attrs for tag, attrs in page.tags if attrs.get("id") == "count-toggle"
+    )
+    assert (
+        toggle["aria-expanded"] == "false" and toggle["aria-controls"] == "count-rows"
+    )
+    assert "hidden" in toggle
+    ticks = [attrs for tag, attrs in page.tags if attrs.get("class") == "input-tick"]
+    assert len(ticks) == 6
+    assert all(attrs["aria-hidden"] == "true" and "hidden" in attrs for attrs in ticks)
+    assert "Ticked values are available for this calculation." in text
+    assert "A zero for safe drops does not prove a source row was supplied." in text
+    next_drawer = next(
+        attrs for tag, attrs in page.tags if attrs.get("id") == "next-drawer"
+    )
+    assert "hidden" in next_drawer
+    assert not any("Looked at" in word for word in page.text)
 
 
 def test_results_hooks_match_the_response_fields(client) -> None:

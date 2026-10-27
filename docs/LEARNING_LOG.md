@@ -1284,3 +1284,36 @@ mid-animation captures retained. See [block 3 evidence](M10_BLOCK3.md).
 
 No new hosted CI, deployment, WebKit/zoom, OS-popup keyboard, screen-reader, or
 unfamiliar-user pass is claimed. Stop for `next` before M10 block 4, Drawer details.
+
+## M10 block 4: Drawer details (2026-10-27)
+
+- Built: Added human titles, an exact outcome strip, qualified availability
+  ticks, a supplied-zero row toggle, applicable Python rule limits, and Next
+  through the active filtered drawer list without wrapping. Preserved full
+  own/day leads, reports, source count rows, and all resource ceilings.
+- Learned: All-zero counts and absent counts need different displays. Checking
+  whether supplied quantities are positive is a presentation choice; adding
+  their money in the browser would duplicate the core. Rule limits should use
+  saved policy evidence, and table scrolling must stay inside named regions.
+  Keep the code budget explicit: 385 bytes remain after shared-style cleanup.
+- Interview question: How would you simplify a count sheet without hiding a
+  real zero count or confusing a missing record with $0.00?
+
+Final checks: 727 pytest tests passed in 13.81 seconds with local-socket
+permission; the targeted web/page suites passed 130 tests. Both Ruff checks
+and `git diff --check` passed. Chrome checked all 60 example drawers, full
+and Note-filtered Next sequences, no-wrap and outsider/member entry cases,
+keyboard row disclosure/Next, seven synthetic count/input cases, long identities,
+overnight/multi-year dates, exact report hashes under filters, and refresh.
+The 20-case view/theme/width matrix recorded no page overflow, page errors,
+or external resources. Large tape/count values stay in internal scroll regions.
+
+CSS/JS totals 59,615 bytes; fonts remain 51,748 bytes. The combined workload
+returns 8,701,107 bytes under the unchanged 10 MB cap. The generic strict audit
+retains seven known external-handler detection findings; DESIGN.md lint has
+zero errors and one existing Markdown-only warning. There are 35 new dated
+screenshots, retaining initial captures and adding a settled tape close-up.
+See [block 4 evidence](M10_BLOCK4.md) for raw checks and limits.
+
+No new hosted CI, deployment, WebKit/zoom, OS-popup keyboard, screen-reader,
+or unfamiliar-user pass is claimed. Stop for `next` before block 5, Start.

@@ -18,6 +18,10 @@
   counts; filtered sections retain full-run drawer order and overall levels
   without counts. More detail contains closed disclosures with previews.
   See [block 3 evidence](M10_BLOCK3.md). Stop for `next` before Drawer details.
+- **M10 block 4 complete locally (authorized 2026-10-27):** Drawer details
+  has a human title, exact outcome strip, supplied-zero row toggle, qualified
+  input ticks, applicable rule limits, and filter-aware Next navigation.
+  See [block 4 evidence](M10_BLOCK4.md). Stop for `next` before the Start view.
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -383,6 +387,39 @@ This replaces the flat-list portion of the block 2 contract above.
   drawers, each with a visible preview. The three tables still render lazily.
 - Next-drawer navigation, a new Drawer title/outcome strip, and zero-count-row
   controls remain block 4 work, not part of this authorization.
+
+### M10 block 4 Drawer details contract (2026-10-27)
+
+This supersedes the earlier Drawer details layout; all prior request, filter,
+report, and core-calculation contracts still apply.
+
+- Human page/browser titles use register and the complete server-labelled date.
+  Metadata retains unique drawer code, cashier ID, and times, including dates
+  across midnight. Long identifiers wrap rather than clipping.
+- Expected, Counted, and Difference are Python's exact strings. Difference
+  status and highest own-lead level remain separate concepts. Do not infer
+  record-problem severity from a small or balanced difference.
+- Tick only known tape inputs. Explain that a tick means an available value,
+  and an aggregate zero for safe drops does not prove a source row exists.
+  Outputs and unknown inputs get no tick. Marks are decorative and static.
+- Fold supplied zero rows only when another supplied row is positive. The
+  native button controls their existing IDs, updates aria-expanded and its
+  Show/Hide wording, and resets on each drawer. All-zero counts show all
+  supplied rows and $0.00; missing counts remain unknown. Never invent rows.
+- Tape/count regions have names and keyboard access for internal horizontal
+  scrolling when large values need it. Outcome figures wrap within the page.
+- What to look at shows full own leads, rule codes, and applicable limit_text.
+  Whole-day leads and the two existing explanatory disclosures remain available.
+- Python enriches only shifts[].flags[] and shifts[].daily_flags[] with
+  limit_text. R01, R04, and R05 wording comes from saved flag evidence; R08
+  matching-window wording uses its evidence, and mismatch review wording uses
+  the report's saved configuration. Heuristics, record problems, and unexpected
+  deposits get no invented limit. Global flags and report contents are unchanged.
+- Keep the unique filtered drawer order from Results. Next follows that order
+  without wrapping; it hides at the end and for drawers outside the list.
+  All-drawers/day-link entries get Next only if they belong to the active list.
+  Back links restore the active filters. Drawer details always shows full leads.
+- Review checkboxes remain deferred. Start and Prepare changes await blocks 5/6.
 
 ### Data the screens need from Python
 

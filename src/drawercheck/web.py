@@ -234,6 +234,36 @@ def _display_values(value: object) -> object:
     return value
 
 
+def _lead_data(flag: Flag, config: Config) -> dict:
+    values = asdict(flag)
+    evidence = flag.evidence
+    limit = ""
+    if flag.rule_code == "R01_VARIANCE":
+        limit = (
+            f"Balanced up to {format_cents(evidence['within_tolerance_cents'])}; "
+            f"Check at {format_cents(evidence['warn_cents'])}; "
+            f"Needs review at {format_cents(evidence['review_threshold_cents'])}."
+        )
+    elif flag.rule_code == "R04_REPEAT_SHORT":
+        limit = (
+            f"Pattern limit: at least {evidence['min_shifts']} shortages of "
+            f"{format_cents(evidence['warn_cents'])} or more in the last "
+            f"{evidence['window']} shifts."
+        )
+    elif flag.rule_code == "R05_MISSING_VERIFIER_OR_NOTE":
+        limit = (
+            "Sign-off required for differences of "
+            f"{format_cents(evidence['required_at_cents'])} or more."
+        )
+    elif flag.rule_code == "R08_DEPOSIT" and "max_lag_days" in evidence:
+        days = evidence["max_lag_days"]
+        limit = f"Matching window: {days} {'day' if days == 1 else 'days'} after the business date."
+        if evidence["issue"] == "mismatch":
+            limit += f" Differences of {format_cents(config.review_cents)} or more need review."
+    values["limit_text"] = limit
+    return values
+
+
 def _shift_data(
     result: ShiftResult,
     config: Config,
@@ -244,6 +274,7 @@ def _shift_data(
         result, config, day.expected_deposit_cents, daily_flags
     )
     values = asdict(result)
+    values["flags"] = [_lead_data(flag, config) for flag in result.flags]
     values["shift"]["counts"] = [
         {
             "denomination": format_cents(denomination),
@@ -255,7 +286,7 @@ def _shift_data(
     values.update(
         deposit_contribution_cents=explanation.deposit_contribution_cents,
         daily_deposit_cents=explanation.daily_deposit_cents,
-        daily_flags=[asdict(flag) for flag in explanation.daily_flags],
+        daily_flags=[_lead_data(flag, config) for flag in explanation.daily_flags],
         retained_float_cents=config.retained_float_per_register_cents,
         within_tolerance_cents=config.within_tolerance_cents,
         review_threshold_cents=config.review_threshold(

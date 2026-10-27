@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "case": "settled-tape-capture",
+      "target": {
+        "x": 16,
+        "y": -0.4375,
+        "width": 288,
+        "height": 48
+      },
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-tape-checked-dark-320.png"
+    },
+    {
+      "case": "all-zero-supplied-sheet",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block4/2026-10-27-m10-block4-drawer-all-zero-sheet-dark-320.png"
+    }
+  ]
+}

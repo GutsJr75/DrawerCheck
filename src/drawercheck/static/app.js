@@ -1,6 +1,5 @@
-// DrawerCheck page behaviour. Python does every calculation and file check;
-// this script only switches views, tracks chosen files, and sends requests.
-// Text from the server is always inserted with textContent, never as HTML.
+// Python calculates; JavaScript handles views, files, and requests.
+// Server strings use textContent, never HTML.
 "use strict";
 
 (() => {
@@ -45,6 +44,8 @@
   const drawerTape = document.querySelector('[data-tape="drawer"]');
   const tapeNote = document.getElementById("tape-note");
   const countSheet = document.getElementById("count-sheet");
+  const countToggle = document.getElementById("count-toggle");
+  const nextDrawer = document.getElementById("next-drawer");
   const countMissing = document.getElementById("count-missing");
   const drawerLeads = document.getElementById("drawer-leads");
   const drawerNoLeads = document.getElementById("drawer-no-leads");
@@ -60,6 +61,7 @@
   let results = null;
   let sortedLeads = [];
   let drawerGroups = new Map();
+  let reviewOrder = [];
   let leadDates = new Set();
   let shiftsByCode = new Map();
   let shiftsByDate = new Map();
@@ -82,7 +84,7 @@
   }
 
   function message(name, values = {}) {
-    // Wording lives in errors.py and reaches the page through the template.
+    // Python owns user-facing errors.
     return fill(document.querySelector(`[data-message="${name}"]`).textContent, values);
   }
 
@@ -209,7 +211,7 @@
       history.replaceState(null, "", "#/");
     }
     if ((address.view === "results" || address.view === "drawer") && !results) {
-      // Results live only in this page, so a refresh or copied link cannot show them.
+      // A new page has no stored results.
       history.replaceState(null, "", "#/");
       notSaved.hidden = false;
       showView("start", { focus: !initial });
@@ -226,7 +228,7 @@
       }
       renderDrawer(item);
       views.drawer.dataset.title = fill(views.drawer.dataset.titleTemplate, {
-        code: address.code,
+        title: drawerHeading.textContent,
       });
     }
     showView(address.view, { focus: !initial });
@@ -286,8 +288,7 @@
       Number(body.dataset.giveUpMs),
     );
     try {
-      // Cancel, leaving the view, or the time limit ends the wait at once. This only
-      // stops the browser waiting; an answer that arrives later is ignored.
+      // Stop waiting immediately and ignore any late answer.
       const outcome = await Promise.race([
         send(url, requestBody, current.controller.signal),
         stoppedEarly,
@@ -370,7 +371,8 @@
       detail.append(element("summary", "", leadList.dataset.ruleLabel), element("p", "", flag.rule_code));
       content.append(detail);
     } else if (scope === "drawer") {
-      content.append(element("p", "lead-meta", fill(leadList.dataset.ruleTemplate, { code: flag.rule_code })));
+      content.append(element("p", "lead-meta", flag.limit_text),
+        element("p", "lead-meta", fill(leadList.dataset.ruleTemplate, { code: flag.rule_code })));
     }
     row.append(levelLabel(flag.severity), content);
     return row;
@@ -424,6 +426,7 @@
     const matching = groupLeads(shown.filter(flag => flag.shift_id !== null), "shift_code");
     const days = groupLeads(shown.filter(flag => flag.shift_id === null), "business_date");
     const ordered = [...drawerGroups.keys()].filter(code => matching.has(code));
+    reviewOrder = ordered;
     leadList.replaceChildren();
     // Section counts come from Python and appear only without filters.
     function section(label, rows, count, unit) {
@@ -673,10 +676,11 @@
     const { shift } = item;
     const unknown = drawerGrid.dataset.unknown;
     const pos = shift.pos;
-    drawerHeading.textContent = fill(drawerHeading.dataset.template, { code: shift.shift_code });
+    drawerHeading.textContent = fill(drawerHeading.dataset.template, {
+      register: shift.register_id, date: formatDate(shift.business_date),
+    });
     const about = fill(drawerAbout.dataset.template, {
-      register: shift.register_id,
-      date: formatDate(shift.business_date),
+      code: shift.shift_code,
       cashier: shift.cashier_id,
     });
     const opened = clockTime(shift.opened_at, shift.business_date);
@@ -700,19 +704,30 @@
       difference: item.variance_amount,
     };
     for (const [line, value] of Object.entries(amounts)) {
-      drawerTape.querySelector(`[data-line="${line}"] td`).textContent = value;
+      const row = drawerTape.querySelector(`[data-line="${line}"]`);
+      row.querySelector("td").textContent = value;
+      row.querySelector(".input-tick")?.toggleAttribute("hidden", value === unknown);
     }
     for (const term of drawerTape.querySelectorAll("details")) {
       term.open = false;
     }
-    drawerTape.querySelector('[data-role="word"]').textContent =
-      results.labels.statuses[item.status];
-    const level = drawerTape.querySelector('[data-role="level"]');
+    for (const number of document.querySelectorAll("[data-outcome]")) {
+      const value = amounts[number.dataset.outcome];
+      number.textContent = value;
+      number.className = /^-?\$/.test(value) ? "money" : "";
+    }
     const worst = worstSeverity(item.flags);
-    // A drawer without leads clears the label rather than hiding the last one.
-    level.hidden = !worst;
-    level.className = worst ? `status ${severityClass[worst]}` : "status";
-    level.textContent = worst ? results.labels.severities[worst] : "";
+    for (const panel of [drawerTape, document.getElementById("drawer-outcome")]) {
+      panel.querySelector('[data-role="word"]').textContent = results.labels.statuses[item.status];
+      const level = panel.querySelector('[data-role="level"]');
+      level.hidden = !worst;
+      level.className = worst ? `status ${severityClass[worst]}` : "status";
+      level.textContent = worst ? results.labels.severities[worst] : "";
+    }
+    const index = reviewOrder.indexOf(shift.shift_code);
+    const next = index < 0 ? null : reviewOrder[index + 1];
+    nextDrawer.hidden = !next;
+    nextDrawer.href = next ? drawerAddress(next) : "#/results";
 
     const notes = [];
     if (item.status === "open") {
@@ -728,9 +743,13 @@
     tapeNote.textContent = notes.join(" ");
     tapeNote.hidden = notes.length === 0;
 
+    const foldZeros = shift.counts.some(count => count.quantity > 0);
     countSheet.tBodies[0].replaceChildren(
-      ...shift.counts.map((count) => {
+      ...shift.counts.map((count, index) => {
         const row = element("tr");
+        row.id = `count-row-${index}`;
+        row.dataset.zero = count.quantity === 0 ? "yes" : "no";
+        row.hidden = count.quantity === 0 && foldZeros;
         const denomination = element("th", "money", count.denomination);
         denomination.scope = "row";
         row.append(
@@ -741,6 +760,11 @@
         return row;
       }),
     );
+    const zeros = [...countSheet.querySelectorAll('[data-zero="yes"]')];
+    countToggle.hidden = !foldZeros || !zeros.length;
+    countToggle.ariaExpanded = "false";
+    countToggle.setAttribute("aria-controls", zeros.map(row => row.id).join(" ") || "count-rows");
+    countToggle.textContent = countToggle.dataset.open;
     document.getElementById("count-total").textContent = item.counted_amount;
     countSheet.closest(".sheet-paper").hidden = shift.counts.length === 0;
     countMissing.hidden = shift.counts.length > 0;
@@ -765,9 +789,15 @@
     depositText.textContent = depositSentence(item, unknown);
   }
 
+  countToggle.addEventListener("click", () => {
+    const expanded = countToggle.ariaExpanded !== "true";
+    countToggle.ariaExpanded = String(expanded);
+    countToggle.textContent = expanded ? countToggle.dataset.close : countToggle.dataset.open;
+    for (const row of countSheet.querySelectorAll('[data-zero="yes"]')) row.hidden = !expanded;
+  });
+
   function depositSentence(item, unknown) {
-    // Python leaves a drawer's share blank whenever its whole day is incomplete,
-    // so the sentence names the actual reason, checked in this order.
+    // A drawer's deposit share is unknown when its whole day is incomplete.
     if (item.status === "open") {
       return depositText.dataset.open;
     }

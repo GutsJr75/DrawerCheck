@@ -271,6 +271,52 @@ def test_summary_counts_keep_drawers_leads_and_days_separate(
     assert summary["deposit_lead_days"] == int(case in ("mixed", "day-only"))
 
 
+@pytest.mark.parametrize(
+    ("rule", "evidence", "expected"),
+    [
+        (
+            "R01_VARIANCE",
+            {
+                "within_tolerance_cents": 100,
+                "warn_cents": 500,
+                "review_threshold_cents": 1250,
+            },
+            "Balanced up to $1.00; Check at $5.00; Needs review at $12.50.",
+        ),
+        (
+            "R04_REPEAT_SHORT",
+            {"min_shifts": 3, "warn_cents": 500, "window": 10},
+            "Pattern limit: at least 3 shortages of $5.00 or more in the last 10 shifts.",
+        ),
+        (
+            "R05_MISSING_VERIFIER_OR_NOTE",
+            {"required_at_cents": 2000},
+            "Sign-off required for differences of $20.00 or more.",
+        ),
+        (
+            "R08_DEPOSIT",
+            {"issue": "mismatch", "max_lag_days": 1},
+            "Matching window: 1 day after the business date. Differences of $77.00 or more need review.",
+        ),
+        (
+            "R08_DEPOSIT",
+            {"issue": "missing", "max_lag_days": 0},
+            "Matching window: 0 days after the business date.",
+        ),
+        ("R08_DEPOSIT", {"issue": "unexpected"}, ""),
+        ("R02_SINGLE_DENOMINATION", {"denomination_cents": 100}, ""),
+        ("R03_TRANSPOSITION_HINT", {"heuristic": True}, ""),
+        ("R09_DATA_INTEGRITY", {"issue": "missing_pos"}, ""),
+    ],
+)
+def test_drawer_lead_limits_use_the_saved_evidence(rule, evidence, expected) -> None:
+    """Money limits come from Python; heuristics and record problems get no invented limit."""
+    flag = Flag(1, "2026-09-03", rule, "review", "Demo message.", evidence)
+    values = web._lead_data(flag, replace(Config(), review_cents=7700))
+    assert values["limit_text"] == expected
+    assert values["message"] == flag.message and values["evidence"] == evidence
+
+
 def test_date_labels_cover_range_and_overnight_clock_dates(worked_shift) -> None:
     """Python provides English calendar dates across midnight, months, and years."""
     shift = replace(

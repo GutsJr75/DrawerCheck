@@ -1,11 +1,12 @@
 # Visual redesign plan: "Tick and tie"
 
-**Status: M10 blocks 1 and 2 completed locally on 2026-10-26; block 3
+**Status: M10 blocks 1/2 completed locally on 2026-10-26; blocks 3/4
 explicitly authorized and completed locally on 2026-10-27.**
 [Block 1 evidence](M10_BLOCK1.md) covers the shared design,
-[block 2 evidence](M10_BLOCK2.md) the Results summary/layout, and
-[block 3 evidence](M10_BLOCK3.md) grouping, filters, More detail, and edge cases.
-Block 4, Drawer details, awaits `next`.
+[block 2 evidence](M10_BLOCK2.md) the Results summary/layout,
+[block 3 evidence](M10_BLOCK3.md) grouping and filters, and
+[block 4 evidence](M10_BLOCK4.md) Drawer details and navigation.
+Block 5, Start, awaits `next`.
 
 The sequence is M10, then M9 R06 and R07. [DESIGN.md](../DESIGN.md) and
 [WEB_PLAN.md](WEB_PLAN.md) describe the current app, including the new shell;
@@ -382,8 +383,8 @@ requested later and are not prerequisites for this redesign.
 
 The user approved **M10 block 1 under this plan, before the remaining M9
 rules**, on 2026-10-26, then explicitly authorized **block 2** with "go for
-block 2", then authorized **block 3** on 2026-10-27. All three are complete
-locally. **M10 block 4 (Drawer details) awaits `next`.** Approval does not authorize
+block 2", then authorized **blocks 3 and 4** separately on 2026-10-27.
+All four are complete locally. **M10 block 5 (Start) awaits `next`.** Approval does not authorize
 running all seven areas unattended. Once M10 is delivered, return to M9 R06,
 then R07, with their existing per-block review stops. New rules may change
 group membership, severity, and counts; the frontend must remain generic
