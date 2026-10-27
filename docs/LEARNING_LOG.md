@@ -1151,3 +1151,34 @@ than added to the unchanged demo data. Documentation link/punctuation checks,
 `git diff --check`, and both local Ruff checks passed. The test suite was not
 rerun for this documentation-only correction. No new push or deployment was
 performed by the agent; no new browser screenshot was taken. R06 has not begun.
+
+## M10 redesign proposal finalized (2026-10-26, documentation only)
+
+- Built: Finalized `REDESIGN_PLAN.md` from the supplied concept and archived
+  review. Specified compact Results, secondary downloads, accurate drawer/day
+  counts, qualified ticks, filter and next-drawer behavior, required states,
+  Python-owned display data, and seven proposed work areas. Results and Drawer
+  details precede Start polish. Added the planning status and decision 72 to
+  `PLAN.md`; optional review checkboxes and report restyling stay deferred.
+- Learned: Grouping changes the units a summary must describe. The current
+  demo has 16 drawer leads across nine drawers plus two whole-day leads, not
+  18 drawer leads. Filtering individual leads before grouping keeps a Note
+  visible even when its drawer also has a higher-level lead.
+- Interview question: How would you redesign a review list without hiding
+  lower-level leads or making its summary disagree with the underlying data?
+
+Verification: relative document links and prohibited punctuation checks passed;
+a fresh local `POST /api/demo` confirmed 60 drawers, nine with leads, 51 with
+none, 16 drawer leads, two whole-day leads on two dates, and the documented
+severity counts. The initial one-off count check used a null shift-code test;
+the corrected check used the actual nullable `shift_id` (whole-day web codes
+are empty strings) and passed. Both Ruff checks passed, with 61 files already
+formatted. Font licence references were checked against the Google Fonts OFL
+files. `git diff --check` passed.
+
+The user authorized finalizing the plan only. M10 implementation and changing
+the milestone order still require explicit approval. No runtime, test, demo
+data, visual asset, or canvas content changed. No new screenshots were needed;
+the earlier concept review remains historical evidence. The full pytest suite
+and browser checks were not rerun for this documentation block. No push,
+deployment, or new hosted CI result is claimed.
