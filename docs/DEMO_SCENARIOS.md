@@ -4,8 +4,8 @@ These are deliberately constructed fictional records for **Demo Store #001**.
 The default command is `drawercheck demo-data --days 30 --seed 42`.
 The business dates are fixed at September 1 through September 30, 2026.
 
-M5 checks the exact set of 16 required flags: the original 12 core flags,
-two repeated-shortage flags, and two bank-deposit flags. The full pipeline test
+M9 block 1 checks the exact set of 18 flags: the original 12 core flags,
+two repeated-shortage flags, two bank-deposit flags, and two R03 hints. The full pipeline test
 compares every date, shift, rule, and severity below and rejects extra flags.
 S9 also checks repeated imports after reconciliation, including saved results.
 
@@ -69,22 +69,24 @@ choices, not claims about real sales or cash-handling policies.
 
 ## Complete expected flags with default settings
 
-Each row is one verified flag under M5. The rule-milestone column records when
+Each row is one expected flag through M9 block 1. The rule-milestone column records when
 the rule was introduced. Date-only deposit flags have no shift. S9 is an import
 check rather than a reconciliation flag. Tests check both the complete set and
-this table. The default totals are 2 info, 7 warn, and 7 review flags.
+this table. The default totals are 4 info, 7 warn, and 7 review flags.
 
 | Scenario | Business date | Shift code | Rule code | Severity | Rule milestone |
 | --- | --- | --- | --- | --- | --- |
 | S1 | 2026-09-03 | 2026-09-03-R1 | R01_VARIANCE | review | M3 |
 | S1 | 2026-09-03 | 2026-09-03-R1 | R02_SINGLE_DENOMINATION | info | M3 |
 | S2 | 2026-09-08 | 2026-09-08-R2 | R01_VARIANCE | review | M3 |
+| S2 | 2026-09-08 | 2026-09-08-R2 | R03_TRANSPOSITION_HINT | info | M9 block 1 |
 | S2 | 2026-09-08 | 2026-09-08-R2 | R05_MISSING_VERIFIER_OR_NOTE | review | M3 |
 | S3 | 2026-09-05 | 2026-09-05-R1 | R01_VARIANCE | warn | M3 |
 | S3 | 2026-09-09 | 2026-09-09-R1 | R01_VARIANCE | warn | M3 |
 | S3 | 2026-09-14 | 2026-09-14-R1 | R01_VARIANCE | warn | M3 |
 | S3 | 2026-09-14 | 2026-09-14-R1 | R04_REPEAT_SHORT | warn | M5 |
 | S3 | 2026-09-18 | 2026-09-18-R1 | R01_VARIANCE | warn | M3 |
+| S3 | 2026-09-18 | 2026-09-18-R1 | R03_TRANSPOSITION_HINT | info | M9 block 1 |
 | S3 | 2026-09-18 | 2026-09-18-R1 | R04_REPEAT_SHORT | warn | M5 |
 | S4 | 2026-09-12 | 2026-09-12-R1 | R01_VARIANCE | warn | M3 |
 | S4 | 2026-09-12 | 2026-09-12-R1 | R02_SINGLE_DENOMINATION | info | M3 |
@@ -94,7 +96,10 @@ this table. The default totals are 2 info, 7 warn, and 7 review flags.
 | S8 | 2026-09-27 | 2026-09-27-R2 | R09_DATA_INTEGRITY | review | M3 |
 
 These expectations assume the default thresholds and all required rules.
-The optional R03, R06, and R07 rules are not enabled or injected.
+R03 is now active: the existing -$45 and -$9 differences qualify as whole-dollar
+multiples of nine. It adds notes without changing the input CSVs or the 16
+original leads. The +$27 over example is covered in a focused rule test. This
+pattern does not prove that digits were swapped. R06 and R07 are not implemented.
 
 All 28 bank entries are consumed exactly once. Twenty-seven match exactly;
 the September 21 entry is consumed as the single mismatched candidate. September
@@ -102,7 +107,7 @@ the September 21 entry is consumed as the single mismatched candidate. September
 so it is not matched. There are no ambiguous or unexpected entries in the default
 demo; separate deposit tests cover those branches and the greedy limitations.
 
-The approved two-pass M5 repair preserves all 16 rows above. It reserves exact
+The approved two-pass M5 repair preserves the original 16 leads. It reserves exact
 matches for every day before reviewing remaining candidates. A separate
 regression changes only September 2's bank amount by one cent in either
 direction: the expected $2,489.98 then receives one warn mismatch, with no

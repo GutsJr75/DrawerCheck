@@ -79,7 +79,7 @@ def test_demo_upload_and_cli_match(app, tmp_path: Path) -> None:
     assert demo.status_code == upload.status_code == 200
     payload = demo.get_json()
     assert payload == upload.get_json()
-    assert len(payload["shifts"]) == 60 and len(payload["flags"]) == 16
+    assert len(payload["shifts"]) == 60 and len(payload["flags"]) == 18
     assert len(payload["days"]) == 30
     for name, render in (
         ("text", text.render),
@@ -152,14 +152,25 @@ def test_screen_fields_match_cli_results(app, tmp_path: Path) -> None:
             }
         ),
     }
-    # The design's plain-facts line for the demo.
+    # The design's plain-facts line, including the two R03 heuristic notes.
     assert payload["summary"] == {
         "drawers_checked": 60,
         "drawers_needing_review": 4,
-        "leads_total": 16,
-        "leads_by_severity": {"info": 2, "warn": 7, "review": 7},
+        "leads_total": 18,
+        "leads_by_severity": {"info": 4, "warn": 7, "review": 7},
         "deposit_lead_days": 2,
     }
+    hints = [
+        flag
+        for flag in payload["flags"]
+        if flag["rule_code"] == "R03_TRANSPOSITION_HINT"
+    ]
+    assert len(hints) == 2
+    assert (
+        payload["labels"]["rules"]["R03_TRANSPOSITION_HINT"]
+        == "Possible swapped digits"
+    )
+    assert all(flag["severity"] == "info" for flag in hints)
     for item in payload["shifts"]:
         result = explain_shift(database, item["shift"]["shift_code"]).result
         rows = item["shift"]["counts"]
@@ -715,7 +726,7 @@ def test_local_config_cannot_change_web_policies(
     with app.test_client() as client:
         response = client.post("/api/demo")
     assert response.status_code == 200
-    assert len(response.get_json()["flags"]) == 16
+    assert len(response.get_json()["flags"]) == 18
 
 
 def test_partial_upload_save_failure_removes_files(

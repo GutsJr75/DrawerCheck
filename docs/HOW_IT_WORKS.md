@@ -97,7 +97,14 @@ The daily check also flags any expected register with no shift on that date.
 That flag belongs to the date, with no invented shift or cashier.
 
 The thresholds are configurable example policies, not industry standards.
-R03, R06, and R07 are optional and remain unimplemented. R08 is described below.
+**R03_TRANSPOSITION_HINT (M9 block 1):** An info-level hint appears when the
+known difference, in either direction, is a whole-dollar amount of at least
+$9 and divisible by 9. For example, typing $52 instead of $25 creates a $27
+difference. This is a heuristic: a rough clue that can also match unrelated
+differences, not proof that a typo occurred or a reconstruction of the original
+amount. Fractional dollars, amounts below $9, and unknown differences do not
+qualify. The rule uses exact integer cents and adds no new calculation in the
+browser. R06 and R07 remain unimplemented. R08 is described below.
 
 ## Missing records and open shifts
 
@@ -261,7 +268,7 @@ Its output places any saved R08 leads under `Daily deposit review for YYYY-MM-DD
 beside the daily expected deposit, including severity, message, and
 evidence. These leads apply to the whole date, not just the selected register.
 Other daily record leads remain separate, and no deposit flag is printed twice.
-The full default demo produces 16 required flags. See [demo scenarios](DEMO_SCENARIOS.md)
+The full default demo produces 18 flags, including two R03 hints. See [demo scenarios](DEMO_SCENARIOS.md)
 for the complete verified expectations.
 
 ## Reports from saved results

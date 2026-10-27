@@ -1097,3 +1097,32 @@ session, including checking whether the tape operator is spoken twice, also
 remains unverified. All seven M8 delivery blocks are complete with these manual
 validation gaps recorded; this is not a claim that every acceptance check passed.
 No further feature milestone is started.
+
+## M9 block 1: possible swapped-digit hint (2026-10-26)
+
+- Built: Added R03 as an info-level heuristic for known whole-dollar differences
+  of at least $9 divisible by nine, in either direction. Reused saved evidence,
+  all reports, and server-owned public labels. Updated the exact demo table,
+  sample report, documentation, and tests; added three dated local screenshots.
+  Bumped policy version to 5 so old saved runs cannot silently mix rule sets.
+- Learned: A number pattern can suggest a check without proving its cause.
+  The unchanged $45 and $9 demo shortages now add two notes, so the demo has
+  18 leads while its amounts and original 16 leads stay unchanged. Counts in
+  tests, reports, screenshots, and walkthroughs must move together.
+- Interview question: Why is a difference divisible by nine only a hint, and
+  how would you avoid presenting that clue as proof of a typing mistake?
+
+| Command or check | Result |
+| --- | --- |
+| `.venv/bin/pytest -q`, final run with Unix-socket permission | PASS: 708 tests in 13.59 seconds. Earlier development failures and corrections are recorded in `M9_BLOCK1.md`. |
+| `.venv/bin/ruff check .` | PASS. |
+| `.venv/bin/ruff format --check .` | PASS. |
+| Local browser, native Chrome | PASS within scope: example, 18-lead summary, Note filtering, new labels/messages, drawer details, Back preserving filters, and Tab/Enter activation. Console showed zero messages when inspected. |
+| Local 320 px viewport | PASS within scope: new drawer hint, message, and rule code wrap without clipping inside the panel, dark mode. |
+| Golden sample | PASS: all 18 date/shift/rule/severity tuples match docs, CSV, and the committed HTML sample apart from its generation timestamp. |
+| Strict frontend audit | Exit 2: same eight baseline findings, documented limitations; raw JSON retained in `M9_BLOCK1_AUDIT.json`. |
+| Relative links, punctuation, screenshot inspection, and `git diff --check` | PASS. |
+
+See [M9 block 1 evidence](M9_BLOCK1.md) and the new screenshot timeline row.
+No hosted CI, push, deployment, or fresh full accessibility audit is claimed.
+R06 and R07 are later blocks. Stop here for review and **next** before R06.

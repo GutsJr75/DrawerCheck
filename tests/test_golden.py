@@ -17,12 +17,14 @@ _EXPECTED = {
     ("2026-09-03", "2026-09-03-R1", "R01_VARIANCE", "review"),
     ("2026-09-03", "2026-09-03-R1", "R02_SINGLE_DENOMINATION", "info"),
     ("2026-09-08", "2026-09-08-R2", "R01_VARIANCE", "review"),
+    ("2026-09-08", "2026-09-08-R2", "R03_TRANSPOSITION_HINT", "info"),
     ("2026-09-08", "2026-09-08-R2", "R05_MISSING_VERIFIER_OR_NOTE", "review"),
     ("2026-09-05", "2026-09-05-R1", "R01_VARIANCE", "warn"),
     ("2026-09-09", "2026-09-09-R1", "R01_VARIANCE", "warn"),
     ("2026-09-14", "2026-09-14-R1", "R01_VARIANCE", "warn"),
     ("2026-09-14", "2026-09-14-R1", "R04_REPEAT_SHORT", "warn"),
     ("2026-09-18", "2026-09-18-R1", "R01_VARIANCE", "warn"),
+    ("2026-09-18", "2026-09-18-R1", "R03_TRANSPOSITION_HINT", "info"),
     ("2026-09-18", "2026-09-18-R1", "R04_REPEAT_SHORT", "warn"),
     ("2026-09-12", "2026-09-12-R1", "R01_VARIANCE", "warn"),
     ("2026-09-12", "2026-09-12-R1", "R02_SINGLE_DENOMINATION", "info"),
@@ -36,7 +38,7 @@ _EXPECTED = {
 def test_full_demo_pipeline_exact_flags_and_documented_scenarios(
     tmp_path: Path,
 ) -> None:
-    """S1 through S8 match exactly with no optional or extra rules in any export."""
+    """S1 through S8 match exactly, including the authorized R03 heuristic."""
     inputs, database = tmp_path / "demo", tmp_path / "demo.db"
     assert main(["demo-data", "--out", str(inputs)]) == 0
     assert main(["import", "--dir", str(inputs), "--db", str(database)]) == 0
@@ -46,7 +48,7 @@ def test_full_demo_pipeline_exact_flags_and_documented_scenarios(
         (flag.business_date, report.shift_code(flag), flag.rule_code, flag.severity)
         for flag in report.flags
     ]
-    assert len(actual) == len(_EXPECTED) == 16
+    assert len(actual) == len(_EXPECTED) == 18
     assert set(actual) == _EXPECTED
     documentation = Path(__file__).resolve().parents[1] / "docs/DEMO_SCENARIOS.md"
     rows = [

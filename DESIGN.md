@@ -236,8 +236,15 @@ the main "Try the example" button.
 
 The top of Results is one line of labelled numbers, not a grid of icon cards.
 Keep counts of leads and counts of drawers separate. For the demo:
-"60 drawers checked", "4 drawers need review", "16 leads in total", and
+"60 drawers checked", "4 drawers need review", "18 leads in total", and
 "2 days with bank-deposit leads".
+
+M9 block 1 adds two R03 notes to the unchanged fictional inputs. R03's public
+label is "Possible swapped digits" and its message explicitly says "Hint only."
+Reuse the existing note styling and lead components for both Results and Drawer
+details. Public labels are owned by `web.py`, messages by the Python rule, and
+the browser renders both through `app.js`; no new token, control, or calculation
+belongs in the browser for this rule.
 
 Built in block 3: the number is semibold at 24 px and the words stay at body
 size on the same baseline, separated by thin `line` rules, so the row reads as

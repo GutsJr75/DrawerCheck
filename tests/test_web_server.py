@@ -138,7 +138,7 @@ def test_hosting_timeout_stops_work_cleans_up_and_recovers() -> None:
                 )
                 status, content = _request(address, "POST", "/api/demo")
                 assert status == 200
-                assert json.loads(content)["summary"]["leads_total"] == 16
+                assert json.loads(content)["summary"]["leads_total"] == 18
                 assert not list(workspaces.iterdir())
             finally:
                 process.terminate()

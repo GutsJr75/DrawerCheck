@@ -69,6 +69,25 @@ def denomination_flags(
     )
 
 
+def transposition_flags(
+    result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
+) -> tuple[Flag, ...]:
+    """Offer a heuristic hint for whole-dollar differences divisible by nine."""
+    variance = result.variance_cents
+    if variance is None or abs(variance) < 900 or abs(variance) % 900:
+        return ()
+    # This arithmetic pattern is only a heuristic, not evidence of a specific typo.
+    return (
+        _flag(
+            result,
+            "R03_TRANSPOSITION_HINT",
+            "info",
+            "Could be two digits swapped when typing a total. Hint only.",
+            {"variance_cents": variance, "heuristic": True},
+        ),
+    )
+
+
 def verification_flags(
     result: ShiftResult, config: Config, history: tuple[ShiftResult, ...] = ()
 ) -> tuple[Flag, ...]:
@@ -223,6 +242,7 @@ def repeat_short_flags(
 RULES = (
     variance_flags,
     denomination_flags,
+    transposition_flags,
     repeat_short_flags,
     verification_flags,
     integrity_flags,

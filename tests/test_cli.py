@@ -223,7 +223,7 @@ def test_reconcile_and_explain_workflow(
     """The installed command interface explains S1 with its full math and saved flags."""
     assert main(["reconcile", "--db", str(demo_database)]) == 0
     assert (
-        "Reconciled 60 shifts from 2026-09-01 to 2026-09-30; saved 16 review flags."
+        "Reconciled 60 shifts from 2026-09-01 to 2026-09-30; saved 18 review flags."
         in capsys.readouterr().out
     )
     assert main(["explain", "2026-09-03-R1", "--db", str(demo_database)]) == 0

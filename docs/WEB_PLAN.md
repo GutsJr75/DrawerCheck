@@ -38,6 +38,13 @@
 
 ## User decision
 
+M9 block 1 adds the R03 swapped-digit heuristic locally after M8 delivery.
+Current source demo results contain 18 leads rather than the historical M8
+16; the additional two are notes only. The old screenshots and verification
+counts below remain historical evidence. R03 has no new screen or JavaScript
+calculation; it reuses server labels and existing lead rendering. See
+[M9 block 1](M9_BLOCK1.md) for local checks and deployment status.
+
 The user requested both a polished recruiter demo and an interactive frontend,
 even if that expands the project. They explicitly chose a public app where
 visitors can upload CSVs and run checks.

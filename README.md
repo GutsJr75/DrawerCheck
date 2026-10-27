@@ -12,12 +12,16 @@ the fictional **Demo Store #001**.
 
 **[Try the public demo](https://drawercheck.onrender.com)** without installing
 anything. Select **Try the example**, open a drawer from the results, and
-download a report. The example checks 60 drawers and produces 16 review leads.
+download a report. The example checks 60 drawers.
 To try uploads, select **Upload demo CSVs** and use the seven example files
 provided on that screen. Use fictional data only.
 
 Results disappear when you refresh or close the page. Download a report to keep
 a copy. The free server may take about a minute to wake up after inactivity.
+
+**M9 block 1:** the updated local example produces 18 leads, including two
+possible swapped-digit hints. This change has not been deployed by this agent;
+the last verified public M8 version produced 16. R06 and R07 are later blocks.
 
 ## Why I am building it
 
@@ -31,9 +35,9 @@ in a job interview.
 | Part | Status |
 | --- | --- |
 | Command-line tool: imports, checks, explanations, and reports | Done |
-| Six review rules, including repeated shortages and bank deposits | Done |
+| Seven review rules, including the R03 swapped-digit heuristic | Built; R03 verified locally, deployment pending |
 | Web request layer, website screens, public hosting, and documentation | Delivered through M8 block 7; live at [drawercheck.onrender.com](https://drawercheck.onrender.com) |
-| Optional extra rules (R03, R06, R07) | Not planned unless requested |
+| Remaining optional rules (R06, R07) | Later M9 blocks; stop for review after each block |
 
 **Automated checks:** [GitHub Actions run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
 for repair commit `332f01b` passed on Python 3.12, 3.13, and 3.14, including
@@ -72,14 +76,13 @@ You need Python 3.12 or newer. All inputs below are fake.
 
 For an offline example, open the
 [committed sample report](examples/sample_report.html). It covers the same 60
-shifts and 16 review leads, and works offline with no external files or scripts.
+shifts and 18 review leads, and works offline with no external files or scripts.
 
 ## Screenshots
 
-Results with report downloads, captured locally in Chrome on 2026-10-24 after
-the block 6 wording repair, in dark mode:
+The updated M9 local results, captured in Chrome on 2026-10-26 in dark mode:
 
-![Results showing 60 drawers checked, 4 needing review, 16 leads, and report downloads](docs/screenshots/2026-10-24-m8-block6-repair/2026-10-24-m8-block6-repair-results-dark-1222.png)
+![Results showing 60 drawers checked, 4 needing review, 18 leads, and report downloads](docs/screenshots/2026-10-26-m9-block1/2026-10-26-m9-block1-results-summary-dark-1390.png)
 
 The public demo's drawer explanation, captured on Render on 2026-10-24 in
 light mode. The worked drawer expected $518.75 and counted $498.75:
@@ -108,6 +111,7 @@ settings in `config.toml`, not industry standards.
 | --- | --- |
 | R01 Cash difference | A difference over $1.00. It becomes warn at $5.00, and review at $20.00 or 1% of cash sales, whichever is lower (but never below $5.00). |
 | R02 Single bill | A difference of exactly $1, $5, $10, $20, $50, or $100, which may be one miscounted bill. |
+| R03 Possible swapped digits | A whole-dollar difference of at least $9, in either direction, divisible by 9. This is a rough clue only; it does not prove a typo. |
 | R04 Repeated shortages | A cashier short by $5.00 or more in at least 3 of their last 10 shifts. |
 | R05 Missing sign-off | A difference of $20.00 or more without both a verifier and a written note. |
 | R08 Bank deposit | Each day's expected deposit compared with bank entries dated that day or up to 3 days later: a missing deposit, a different amount, or an entry that matches no day. |
@@ -137,7 +141,7 @@ drawercheck import --dir data/another-demo --db another-demo.db
 
 Importing the same files again prints `already imported; skipped` and adds
 nothing. The [demo scenarios](docs/DEMO_SCENARIOS.md) list the deliberately
-planted problems and the 16 leads they produce. If you leave out `--db`, the
+planted problems and the 18 leads they produce. If you leave out `--db`, the
 database is `./drawercheck.db`.
 
 ### Run the checks and explain one shift

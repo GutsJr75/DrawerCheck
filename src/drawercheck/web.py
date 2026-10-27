@@ -52,6 +52,7 @@ CONTENT_SECURITY_POLICY = (
 RULE_LABELS = {
     "R01_VARIANCE": "Cash difference to check",
     "R02_SINGLE_DENOMINATION": "Possible single bill",
+    "R03_TRANSPOSITION_HINT": "Possible swapped digits",
     "R04_REPEAT_SHORT": "Repeated shortages",
     "R05_MISSING_VERIFIER_OR_NOTE": "Missing sign-off",
     "R08_DEPOSIT": "Bank deposit to check",

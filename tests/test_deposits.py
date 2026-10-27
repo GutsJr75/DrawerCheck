@@ -161,7 +161,7 @@ def test_one_cent_demo_difference_uses_remaining_candidate(
             )
     changed = reconcile(demo_database, Config())
     assert changed == reconcile(demo_database, Config())
-    assert len(changed.flags) == 17
+    assert len(changed.flags) == len(original.flags) + 1
     assert (
         tuple(flag for flag in changed.flags if flag.business_date != "2026-09-02")
         == original.flags

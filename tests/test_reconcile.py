@@ -163,7 +163,7 @@ def test_full_demo_retains_exactly_the_m3_flags(demo_database: Path) -> None:
         (result.shift.shift_code, flag.rule_code, flag.severity)
         for result in run.shifts
         for flag in result.flags
-        if flag.rule_code != "R04_REPEAT_SHORT"
+        if flag.rule_code not in ("R03_TRANSPOSITION_HINT", "R04_REPEAT_SHORT")
     }
     expected = {
         ("2026-09-03-R1", "R01_VARIANCE", "review"),
@@ -180,7 +180,7 @@ def test_full_demo_retains_exactly_the_m3_flags(demo_database: Path) -> None:
     }
     assert actual == expected
     assert len(actual) == 12
-    assert len(run.flags) == 16
+    assert len(run.flags) == 18
     assert len(run.shifts) == 60
     assert len(_saved(demo_database)[1]) == 30
     deposits = {day.business_date: day.expected_cents for day in run.deposits}

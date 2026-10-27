@@ -1,8 +1,10 @@
 # Interview and project-sharing notes
 
 DrawerCheck is a personal learning project with fictional data. These notes
-describe the implemented command-line core and public website through M8
-block 7. [Open the public demo](https://drawercheck.onrender.com), or use the
+describe the implemented command-line core and public website through M8,
+plus the locally verified M9 block 1 R03 heuristic. The updated local example
+has 18 leads; the last verified public M8 version has 16 until redeployment.
+[Open the public demo](https://drawercheck.onrender.com), or use the
 offline sample report if the free server is waking up. The
 [core checklist](CORE_CHECKLIST.md) and [M8 checklist](M8_CHECKLIST.md) record
 what was tested, how it was checked, and what remains unverified.
@@ -18,7 +20,7 @@ checks. It is a learning project, not a system used by a real business.
 ## A two-minute walkthrough
 
 I open the public site and choose **Try the example**. It checks 30 fixed
-business dates and two registers: 60 drawers, 4 needing review, and 16 leads in
+business dates and two registers: 60 drawers, 4 needing review, and 18 leads in
 total. Every person and record is fictional. The other entry point,
 **Upload demo CSVs**, takes seven files. The importer validates and saves them
 within one transaction, so an invalid row rolls the import back. Errors name
@@ -32,7 +34,10 @@ is compared with that expected amount. Money stays in integer cents throughout.
 The required rules cover cash differences, possible single-bill miscounts,
 repeated shortages, missing verification, deposit exceptions, and incomplete or
 inconsistent records. A flag is a lead for review, never a finding about a person.
-Missing counts stay unknown instead of becoming a misleading zero.
+Missing counts stay unknown instead of becoming a misleading zero. M9 adds
+a swapped-digit hint for whole-dollar differences divisible by nine, such as
+$27. This is a heuristic, a rough clue only, and cannot prove what caused a
+difference.
 
 For deposits, one pass reserves exact matches across all days. A second pass
 checks the remaining candidates. This remains a simplified date-and-amount
@@ -136,7 +141,7 @@ Choose wording you can explain and adapt it to the space available:
 
 - Built a Python cash-reconciliation CLI and public Flask demo with synthetic
   CSV uploads, integer-cent calculations, and isolated SQLite request databases.
-- Implemented six explainable review rules, transactional imports, repeatable
+- Implemented seven explainable review rules, transactional imports, repeatable
   reconciliation, and text, standalone HTML, and protected CSV reports.
 - Tested malformed inputs, rollback, duplicate imports, temporary-file cleanup,
   matching boundaries, and server timeout recovery with pytest; verified hosted
