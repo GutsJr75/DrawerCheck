@@ -1182,3 +1182,38 @@ data, visual asset, or canvas content changed. No new screenshots were needed;
 the earlier concept review remains historical evidence. The full pytest suite
 and browser checks were not rerun for this documentation block. No push,
 deployment, or new hosted CI result is claimed.
+
+## M10 block 1: shared Tick and tie design (2026-10-26)
+
+- Built: Applied the approved shared ledger palette, Atkinson fonts, responsive
+  type/spacing, drawer logo, header, wrapping footer, breadcrumbs, and scrollbar
+  styles to the existing views. Added colour-guide drift coverage, font licence
+  packaging, a canonical-owner audit manifest, and 35 dated screenshots with
+  initial and verified states. No financial or routing JavaScript changed.
+- Learned: Two variable fonts can cover all needed weights with fewer assets.
+  The shipped fonts total 51,748 bytes, and package-data checks must include
+  their licences. A reused navigation role can preserve filters in breadcrumbs
+  without a second state system. Restart a cached local template before final
+  screenshot acceptance.
+- Interview question: How would you change a site's shared visual identity
+  while preserving its calculations, navigation state, and accessibility cues?
+
+Final checks: 709 pytest tests passed in 15.46 seconds with local-socket
+permission; the targeted page suite passed 18 tests; both Ruff checks passed
+(62 files formatted in the final check). Chrome passed the 16-case view/theme/width matrix and
+the recorded controls, filter-preserving keyboard return, fake upload, downloads,
+cancellation, error/retry, and refresh checks. Fonts loaded locally, no page-wide
+horizontal overflow occurred, and the matrix recorded no external resources or
+page-error events. Combined CSS/JS is 54,788 bytes, below 60,000.
+
+The generic strict audit retains seven pre-existing external-handler detection
+findings; all flagged buttons were exercised successfully. The native-select
+ownership finding is resolved. Official DESIGN.md lint had zero errors and one
+Markdown-only warning; the new project test checks exact colour-table drift.
+The attempted headless native-popup key sequence did not select a date; explicit
+native selection passed, without a new OS-popup keyboard claim. Development
+packaging/format issues and the preview-cache correction are recorded in
+[block 1 evidence](M10_BLOCK1.md), along with screenshots and raw check records.
+
+No new hosted CI or deployment result, WebKit/zoom pass, screen-reader session,
+or beginner usability pass is claimed. Stop for `next` before M10 block 2.

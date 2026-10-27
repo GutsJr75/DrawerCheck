@@ -2,6 +2,12 @@
 
 ## Where things stand
 
+- **M10 block 1 (authorized 2026-10-26):** the shared "Tick and tie" palette,
+  local Atkinson fonts, responsive type/spacing, decorative drawer logo,
+  header, footer, and breadcrumbs replace the corresponding M8 shell styles.
+  Results grouping and the later view changes remain separate blocks. The
+  current visual rules are in [DESIGN.md](../DESIGN.md); the delivery scope is
+  in [REDESIGN_PLAN.md](REDESIGN_PLAN.md).
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -129,6 +135,32 @@ on 2026-10-23. The behaviour rules below were added at the same time. Browser
 checks remain M8 work.
 
 ### Navigation, addresses, and the Back button
+
+M10 block 1 adds a shared breadcrumb macro to Prepare files, Results, Drawer
+details, and the missing-drawer view. Start is the root and needs no breadcrumb.
+The current view is plain text, not a link. Parent links use the same hash
+addresses below; every Results ancestor uses the existing `back-to-results`
+role, so filtering updates its address alongside the existing return actions.
+The short current label on Drawer details stays "Drawer details" until its
+human-readable heading arrives in block 4. Page titles and view-heading focus
+still use the existing shared route handler. No new routing or stored state.
+
+### Canonical UI Map
+
+This document is the maintained behavior contract; DESIGN.md owns visual rules.
+The optional `premium-ui.json` audit manifest points here rather than creating
+a second UX contract. Existing native popup geometry is an intentional choice.
+
+| Capability | Canonical owner | Source of truth | Allowed variants | Verification |
+| --- | --- | --- | --- | --- |
+| Select/Listbox | Native select and radio buttons in index.html, populated by app.js | This document's navigation and filter rules | Browser/OS-owned popup, CSS-styled trigger | Keyboard, opened popup, filter restoration in the local browser |
+| Date | Shared formatDate in app.js, ISO business dates from web.py | Data contract below; current UTC calendar-day formatting | Read-only labels, no date picker; server-owned display labels planned in M10 block 2 | Existing API tests and visible date options |
+| Form | Existing chosen-file map, importer validation, and error summary | Upload and request contracts below | Seven fake CSVs, native chooser, existing drag/drop enhancement | Existing web tests; missing-file error summary and focus in the browser |
+| Scrollbar | Global app.css standards rules and WebKit fallback | DESIGN.md runtime mapping | Document scrolling; optional tables own horizontal overflow | Narrow views and computed styles, system fallback in forced colors |
+
+There is no table selection, account CRUD, or toast system. Existing polite
+live announcements and inline errors remain owned by app.js and the template.
+The operation and recovery rules below remain authoritative.
 
 Each view has its own address after `#`, so the browser's Back and Forward
 buttons, refresh, and copied links behave the way people expect:

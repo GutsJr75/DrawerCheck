@@ -1,0 +1,26 @@
+{
+  "checks": [
+    "Native date selection, Note filter, drawer link, breadcrumb Shift+Tab/Enter, 3px ring, and filter restoration",
+    "Missing-drawer breadcrumb and recovery preserve filters",
+    "Downloaded html: drawercheck.html",
+    "Downloaded csv: drawercheck.csv",
+    "Downloaded text: drawercheck.txt",
+    "Example busy state and Cancel restore the shared button",
+    "Missing-file error summary and row-link focus",
+    "Seven local fake files selected; upload busy state and Cancel restore button",
+    "Real seven-file fake upload returned 18 leads",
+    "Reduced motion disables transitions; forced colors restores system scrollbar colors",
+    "Refresh resets to Start with results-not-saved explanation",
+    "Simulated 503 example failure displayed inline; Try again reran the real API and returned 18 leads"
+  ],
+  "focused": {
+    "role": "back-to-results",
+    "ring": "3px",
+    "style": "solid"
+  },
+  "nativeDate": "2026-09-03",
+  "filteredAddress": "#/results?date=2026-09-03&show=note",
+  "reducedMotionDuration": "0s",
+  "forcedColorsScrollbar": "auto",
+  "serverFailureAndRetry": "The example is temporarily unavailable. Try again.\n\nTry again"
+}

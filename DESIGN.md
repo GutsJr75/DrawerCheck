@@ -1,6 +1,12 @@
 # DrawerCheck design guide
 
-This guide covers two things: the M8 website and the existing M4 HTML report.
+This guide covers the website and the existing M4 HTML report. M10 block 1,
+authorized on 2026-10-26, applies the approved "Tick and tie" shared palette,
+fonts, type/spacing, logo, header, breadcrumbs, and footer. The M8 view
+structures remain until their later M10 blocks. See
+[REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
+
+The original M8 delivery history follows.
 M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in
 `src/drawercheck/static/app.css`. Block 2 added the Start view with the example
 tape and the Prepare files view with its checklist. Block 3 added Results and
@@ -74,72 +80,103 @@ practice, for this site:
 
 ### Colour
 
-The website reuses the report's marine teal so the site and the downloaded
-report feel like one product. Light and dark themes follow the visitor's system
-setting. Contrast ratios were calculated for each pair listed.
+The approved M10 "Tick and tie" identity uses pale ledger-green paper,
+blue-pen actions, red/amber review labels, and graphite Notes. Green has a
+written status meaning, never proof of an independently verified match.
+Light and dark follow the visitor's system setting. The report keeps its own
+marine-teal palette. The values below are the website's shared runtime tokens.
 
-| Token | Use | Light | Dark | Checked contrast (light / dark) |
+| Token | Use | Light | Dark | Contrast on surface (light / dark) |
 | --- | --- | --- | --- | --- |
-| `page` | Page background | `#edf3f5` | `#13262f` | |
-| `surface` | Panels, tables, inputs | `#ffffff` | `#1b333e` | |
-| `text` | Main text | `#162b35` | `#eff5f7` | 14.7:1 / 12.0:1 on surface |
-| `muted` | Supporting text | `#48636f` | `#b4cbd4` | 5.7:1 / 7.8:1, worst case |
-| `line` | Dividers only, never control edges | `#cedce1` | `#3a5662` | decorative |
-| `control` | Input and button borders | `#6b8792` | `#86a3ae` | 3.4:1 / 5.0:1, worst case |
-| `accent` | Main button, links, focus ring | `#076f78` | `#80d8d3` | 5.3:1 / 8.0:1, worst case |
-| `on-accent` | Text on the main button | `#ffffff` | `#0d2a30` | 5.9:1 / 9.1:1 |
-| `note` text / background | "Note" label | `#076f78` / `#e6f3f2` | `#80d8d3` / `#1e4148` | 5.2:1 / 6.7:1 |
-| `check` text / background | "Check" label | `#7a4d00` / `#fdf1dc` | `#ffd28a` / `#3b3122` | 6.5:1 / 9.0:1 |
-| `review` text / background | "Needs review" label | `#963a32` / `#fbeae8` | `#ffb2a8` / `#45292b` | 6.1:1 / 7.6:1 |
-| `ready` text / background | "Ready" file status | `#2d6a3e` / `#e6f2e9` | `#9ad8a8` / `#20402c` | 5.6:1 / 7.0:1 |
+| `page` | Ledger paper background | `#E8EEE5` | `#121A16` | |
+| `surface` | Sheets, inputs | `#FBFCF8` | `#1A2520` | |
+| `text` | Pine ink | `#1C2A23` | `#E5EDE6` | 14.5 / 13.2 |
+| `muted` | Supporting text | `#4E6157` | `#A8B9AE` | 6.4 / 7.7 |
+| `line` | Dividers only | `#C8D6C6` | `#33443B` | decorative |
+| `control` | Control borders, dashed tape rules | `#6E8476` | `#7F978A` | 3.9 / 5.0 |
+| `accent` | Blue pen: buttons, links, focus | `#2747A6` | `#A3B6FF` | 8.0 / 8.0 |
+| `on-accent` | Text on the main button | `#FFFFFF` | `#121A16` | 8.3 / 9.0 |
+| `review` / bg | Red pencil: Needs review, "Short" amounts | `#A3302A` / `#F8E6E2` | `#FF9E92` / `#3D2522` | 5.8 / 7.1 on bg |
+| `check` / bg | Amber pencil: Check | `#7A5200` / `#F6EAD0` | `#F0C26A` / `#3A3020` | 5.8 / 7.8 on bg |
+| `note` / bg | Graphite: Note | `#3D4E46` / `#E3EAE3` | `#C6D2CA` / `#27332D` | 7.2 / 8.4 on bg |
+| `ready` / bg | Tick green: labelled availability or no leads | `#2C6A44` / `#E0EFE3` | `#93D3A6` / `#1F3A2A` | 5.4 / 7.1 on bg |
 
-`accent` is the only decorative colour. The four status colours appear only on
-status labels and their related text, never as large fills or backgrounds.
-
-The demo notice reverses `text` and `surface` (14.7:1 light, 12.0:1 dark), so
-it needs no extra token: a dark strip in light mode and a light strip in dark
-mode. `tests/test_web_page.py` recalculates every pair above, plus this one,
-from the stylesheet, so a token change that breaks contrast fails the tests.
+The notice reverses `text` and `surface`. The contrast tests cover page and
+surface backgrounds, label backgrounds, errors, control edges, and the logo
+mark; the button hover/active pair uses `surface` on `text`. All pairs must
+meet their actual text or non-text threshold. This is a contrast check, not
+full accessibility certification.
 
 ### Typography
 
-- **Fonts:** IBM Plex Sans for text and IBM Plex Mono for money, served from the
-  site itself as WOFF2 files (regular and semibold, Latin subset), with their SIL
-  Open Font License included. No font is loaded from another website. Fallbacks:
-  `system-ui, -apple-system, "Segoe UI", Roboto, sans-serif` and
-  `ui-monospace, Menlo, Consolas, monospace`. Use `font-display: swap`.
-- **Font files:** the Latin1 WOFF2 files from IBM's GitHub releases
-  `@ibm/plex-sans@1.1.0` and `@ibm/plex-mono@2.5.0`, with IBM's own
-  `unicode-range` values. The four files total 78,660 bytes. The page preloads
-  the two Sans files; the browser fetches Mono only when money appears.
-- **Why Plex:** it reads clearly at small sizes, has a slightly technical,
-  ledger-like character that suits cash records, and looks the same on every
-  device, unlike the report's system fonts.
-- **Sizes:** 14, 16, 18, 20, 24, and 32 pixels (32 becomes 28 on phones). Body
-  text is 16 px with 1.5 line height; headings use 1.25. Keep paragraphs under
-  about 68 characters wide.
-- **Weights:** 400 for text, 600 for headings, labels, and key amounts. Use
-  sentence case everywhere; no all-capital labels.
-- **Money:** always IBM Plex Mono, right-aligned in columns, exactly as Python
-  formatted it, for example `$1,250.75` or `-$20.00`. Next to a signed
-  difference, also write the word: "Short", "Over", or "Balanced".
+- **Text:** Atkinson Hyperlegible Next. **Money:** Atkinson Hyperlegible Mono,
+  right-aligned and exactly as Python formatted it. Both are self-hosted Latin
+  variable WOFF2 fonts from Fontsource packages pinned to **5.3.0**, downloaded
+  on 2026-10-26. They support upright weights 200 through 800; the UI uses
+  400, 600, and 700. Body is 17 px / 1.55; headings use 700 / 1.2.
+- **Sizes:** 52 px Start title on desktop, 34 px on phones; other page titles
+  40 px on desktop, 30 px on phones; section titles 26 px, smaller headings
+  19 px; supporting copy 15 px and status labels 14 px. Keep prose under 68ch.
+- **Assets:** `atkinson-hyperlegible-next-latin-wght-normal.woff2` is 33,996
+  bytes; `atkinson-hyperlegible-mono-latin-wght-normal.woff2` is 17,752 bytes.
+  Total **51,748 bytes**. Preserve `LICENSE-next.txt` and `LICENSE-mono.txt`
+  with their original copyright notices and SIL OFL 1.1 text.
+- The page preloads the single Next file. Both font faces use `font-display:
+  swap`; Mono loads when amounts appear. Keep the existing system sans and
+  monospace fallbacks. No remote font or CSS requests at runtime.
+- These letterforms help distinguish similar characters. They do not replace
+  actual reading, narrow-screen, zoom, and assistive-technology checks.
+
+Font package sources (no package is installed as a runtime dependency):
+
+- [Next 5.3.0 archive](https://registry.npmjs.org/@fontsource-variable/atkinson-hyperlegible-next/-/atkinson-hyperlegible-next-5.3.0.tgz)
+- [Mono 5.3.0 archive](https://registry.npmjs.org/@fontsource-variable/atkinson-hyperlegible-mono/-/atkinson-hyperlegible-mono-5.3.0.tgz)
 
 ### Spacing, shape, and layout
 
-- **Spacing scale:** 4, 8, 12, 16, 24, 32, 48, and 64 px. Use nothing else.
-- **Corners:** 4 px on buttons, inputs, and labels; 8 px on panels. No pill
-  shapes.
-- **Depth:** separate areas with `line` borders and spacing. No drop shadows.
-- **Width:** content up to 1,120 px wide; side margins of 16 px on phones,
-  24 px on tablets, and 32 px on desktops.
-- **Breakpoints:** 640 px and 1,024 px. Below 640 px, results tables become
-  stacked rows, one review item per row.
-- **Focus ring:** 3 px solid `accent` with a 2 px gap, on every interactive
-  element. View headings, `main`, and the error summary receive focus from
-  scripts but are not controls, so they show no ring; a checklist row reached
-  from an error link keeps its ring so visitors can see where they landed.
-- **Transitions:** at most 150 ms on colour changes; none when reduced motion is
-  requested.
+- **Three spacing roles:** item 8 to 12 px; group 16 to 24 px; new topic
+  32 px on phones and 48 px on desktop, up to 64 px where a layout needs it.
+  `--space-item`, `--space-group`, and `--space-topic` adapt the existing
+  4/8/12/16/24/32/48/64 px scale. Headings stay near the content they introduce.
+- **Corners:** 4 px status labels, 8 px controls, 12 px sheets. No shadows.
+- **Width:** up to 1,200 px plus gutters; gutters 16/24/32 px at phone,
+  640 px, and 1,024 px. Existing columns retain their current breakpoints
+  until their M10 view blocks; the planned side column stacks below 960 px.
+- **Shell:** surface header with a decorative drawer-and-tick mark beside the
+  DrawerCheck home link. The top demo wording stays unchanged. Breadcrumbs
+  use an ordered list in a named navigation landmark, linked ancestors, and
+  plain current text marked `aria-current="page"`; slash separators are hidden
+  from assistive technology. Results ancestors keep the active filters.
+- **Footer:** one wrapping row with the learning-project and fictional-record
+  boundary, not-for-real-cash-control wording, file deletion, and source/report
+  links. Never fix its height or truncate its content to force one line.
+- **Focus:** 3 px accent ring with a 2 px gap. Keep view-heading focus on
+  navigation and the existing error-summary/row focus behavior.
+- **Scroll ownership:** document scrolling; optional tables scroll internally.
+  The root reserves its scrollbar gutter. Every owned scroll region uses
+  `control` on `surface`, with `muted` hover and `text` active thumbs where
+  supported. Use standards properties and a WebKit fallback; system colors
+  take over in forced-colors mode. Never hide scrollbars.
+- **Motion:** existing colour transitions are at most 150 ms and disabled for
+  reduced motion. No new animation ships in block 1. The proposed summary tick
+  animation belongs to the Results block, with a still reduced-motion state.
+
+### Runtime token ownership and mapping
+
+The existing CSS is the canonical runtime source (Model B). Edit the shared
+`:root`/dark-mode tokens in `static/app.css` once; this guide mirrors their
+accepted values and explains their use. There is no second theme adapter or
+front-end framework. `tests/test_web_page.py` recalculates contrast and checks
+local asset serving, font licences, package contents, and resource budgets.
+
+| Design rule | Runtime target | Shared consumers |
+| --- | --- | --- |
+| Palette roles in the table above | Same-named `--page`, `--text`, `--accent`, etc. | All four views and the shared shell |
+| Text and money fonts | `--font-sans`, `--font-mono`; local `@font-face` rules | Body, tables, tape, amounts |
+| Item/group/topic spacing | `--space-item`, `--space-group`, `--space-topic` | Shared breadcrumbs, section gaps, footer |
+| Label/control/sheet shape | `--radius-label`, `--radius-control`, `--radius-panel` | Statuses, buttons/inputs, sheets |
+| Native date filter and shared navigation | Existing `app.js` and native HTML select | Results, drawer links, breadcrumbs |
+| Scrollbars | Global CSS standards properties and pseudo-elements | Document and future overflow regions |
 
 ### Components
 
@@ -152,7 +189,7 @@ from the stylesheet, so a token change that breaks contrast fails the tests.
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
 | Filters | A native `select` and native radio buttons with `accent-color`, each with a visible label; no custom dropdown widget. The select drops its native look and draws its own arrow in the `text` colour, because WebKit ignores the 44 px height on native-looking selects. |
 | Demo notice placement | Inside the `header` landmark, above the wordmark row, so every piece of content belongs to a landmark. |
-| Favicon | `static/favicon.svg`: a teal till receipt with a torn edge and three lines, echoing the drawer tape. |
+| Favicon | `static/favicon.svg`: a drawer outline and green tick on pale paper, matching the decorative header mark. |
 | Downloads | Three labelled buttons under the facts: "Web page (.html)" as the main button, then "Spreadsheet (.csv)" and "Text (.txt)". |
 | Waiting | The busy button's own words, a Cancel button beside it, and after 5 seconds a sentence with a `control` left rule. Failures show in `review` text with a "Try again" button. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |
@@ -167,7 +204,7 @@ rather than by decoration. All numbers below are real values from the demo.
 ### The drawer tape (Drawer details)
 
 The calculation is shown like a till receipt or adding-machine tape: an
-operator column, a plain-language label, and the amount in Plex Mono. A rule
+operator column, a plain-language label, and the amount in Atkinson Hyperlegible Mono. A rule
 line separates the inputs from the result, and the result line is emphasised.
 
 ```text
@@ -246,7 +283,7 @@ details. Public labels are owned by `web.py`, messages by the Python rule, and
 the browser renders both through `app.js`; no new token, control, or calculation
 belongs in the browser for this rule.
 
-Built in block 3: the number is semibold at 24 px and the words stay at body
+The current M8 structure remains during M10 block 1: the number is semibold at 24 px and the words stay at body
 size on the same baseline, separated by thin `line` rules, so the row reads as
 a sentence rather than as stat cards. On phones the facts stack. A second line
 gives the leads by level as status labels with counts. Leads then follow in one

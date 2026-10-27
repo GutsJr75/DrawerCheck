@@ -29,7 +29,7 @@ drawercheck = [
     "static/*.js",
     "static/*.svg",
     "static/fonts/*.woff2",
-    "static/fonts/LICENSE.txt",
+    "static/fonts/LICENSE-*.txt",
 ]
 
 [tool.pytest.ini_options]

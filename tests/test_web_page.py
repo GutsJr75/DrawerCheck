@@ -130,8 +130,8 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
     )
     assert "| DrawerCheck" in text
     assert "Example data only. Do not upload real store records." in text
-    assert "It is not for real cash control." in text
-    assert "Uploaded files are checked and then deleted. Nothing is saved." in text
+    assert "Not for real cash control." in text
+    assert "Files are checked, then deleted. Nothing is saved." in text
     assert "Upload demo CSVs" in text
     assert (
         "Results disappear when you refresh or close this page. "
@@ -339,7 +339,7 @@ def test_stylesheet_fonts_are_local_and_served(client) -> None:
     assert all(
         url.startswith("data:image/svg+xml,") for url in every_url if url not in urls
     )
-    assert len(urls) == 4 and css.count("font-display: swap") == 4
+    assert len(urls) == 2 and css.count("font-display: swap") == 2
     page, _ = _page(client)
     preloads = {
         attrs["href"]
@@ -352,8 +352,12 @@ def test_stylesheet_fonts_are_local_and_served(client) -> None:
         with client.get(f"/static/{url}") as response:
             assert response.status_code == 200 and response.mimetype == "font/woff2"
             assert response.get_data()[:4] == b"wOF2"
-    license_text = (STATIC / "fonts" / "LICENSE.txt").read_text(encoding="utf-8")
-    assert "SIL Open Font License, Version 1.1" in license_text
+    for family in ("next", "mono"):
+        license_text = (STATIC / "fonts" / f"LICENSE-{family}.txt").read_text(
+            encoding="utf-8"
+        )
+        assert "SIL Open Font License, Version 1.1" in license_text
+        assert "Copyright" in license_text
 
 
 def test_static_files_meet_the_performance_budget() -> None:
@@ -444,6 +448,24 @@ def _themes() -> dict[str, dict[str, str]]:
     }
 
 
+def test_design_guide_matches_the_shared_colour_tokens() -> None:
+    """Keep the maintained design guide in sync with both runtime themes."""
+    guide = (ROOT / "DESIGN.md").read_text(encoding="utf-8")
+    table = guide.split("### Colour", 1)[1].split("### Typography", 1)[0]
+    documented: dict[str, dict[str, str]] = {"light": {}, "dark": {}}
+    for line in table.splitlines():
+        columns = [cell.strip() for cell in line.split("|")[1:-1]]
+        if not columns or not (match := re.match(r"`([a-z-]+)`", columns[0])):
+            continue
+        name = match.group(1)
+        for theme, column in (("light", 2), ("dark", 3)):
+            colours = re.findall(r"#[0-9a-fA-F]{6}", columns[column])
+            documented[theme][name] = colours[0].lower()
+            if len(colours) == 2:
+                documented[theme][name + "-bg"] = colours[1].lower()
+    assert documented == _themes()
+
+
 # WCAG 2.2 AA: 4.5:1 for text, 3:1 for control borders.
 CONTRAST_PAIRS = [
     ("text", "surface", 4.5),
@@ -463,6 +485,9 @@ CONTRAST_PAIRS = [
     ("review", "surface", 4.5),
     ("review", "page", 4.5),
     ("ready", "ready-bg", 4.5),
+    ("ready", "surface", 3),  # Decorative logo tick, kept legible anyway.
+    ("check", "surface", 4.5),
+    ("note", "surface", 4.5),
 ]
 
 

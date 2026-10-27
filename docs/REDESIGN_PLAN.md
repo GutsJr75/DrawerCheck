@@ -1,13 +1,14 @@
 # Visual redesign plan: "Tick and tie"
 
-**Status: finalized proposal, awaiting implementation approval.** Updated
-2026-10-26 after the user requested "Finalize the redesign plan first."
-That authorizes this documentation block only. M10 code has not started.
+**Status: M10 block 1 approved and completed locally on 2026-10-26.** The user
+approved the finalized proposal's next block before the remaining M9 rules.
+[Block 1 evidence](M10_BLOCK1.md) records the shared design changes, tests,
+Chrome checks, screenshots, and limitations. Block 2 awaits `next`.
 
-Recommended order: M10 first, then the remaining M9 blocks (R06 and R07).
-This proposed order takes effect only when the user approves M10. Until then,
-[DESIGN.md](../DESIGN.md) and [WEB_PLAN.md](WEB_PLAN.md) remain the contract for
-the current app. Update their affected sections during the authorized build.
+The sequence is M10, then M9 R06 and R07. [DESIGN.md](../DESIGN.md) and
+[WEB_PLAN.md](WEB_PLAN.md) describe the current app, including the new shell;
+this document specifies the later redesign work. Each future block needs its
+own continuation and updates the relevant current-contract sections.
 
 The private [concept canvas](https://claude.ai/artifact/4HZ3thdSfEQS3trS32zqBv#page-dcb81aee8d83)
 provides the visual starting point. The [archived review](screenshots/2026-10-26-redesign-concept-review/README.md)
@@ -326,7 +327,7 @@ styles. New summaries must agree with the core and reports.
 
 ## 6. Delivery as M10, one block at a time
 
-These are seven proposed work areas, with Results and Drawer details before
+These are seven planned work areas, with Results and Drawer details before
 Start-page polish. Target 30 to 60 minutes per block, not a guaranteed total.
 Split an area into smaller recorded blocks if needed; never drop checks to
 fit the estimate. Each authorized block ends with tests, both Ruff checks,
@@ -370,20 +371,20 @@ folder and a timeline entry. Never modify earlier screenshot folders.
   open from M8. Carry them forward honestly if unavailable; screenshots and
   automated checks are not substitutes or full accessibility certification.
 
-## 7. Approval and deferred work
+## 7. Authorization and deferred work
 
 The proposed package is the ledger palette, Atkinson fonts, grouped review
 flow, corrected wording, and the seven work areas above. Default scope excludes
 "Looked at" checkboxes and restyling the downloadable HTML report. Both can be
 requested later and are not prerequisites for this redesign.
 
-The next approval is **M10 block 1 under this plan, before the remaining M9
-rules**. Finalizing or committing this document is not that approval. After
-approval, implement block 1 only and stop for `next`; do not treat approval as
-permission to run all seven areas unattended. Once M10 is delivered, return to
-M9 R06, then R07, with their existing per-block review stops. New rules may
-change group membership, severity, and counts; the frontend must remain
-generic rather than relying on today's demo distribution.
+The user approved **M10 block 1 under this plan, before the remaining M9
+rules**, on 2026-10-26. That block is complete locally. **M10 block 2 (Results
+summary and layout) is next and awaits `next`.** Approval does not authorize
+running all seven areas unattended. Once M10 is delivered, return to M9 R06,
+then R07, with their existing per-block review stops. New rules may change
+group membership, severity, and counts; the frontend must remain generic
+rather than relying on today's demo distribution.
 
 ## Sources
 

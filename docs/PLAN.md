@@ -26,13 +26,17 @@
   Local verification passed 708 tests. The public example and seven-file fake
   upload both returned the expected 18 leads on 2026-10-26. See
   `docs/M9_BLOCK1.md` for exact checks and limits.
-  Wait for **next** before block 2 (R06).
-- **M10 redesign planning (2026-10-26):** the user requested a finalized plan,
-  not implementation. [REDESIGN_PLAN.md](REDESIGN_PLAN.md) now specifies the
-  proposed "Tick and tie" design, review corrections, data contract, and seven
-  work areas. The recommendation is M10 before the remaining M9 rules, pending
-  explicit approval of M10 block 1. "Looked at" ticks and report restyling are
-  deferred. Current app behavior and M9 progress are unchanged.
+  R06 and R07 remain unfinished; the approved M10 redesign comes first.
+- **M10 block 1 complete locally (authorized 2026-10-26):** after finalizing
+  [REDESIGN_PLAN.md](REDESIGN_PLAN.md), the user approved implementation of
+  block 1 before the remaining M9 rules. Shared ledger colours, self-hosted
+  Atkinson fonts, responsive type/spacing, logo, header, breadcrumbs, footer,
+  and scrollbar styles now apply to all views. Final local verification:
+  709 tests, both Ruff checks, and Chrome checks at 320/1,280 px in both themes.
+  [Block 1 evidence](M10_BLOCK1.md) records screenshots and audit limitations.
+  No new hosted CI or deployment result is claimed. Stop for **next** before
+  M10 block 2 (Results summary and layout). Review checkboxes and report
+  restyling remain deferred.
 
 How the scope grew:
 
@@ -84,7 +88,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M7: Web request handling | Optional Flask installation and shared pipeline; bounded uploads and isolated temporary runs; web error handling and in-process tests. | `src/drawercheck/web.py`, `pyproject.toml`, `errors.py`, `tests/test_web.py`, CI updates, `docs/WEB_PLAN.md` | The same demo or CSV data gives the same results through CLI and web. Failed and concurrent requests cannot leave shared data. Upload limits, cleanup, escaping, and report contents are tested. Stop before M8. |
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
-| M10: Proposed frontend redesign | Planning authorized 2026-10-26; implementation awaiting approval. Shared design, Results summary and grouping, Drawer details, Start, Prepare files, then verification. Recommended before M9 R06/R07 if approved. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. No automatic implementation from this planning entry. |
+| M10: Proposed frontend redesign | Block 1 authorized and completed locally 2026-10-26. Shared design done; Results summary and grouping, Drawer details, Start, Prepare files, then verification remain. M10 precedes M9 R06/R07. Stop for next before each further block. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. Block 1 evidence in docs/M10_BLOCK1.md; no automatic continuation to later blocks. |
 
 ## Intended structure
 
@@ -253,6 +257,9 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 71. **Start M9 in three reviewed blocks (authorized 2026-10-26).** The user explicitly asked to proceed with M9. Block 1 implements R03_TRANSPOSITION_HINT: use the magnitude of a known variance, require whole dollars at least $9 and divisible by 9, and return an info-level hint only. Both shortages and overages qualify; no floating-point arithmetic or proof of a specific typo is implied. Reuse Python rule evaluation, generic report rendering, server-owned public labels, and existing browser lead components. The unchanged demo inputs already contain qualifying $45 and $9 shortages, so their two extra notes raise the expected total to 18. Cover the requested +$27 example in a focused test instead of changing deterministic CSVs. Bump the saved policy version so old results cannot silently mix old and new rule sets. R06 and R07 remain subsequent blocks and are not implemented here; resolve R07's historical median details before that block.
 
 72. **Finalize the redesign proposal without starting M10 (planning authorized 2026-10-26).** The user requested "Finalize the redesign plan first." Preserve the proposed ledger palette, Atkinson fonts, and grouped drawer review, with the corrections in `docs/REDESIGN_PLAN.md`: compact Results, secondary downloads, separate drawer and whole-day counts, qualified tick wording, and filtering before grouping. Python supplies displayed counts and date labels; the browser only presents and navigates. Build Results and Drawer details before Start polish if M10 is approved. Defer optional review checkboxes and report restyling. Keep the existing calculation rules, resource caps, safe rendering, and no-outside-requests requirement. The archived concept review covers desktop light views only, not mobile, dark, interaction, or accessibility validation. The recommended M10-before-R06/R07 order remains a proposal; explicit M10 block 1 approval is required before code, then stop after each block for `next`.
+
+
+73. **Deliver M10 block 1 only (authorized 2026-10-26).** The user's "I give you my approval" approves the next block under the finalized redesign plan, before the remaining M9 rules. Apply the shared ledger palette, Atkinson fonts, responsive type/spacing, drawer-and-tick brand mark, surface header, wrapping footer, and breadcrumbs. Keep the existing views and calculations until their own blocks. Use two Fontsource 5.3.0 Latin variable fonts (51,748 bytes total), preload Next only, and ship each original licence through package data. Reuse the existing hash routing and back-to-results role in the shared breadcrumb macro, preserving filters and heading focus. The existing CSS remains the canonical token owner; DESIGN.md mirrors it, with a drift test. WEB_PLAN.md remains the behavior contract and the audit manifest points to it. Verified local browser evidence and the generic static audit's seven external-handler detection limitations are in docs/M10_BLOCK1.md. Stop for next before block 2; no push, deployment, rule changes, or optional review checkboxes are included.
 
 ## Math and test commitments
 

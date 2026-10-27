@@ -1,73 +1,51 @@
 /* DrawerCheck site styles. DESIGN.md lists every token and its checked contrast. */
 
-/* IBM Plex, Latin1 subsets from IBM's official releases (SIL OFL, see fonts/LICENSE.txt). */
+/* Atkinson Latin variable fonts, Fontsource 5.3.0. See fonts/LICENSE-*.txt. */
 @font-face {
-  font-family: "IBM Plex Sans";
+  font-family: "Atkinson Hyperlegible Next";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 200 800;
   font-display: swap;
-  src: url("fonts/IBMPlexSans-Regular-Latin1.woff2") format("woff2");
-  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153,
-    U+02C6, U+02DA, U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022,
-    U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
+  src: url("fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "IBM Plex Sans";
+  font-family: "Atkinson Hyperlegible Mono";
   font-style: normal;
-  font-weight: 600;
+  font-weight: 200 800;
   font-display: swap;
-  src: url("fonts/IBMPlexSans-SemiBold-Latin1.woff2") format("woff2");
-  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153,
-    U+02C6, U+02DA, U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022,
-    U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
-}
-
-@font-face {
-  font-family: "IBM Plex Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("fonts/IBMPlexMono-Regular-Latin1.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153, U+02C6, U+02DA,
-    U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030,
-    U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
-}
-
-@font-face {
-  font-family: "IBM Plex Mono";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("fonts/IBMPlexMono-SemiBold-Latin1.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153, U+02C6, U+02DA,
-    U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+2030,
-    U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
+  src: url("fonts/atkinson-hyperlegible-mono-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* Light theme. tests/test_web_page.py recalculates contrast for these values. */
 :root {
   color-scheme: light dark;
-  --page: #edf3f5;
-  --surface: #ffffff;
-  --text: #162b35;
-  --muted: #48636f;
-  --line: #cedce1;
-  --control: #6b8792;
-  --accent: #076f78;
+  --page: #e8eee5;
+  --surface: #fbfcf8;
+  --text: #1c2a23;
+  --muted: #4e6157;
+  --line: #c8d6c6;
+  --control: #6e8476;
+  --accent: #2747a6;
   --on-accent: #ffffff;
-  --note: #076f78;
-  --note-bg: #e6f3f2;
-  --check: #7a4d00;
-  --check-bg: #fdf1dc;
-  --review: #963a32;
-  --review-bg: #fbeae8;
-  --ready: #2d6a3e;
-  --ready-bg: #e6f2e9;
+  --note: #3d4e46;
+  --note-bg: #e3eae3;
+  --check: #7a5200;
+  --check-bg: #f6ead0;
+  --review: #a3302a;
+  --review-bg: #f8e6e2;
+  --ready: #2c6a44;
+  --ready-bg: #e0efe3;
 
-  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto,
+  --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto,
     sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas, monospace;
 
   /* Spacing scale: 4, 8, 12, 16, 24, 32, 48, and 64 px at the default text size. */
   --space-1: 0.25rem;
@@ -79,33 +57,37 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
-  --radius-control: 4px;
-  --radius-panel: 8px;
+  --radius-label: 4px;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  --space-item: var(--space-2);
+  --space-group: var(--space-5);
+  --space-topic: var(--space-6);
   --gutter: 16px;
   /* The drop-down arrow, drawn in the theme's text colour. */
-  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23162b35' stroke-width='2'/%3E%3C/svg%3E");
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231c2a23' stroke-width='2'/%3E%3C/svg%3E");
 }
 
 /* Dark theme, following the visitor's system setting. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #13262f;
-    --surface: #1b333e;
-    --text: #eff5f7;
-    --muted: #b4cbd4;
-    --line: #3a5662;
-    --control: #86a3ae;
-    --accent: #80d8d3;
-    --on-accent: #0d2a30;
-    --note: #80d8d3;
-    --note-bg: #1e4148;
-    --check: #ffd28a;
-    --check-bg: #3b3122;
-    --review: #ffb2a8;
-    --review-bg: #45292b;
-    --ready: #9ad8a8;
-    --ready-bg: #20402c;
-    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23eff5f7' stroke-width='2'/%3E%3C/svg%3E");
+    --page: #121a16;
+    --surface: #1a2520;
+    --text: #e5ede6;
+    --muted: #a8b9ae;
+    --line: #33443b;
+    --control: #7f978a;
+    --accent: #a3b6ff;
+    --on-accent: #121a16;
+    --note: #c6d2ca;
+    --note-bg: #27332d;
+    --check: #f0c26a;
+    --check-bg: #3a3020;
+    --review: #ff9e92;
+    --review-bg: #3d2522;
+    --ready: #93d3a6;
+    --ready-bg: #1f3a2a;
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23e5ede6' stroke-width='2'/%3E%3C/svg%3E");
   }
 }
 
@@ -119,6 +101,7 @@
 @media (min-width: 64em) {
   :root {
     --gutter: 32px;
+    --space-topic: var(--space-7);
   }
 }
 
@@ -141,34 +124,34 @@ body {
   background: var(--page);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1.0625rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 h1,
 h2,
 h3 {
   margin: 0 0 var(--space-4);
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 h1 {
-  font-size: 1.75rem;
+  font-size: 1.875rem;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.625rem;
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: 1.1875rem;
 }
 
 @media (min-width: 40em) {
   h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 }
 
@@ -202,7 +185,7 @@ h1[tabindex="-1"]:focus,
 /* Layout */
 .wrap {
   width: 100%;
-  max-width: calc(1120px + 2 * var(--gutter));
+  max-width: calc(1200px + 2 * var(--gutter));
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -235,11 +218,12 @@ h1[tabindex="-1"]:focus,
   max-width: none;
   margin: 0;
   padding-block: var(--space-2);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
 }
 
 .site-header {
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 
@@ -252,6 +236,10 @@ h1[tabindex="-1"]:focus,
 }
 
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
   color: var(--text);
   font-size: 1.25rem;
   font-weight: 600;
@@ -264,14 +252,9 @@ h1[tabindex="-1"]:focus,
 
 main {
   flex: 1 0 auto;
-  padding-block: var(--space-6) var(--space-7);
+  padding-block: var(--space-topic);
 }
 
-@media (min-width: 64em) {
-  main {
-    padding-block: var(--space-7) var(--space-8);
-  }
-}
 
 .lead {
   font-size: 1.125rem;
@@ -279,7 +262,7 @@ main {
 
 .hint {
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .money {
@@ -404,7 +387,7 @@ main {
   display: inline-block;
   padding: 0 var(--space-2);
   border: 1px solid transparent;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-label);
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.5;
@@ -527,7 +510,7 @@ main {
 .tape-code {
   display: block;
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 400;
 }
 
@@ -573,7 +556,7 @@ main {
 .tape-figure figcaption {
   margin-top: var(--space-5);
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 /* Prepare files view */
@@ -649,13 +632,13 @@ main {
 
 .file-size {
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .file-about {
   grid-area: about;
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .file-problem {
@@ -663,7 +646,7 @@ main {
   max-width: none;
   margin: var(--space-2) 0 0;
   color: var(--review);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
 }
 
@@ -671,7 +654,7 @@ main {
   grid-area: example;
   justify-self: start;
   padding-block: var(--space-1);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 /* Results: plain facts on one line, then leads ordered by level. */
@@ -712,7 +695,7 @@ main {
 .severity-intro {
   margin-right: var(--space-2);
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .severity-count {
@@ -758,7 +741,7 @@ main {
 .lead-meta {
   margin: 0;
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .lead-open {
@@ -768,7 +751,7 @@ main {
 
 .lead-drawers {
   margin: var(--space-2) 0 0;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .lead-drawers a {
@@ -806,7 +789,7 @@ main {
   display: block;
   margin-bottom: var(--space-1);
   padding: 0;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
 }
 
@@ -857,7 +840,7 @@ main {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .data-table caption {
@@ -933,7 +916,7 @@ main {
   max-width: 16rem;
   margin: var(--space-1) 0 var(--space-2);
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 400;
 }
 
@@ -962,7 +945,7 @@ main {
 
 .count-sheet thead th {
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
 }
 
@@ -1014,10 +997,11 @@ main {
 }
 
 .site-footer {
+  background: var(--surface);
   border-top: 1px solid var(--line);
   padding-block: var(--space-5) var(--space-6);
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .site-footer p {
@@ -1028,7 +1012,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1) var(--space-5);
-  margin: var(--space-3) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -1037,6 +1021,128 @@ main {
 .footer-links a {
   display: inline-block;
   padding-block: var(--space-1);
+}
+
+
+/* The drawer-and-tick mark is decorative; the adjacent word names the link. */
+.brand-mark {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-tick {
+  stroke: var(--ready);
+}
+
+/* Breadcrumbs describe the view hierarchy, with the current view as plain text. */
+.breadcrumbs {
+  margin-bottom: var(--space-group);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-item);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumbs li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-item);
+  min-width: 0;
+}
+
+.breadcrumbs a,
+.breadcrumbs [aria-current] {
+  display: inline-block;
+  min-height: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.view > h2,
+.view > #day-leads-block {
+  margin-top: var(--space-topic);
+}
+
+#start-heading {
+  font-size: 2.125rem;
+}
+
+@media (min-width: 40em) {
+  #start-heading {
+    font-size: 3.25rem;
+  }
+}
+
+.site-footer > .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-group);
+}
+
+.site-footer p {
+  flex: 1 1 38rem;
+  max-width: none;
+  margin: 0;
+}
+
+/* Every app-owned scroll region inherits this baseline. Never hide scrollbars. */
+html {
+  scrollbar-gutter: stable;
+}
+
+* {
+  scrollbar-color: var(--control) var(--surface);
+  scrollbar-width: auto;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid var(--surface);
+  border-radius: var(--radius-control);
+  background: var(--control);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--text);
+}
+
+@media (forced-colors: active) {
+  * {
+    scrollbar-color: auto;
+  }
+}
+
+.button:active {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--surface);
 }
 
 @media (prefers-reduced-motion: reduce) {

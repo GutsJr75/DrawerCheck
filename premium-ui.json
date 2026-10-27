@@ -1,0 +1,11 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["src/drawercheck"],
+  "locale": "en-US",
+  "canonicalMap": "docs/WEB_PLAN.md",
+  "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar"],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "typed"
+  }
+}

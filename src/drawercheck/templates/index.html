@@ -6,8 +6,7 @@
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A learning demo that compares a closing cash count with the register's records, using fictional data.">
   <title>Check a cash drawer | DrawerCheck</title>
-  <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-Regular-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="{{ url_for('static', filename='fonts/IBMPlexSans-SemiBold-Latin1.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ url_for('static', filename='fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
   <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
   <script src="{{ url_for('static', filename='app.js') }}" defer></script>
@@ -31,6 +30,15 @@
     </tbody>
   </table>
   {%- endmacro %}
+  {% macro breadcrumbs(current, from_results=false) -%}
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="#/">Start</a></li>
+      {% if from_results %}<li><span aria-hidden="true">/</span><a href="#/results" data-role="back-to-results">Results</a></li>{% endif %}
+      <li><span aria-hidden="true">/</span><span aria-current="page">{{ current }}</span></li>
+    </ol>
+  </nav>
+  {%- endmacro %}
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header">
     <div class="notice">
@@ -39,7 +47,14 @@
       </div>
     </div>
     <div class="wrap">
-      <a class="wordmark" href="#/">DrawerCheck</a>
+      <a class="wordmark" href="#/">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect x="3" y="11" width="26" height="18" rx="3"/>
+          <path d="M12 20h8"/>
+          <path class="brand-tick" d="m9 7 5 5L25 3"/>
+        </svg>
+        DrawerCheck
+      </a>
     </div>
   </header>
   <main id="main" class="wrap" tabindex="-1">
@@ -89,7 +104,7 @@
     </section>
 
     <section id="view-prepare" class="view view-narrow" aria-labelledby="prepare-heading" data-title="Prepare your files | DrawerCheck" hidden>
-      <a class="back-link" href="#/">Back to start</a>
+      {{ breadcrumbs("Prepare files") }}
 
       <div class="error-summary" id="error-summary" tabindex="-1" hidden>
         <div role="alert">
@@ -153,6 +168,7 @@
     </section>
 
     <section id="view-results" class="view" aria-labelledby="results-heading" data-title="Results | DrawerCheck" data-announce="Results are ready." hidden>
+      {{ breadcrumbs("Results") }}
       <h1 id="results-heading" tabindex="-1">Results</h1>
       <p class="lead" id="results-range" data-template="Records from {from} to {to}."></p>
 
@@ -288,7 +304,7 @@
     </section>
 
     <section id="view-drawer" class="view" aria-labelledby="drawer-heading" data-title-template="Drawer {code} | DrawerCheck" hidden>
-      <a class="back-link" href="#/results" data-role="back-to-results">Back to results</a>
+      {{ breadcrumbs("Drawer details", from_results=true) }}
       <h1 id="drawer-heading" tabindex="-1" data-template="Drawer {code}"></h1>
       <p class="lead" id="drawer-about"
          data-template="Register {register} on {date}. Cashier ID {cashier}."
@@ -366,6 +382,7 @@
     </section>
 
     <section id="view-missing" class="view" aria-labelledby="missing-heading" data-title="Drawer not found | DrawerCheck" hidden>
+      {{ breadcrumbs("Drawer not found", from_results=true) }}
       <h1 id="missing-heading" tabindex="-1">This drawer is not in the current results</h1>
       <p class="lead" id="missing-code" data-template="No drawer with the code {code} was checked in these results. The address may come from another check."></p>
       <a class="button button-secondary" href="#/results" data-role="back-to-results">Back to results</a>
@@ -373,11 +390,10 @@
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>DrawerCheck is a personal learning project that uses fictional records. It is not for real cash control.</p>
-      <p>Uploaded files are checked and then deleted. Nothing is saved.</p>
+      <p>A personal learning project. Fictional records only. Not for real cash control. Files are checked, then deleted. Nothing is saved.</p>
       <ul class="footer-links">
-        <li><a href="https://github.com/GutsJr75/DrawerCheck">Source code on GitHub</a></li>
-        <li><a href="https://github.com/GutsJr75/DrawerCheck/blob/main/examples/sample_report.html">Example report on GitHub</a></li>
+        <li><a href="https://github.com/GutsJr75/DrawerCheck">Source code<span class="visually-hidden"> on GitHub</span></a></li>
+        <li><a href="https://github.com/GutsJr75/DrawerCheck/blob/main/examples/sample_report.html">Example report<span class="visually-hidden"> on GitHub</span></a></li>
       </ul>
     </div>
   </footer>
