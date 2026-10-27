@@ -6,8 +6,8 @@
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
   [drawercheck.onrender.com](https://drawercheck.onrender.com).
-- **Verified on GitHub:** [run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
-  passed for repair commit `332f01b` on Python 3.12, 3.13, and 3.14, including
+- **Verified on GitHub:** [run 40426134663](https://github.com/GutsJr75/DrawerCheck/actions/runs/40426134663)
+  passed for M9 block 1 commit `c5af7a4` on Python 3.12, 3.13, and 3.14, including
   optional web/server tests. Inspected on 2026-10-26; no hosted result is
   claimed for the later documentation commit.
 - **Block 6 deployment follow-up closed:** user-supplied Render screenshots
@@ -22,9 +22,11 @@
   and `docs/LEARNING_LOG.md`.
 - **M9 authorized (2026-10-26):** build optional rules in three contained blocks:
   R03 swapped-digit hint, R06 no safe drop, then R07 unusual refunds/voids with
-  a shortage. Block 1 (R03) is locally complete with 708 passing tests, updated
-  demo/report expectations, and new screenshots. See `docs/M9_BLOCK1.md`.
-  Wait for **next** before block 2 (R06). No M9 push or deployment is claimed.
+  a shortage. Block 1 (R03) is complete, pushed, passing on GitHub, and live.
+  Local verification passed 708 tests. The public example and seven-file fake
+  upload both returned the expected 18 leads on 2026-10-26. See
+  `docs/M9_BLOCK1.md` for exact checks and limits.
+  Wait for **next** before block 2 (R06).
 
 How the scope grew:
 

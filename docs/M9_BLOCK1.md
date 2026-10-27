@@ -1,6 +1,7 @@
 # M9 block 1: possible swapped digits
 
-Authorized and verified locally on 2026-10-26. M9 is split into three blocks:
+Authorized and verified locally on 2026-10-26. Hosted CI and public HTTP checks
+were subsequently observed the same day; see the follow-up below. M9 is split into three blocks:
 R03, R06, and R07. This block completes R03 only. Stop for review before R06.
 
 ## Behavior and scope
@@ -72,10 +73,10 @@ or unrelated control rewrite was introduced to silence the tool.
 
 ## Limits and next block
 
-No M9 push, hosted CI result, Render setting change, or deployment is claimed.
-The last independently verified hosted run is for M8 repair commit 332f01b.
-The last verified public M8 demo has 16 leads until an updated deployment is
-observed. The 18-lead source and sample are locally verified.
+At the end of the implementation session, M9 had not been pushed or deployed
+by the agent, and only local results were claimed. The subsequent hosted and
+public checks below replace that pending status. The agent made no Render
+setting change or deployment during either verification session.
 
 No new full accessibility, cross-browser, light-theme, zoom, capacity, or Render
 memory audit was run. Earlier M8 evidence remains historical. A real screen
@@ -84,3 +85,36 @@ reader and the user-deferred friend usability check remain open.
 Next, after **next**, implement R06 (high cash sales with no recorded safe
 drop) using the existing example threshold. R07 needs its historical median
 details settled before its later block. No R06 or R07 rule is registered here.
+
+## Public verification follow-up, 2026-10-26
+
+The user subsequently pushed and deployed M9 block 1. Independently inspected
+GitHub Actions [run 40426134663](https://github.com/GutsJr75/DrawerCheck/actions/runs/40426134663)
+for `c5af7a4ad4818a7d136b4e36159c2d8459c7eb66`: completed successfully.
+Python 3.12, 3.13, and 3.14 all passed lint, formatting, core tests, installed
+CLI help, and optional web/server tests. The run began at 00:23:56 UTC on
+2026-10-27, which is 17:23:56 PDT on 2026-10-26. This run verifies the
+implementation commit, not this later documentation update.
+
+The following live checks were run on 2026-10-26 against
+`https://drawercheck.onrender.com`, using Python's standard-library HTTPS
+client and only the repository's fictional demo files:
+
+| Request or check | Observed result |
+| --- | --- |
+| `GET /` | HTTP 200; exact expected Content-Security-Policy, Cache-Control, Referrer-Policy, and X-Content-Type-Options values; current upload label and refresh reminder present. |
+| `POST /api/demo` | HTTP 200; 60 drawers, 4 needing review, 18 leads, 2 bank-deposit lead days; severities 4 info, 7 warn, and 7 review. |
+| R03 labels and flags | Public label "Possible swapped digits"; exactly two info hints for 2026-09-08-R2 and 2026-09-18-R1; both messages say "Hint only." |
+| Seven `GET /examples/<file>` downloads | HTTP 200; every file matched its `data/demo` repository bytes. |
+| `POST /api/check` with all seven demo CSVs | HTTP 200; all response fields other than generation timestamp and reports matched the built-in example exactly. |
+| Reports in both API responses | HTML, text, and CSV contain R03 and "Hint only."; each CSV has 18 lead rows, exactly two of them R03. |
+
+These are direct HTTP and response-content checks. No new browser interaction,
+download-button, accessibility, or real-screen-reader check is claimed. No
+deliberate timeout, traffic-capacity, or Render memory test was performed.
+The API exhibits the expected R03 behavior; no authenticated Render dashboard
+was inspected during this follow-up.
+
+Decision 71 remains unchanged: the brief's +$27 over example is covered by a
+focused rule test, while the deterministic demo CSVs stay unchanged. This is a
+documented test-data choice, not a missing scenario or an unfinished feature.

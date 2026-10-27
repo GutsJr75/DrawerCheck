@@ -19,9 +19,10 @@ provided on that screen. Use fictional data only.
 Results disappear when you refresh or close the page. Download a report to keep
 a copy. The free server may take about a minute to wake up after inactivity.
 
-**M9 block 1:** the updated local example produces 18 leads, including two
-possible swapped-digit hints. This change has not been deployed by this agent;
-the last verified public M8 version produced 16. R06 and R07 are later blocks.
+**M9 block 1 is live:** the public example produces 18 leads, including two
+possible swapped-digit hints. The live example and seven-file synthetic upload
+were checked on 2026-10-26; see [verification evidence](docs/M9_BLOCK1.md#public-verification-follow-up-2026-10-26).
+R06 and R07 are later blocks.
 
 ## Why I am building it
 
@@ -35,14 +36,14 @@ in a job interview.
 | Part | Status |
 | --- | --- |
 | Command-line tool: imports, checks, explanations, and reports | Done |
-| Seven review rules, including the R03 swapped-digit heuristic | Built; R03 verified locally, deployment pending |
+| Seven review rules, including the R03 swapped-digit heuristic | Done; R03 verified locally, on GitHub, and live |
 | Web request layer, website screens, public hosting, and documentation | Delivered through M8 block 7; live at [drawercheck.onrender.com](https://drawercheck.onrender.com) |
 | Remaining optional rules (R06, R07) | Later M9 blocks; stop for review after each block |
 
-**Automated checks:** [GitHub Actions run 40085196045](https://github.com/GutsJr75/DrawerCheck/actions/runs/40085196045)
-for repair commit `332f01b` passed on Python 3.12, 3.13, and 3.14, including
+**Automated checks:** [GitHub Actions run 40426134663](https://github.com/GutsJr75/DrawerCheck/actions/runs/40426134663)
+for M9 block 1 commit `c5af7a4` passed on Python 3.12, 3.13, and 3.14, including
 both Ruff checks and the optional web/server tests. This run was inspected on
-2026-10-26; it does not test the later documentation commit. The badge above
+2026-10-26; it does not test this later documentation update. The badge above
 shows GitHub's most recent result. The [M8 checklist](docs/M8_CHECKLIST.md)
 separates observed checks, user-reported checks, and remaining validation.
 A real screen-reader session and a usability check with a new participant

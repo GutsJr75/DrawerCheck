@@ -2,8 +2,8 @@
 
 DrawerCheck is a personal learning project with fictional data. These notes
 describe the implemented command-line core and public website through M8,
-plus the locally verified M9 block 1 R03 heuristic. The updated local example
-has 18 leads; the last verified public M8 version has 16 until redeployment.
+plus the M9 block 1 R03 heuristic, verified locally, on GitHub, and live. The
+public example and synthetic upload both returned 18 leads on 2026-10-26.
 [Open the public demo](https://drawercheck.onrender.com), or use the
 offline sample report if the free server is waking up. The
 [core checklist](CORE_CHECKLIST.md) and [M8 checklist](M8_CHECKLIST.md) record
@@ -96,7 +96,8 @@ The first five also form a short practice set for a code walkthrough.
 8. **Is the website built or the project fully deployed?**
    Yes, the public learning demo is on Render. It supports the example, seven
    demo CSV uploads, drawer explanations, filters, and three report formats.
-   Repair commit `332f01b` passed hosted checks on Python 3.12, 3.13, and 3.14.
+   M9 block 1 commit `c5af7a4` passed hosted checks on Python 3.12, 3.13, and
+   3.14 in [run 40426134663](https://github.com/GutsJr75/DrawerCheck/actions/runs/40426134663).
    Deployment screenshots confirm two sync workers. The
    [M8 checklist](M8_CHECKLIST.md) records the live checks and their evidence.
    The free server can sleep, and no public run history is saved. This does not

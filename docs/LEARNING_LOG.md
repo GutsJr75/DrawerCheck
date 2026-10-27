@@ -1126,3 +1126,28 @@ No further feature milestone is started.
 See [M9 block 1 evidence](M9_BLOCK1.md) and the new screenshot timeline row.
 No hosted CI, push, deployment, or fresh full accessibility audit is claimed.
 R06 and R07 are later blocks. Stop here for review and **next** before R06.
+
+## M9 block 1: published verification records (2026-10-26)
+
+- Built: Refreshed current deployment statements in README, plan, web plan,
+  interview notes, and M9 evidence after the user pushed and deployed R03.
+  Linked passing hosted run 40426134663 and recorded today's direct public
+  HTTP checks. Runtime code, tests, demo CSVs, and decision 71 are unchanged.
+- Learned: "Deployment pending" must be refreshed after actual hosted and
+  public results are observed. A live API check establishes its response
+  behavior without claiming a fresh browser or accessibility pass.
+- Interview question: How would you distinguish a passing CI run from evidence
+  that the deployed application is actually serving the new behavior?
+
+GitHub run 40426134663 for `c5af7a4` was independently observed passing on
+Python 3.12/3.13/3.14, including both Ruff checks, core tests, CLI help, and
+optional web/server tests. On the public URL, the homepage passed its four
+header checks, the example and seven-file synthetic upload both returned the
+expected 18-lead results, all seven example downloads matched repository bytes,
+and the three report contents included R03. Exact results and limits are in
+[the public follow-up](M9_BLOCK1.md#public-verification-follow-up-2026-10-26).
+The +$27 over case remains deliberately covered by a focused rule test rather
+than added to the unchanged demo data. Documentation link/punctuation checks,
+`git diff --check`, and both local Ruff checks passed. The test suite was not
+rerun for this documentation-only correction. No new push or deployment was
+performed by the agent; no new browser screenshot was taken. R06 has not begun.
