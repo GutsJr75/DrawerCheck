@@ -1,0 +1,92 @@
+{
+  "checks": [
+    {
+      "case": "full-run",
+      "drawers": [
+        "2026-09-03-R1",
+        "2026-09-08-R2",
+        "2026-09-25-R1",
+        "2026-09-27-R2",
+        "2026-09-05-R1",
+        "2026-09-09-R1",
+        "2026-09-12-R1",
+        "2026-09-14-R1",
+        "2026-09-18-R1"
+      ],
+      "days": [
+        "2026-09-16",
+        "2026-09-21"
+      ],
+      "headings": [
+        "Needs review (4 drawers)",
+        "Whole-day leads (2 dates)",
+        "Check (5 drawers)"
+      ],
+      "leads": 18,
+      "outcomes": [
+        {
+          "code": "2026-09-03-R1",
+          "amount": "-$20.00",
+          "status": "Short"
+        },
+        {
+          "code": "2026-09-08-R2",
+          "amount": "-$45.00",
+          "status": "Short"
+        },
+        {
+          "code": "2026-09-25-R1",
+          "amount": "unknown",
+          "status": "Missing records"
+        },
+        {
+          "code": "2026-09-27-R2",
+          "amount": "$0.44",
+          "status": "Balanced (within $1.00)"
+        },
+        {
+          "code": "2026-09-05-R1",
+          "amount": "-$6.00",
+          "status": "Short"
+        },
+        {
+          "code": "2026-09-09-R1",
+          "amount": "-$8.00",
+          "status": "Short"
+        },
+        {
+          "code": "2026-09-12-R1",
+          "amount": "$5.00",
+          "status": "Over"
+        },
+        {
+          "code": "2026-09-14-R1",
+          "amount": "-$7.00",
+          "status": "Short"
+        },
+        {
+          "code": "2026-09-18-R1",
+          "amount": "-$9.00",
+          "status": "Short"
+        }
+      ]
+    },
+    {
+      "case": "all-date-and-level-combinations",
+      "combinations": 48
+    },
+    {
+      "case": "mixed-level-note-keyboard-back-and-breadcrumb",
+      "address": "#/results?date=2026-09-03&show=note",
+      "focus": {
+        "className": "drawer-title",
+        "ring": "3px"
+      }
+    },
+    {
+      "case": "invalid-filter-normalization-and-lazy-more-detail",
+      "drawers": 60
+    }
+  ],
+  "errors": []
+}

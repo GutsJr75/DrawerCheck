@@ -228,6 +228,7 @@ def test_results_reading_order_and_download_emphasis(client) -> None:
         "leads-heading",
         "lead-list",
         "downloads-heading",
+        "more-detail-heading",
         "day-details",
     ]
     assert [name for name in ids if name in expected] == expected
@@ -237,6 +238,27 @@ def test_results_reading_order_and_download_emphasis(client) -> None:
     assert all(
         "button-secondary" in attrs["class"] and "button-primary" not in attrs["class"]
         for attrs in buttons
+    )
+
+
+def test_results_detail_previews_and_group_units(client) -> None:
+    """Optional tables keep plain previews; grouped headings distinguish drawers and dates."""
+    page, text = _page(client)
+    group = next(attrs for tag, attrs in page.tags if attrs.get("id") == "lead-list")
+    assert group["role"] == "group"
+    assert group["aria-labelledby"] == "leads-heading"
+    assert group["data-drawers-one"] == "drawer"
+    assert group["data-drawers-many"] == "drawers"
+    assert group["data-dates-one"] == "date"
+    assert group["data-dates-many"] == "dates"
+    assert "Matching drawers" in group.values()
+    previews = [
+        attrs for tag, attrs in page.tags if attrs.get("class") == "help-preview"
+    ]
+    assert len(previews) == 4
+    assert all("open" not in attrs for tag, attrs in page.tags if tag == "details")
+    assert (
+        "More detail" in text and "Every drawer, including those without leads." in text
     )
 
 

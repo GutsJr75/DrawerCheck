@@ -1,0 +1,68 @@
+{
+  "checks": [
+    {
+      "case": "grouped-leads-appearance",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-grouped-light-1280.png"
+    },
+    {
+      "case": "grouped-phone-appearance",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-grouped-dark-320.png"
+    },
+    {
+      "case": "whole-day-rule-disclosure",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-day-rule-dark-320.png"
+    },
+    {
+      "case": "more-detail-appearance",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-more-detail-light-1280.png"
+    },
+    {
+      "case": "mixed-note-appearance",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-mixed-note-dark-320.png"
+    },
+    {
+      "case": "filtered-full-report-downloads",
+      "formats": [
+        "html",
+        "csv",
+        "text"
+      ]
+    },
+    {
+      "case": "clean-settled-tick",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-clean-settled-dark-320.png"
+    },
+    {
+      "case": "both-busy-and-cancel",
+      "passed": true
+    },
+    {
+      "case": "503-real-retry-reduced-motion-and-forced-colors",
+      "passed": true
+    },
+    {
+      "case": "refresh-recovery",
+      "passed": true
+    }
+  ],
+  "downloads": [
+    {
+      "kind": "html",
+      "path": "/tmp/drawercheck-block3-report.html",
+      "expectedSha256": "e11c2ad066ff7454c857494c2a5d2f9bbed6f15ac5ae5d750da3c68867014540",
+      "matched": true
+    },
+    {
+      "kind": "csv",
+      "path": "/tmp/drawercheck-block3-report.csv",
+      "expectedSha256": "4297343396c28bbd8d4b506157b2c5a7cf04d7d18428ad5079545b0470efec1c",
+      "matched": true
+    },
+    {
+      "kind": "text",
+      "path": "/tmp/drawercheck-block3-report.text",
+      "expectedSha256": "93a52012a1da05809893d927c704193e2f55c952674236c7210071658cd0a1ae",
+      "matched": true
+    }
+  ]
+}

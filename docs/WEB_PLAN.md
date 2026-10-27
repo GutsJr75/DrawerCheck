@@ -11,8 +11,13 @@
 - **M10 block 2 complete locally (authorized 2026-10-26):** Results now uses
   a Full run summary, secondary downloads, and a responsive side column.
   Python supplies separate drawer/day counts and weekday date labels,
-  including overnight clock dates. The list stays flat until block 3.
+  including overnight clock dates. That block kept the list flat.
   See [block 2 evidence](M10_BLOCK2.md). Stop for `next` before grouping.
+- **M10 block 3 complete locally (authorized 2026-10-27):** matching leads
+  group by unique drawer and whole-day date. Unfiltered sections use server
+  counts; filtered sections retain full-run drawer order and overall levels
+  without counts. More detail contains closed disclosures with previews.
+  See [block 3 evidence](M10_BLOCK3.md). Stop for `next` before Drawer details.
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -345,6 +350,39 @@ This supersedes the historical M8 plain-facts layout described above.
   uses this lookup without date arithmetic or the visitor's timezone.
 - Reports, core calculations, response/upload limits, and transient retention
   remain unchanged. Regression tests cover count invariants and date coverage.
+
+### M10 block 3 grouping contract (2026-10-27)
+
+This replaces the flat-list portion of the block 2 contract above.
+
+- Unfiltered section order is Needs review, Whole-day leads, Check, then Note,
+  omitting empty sections. Each unique drawer appears once under its highest
+  own lead level, ordered by date/code within that level. Whole-day leads from
+  any rule group by date and sort by date.
+- Drawer titles link to existing encoded drawer addresses and show register
+  and server-labelled date. One visible code distinguishes same-register,
+  same-date shifts. Render Python's exact difference and status, including
+  unknown values, open/missing records, and balanced amounts with record leads.
+- Keep every lead's original title/message/level. Drawer rule codes stay on
+  Drawer details. Whole-day rule codes remain available in native disclosures;
+  date groups link once to existing drawers, with no bank-only drawer links.
+- Filter leads first, then group matches. Preserve the unfiltered drawer order
+  and highest overall level in filtered groups. Use Matching drawers followed
+  by matching Whole-day leads, without section counts. Full-run summary and
+  downloaded reports stay unchanged. Status text describes filters in words.
+- Preserve history replacement for filter changes, Back, breadcrumbs, heading
+  focus, invalid-address normalization, and refresh recovery. Accept only own
+  supported level keys, so values such as constructor normalize to All.
+- Drawer details shows all own/day leads when reached from a filtered group.
+  A shared lead-row renderer keeps titles, messages, labels, and rule access
+  consistent; date/drawer context is supplied once by the existing page header.
+- No-leads runs hide the queue heading and filters, retaining the qualified
+  message, all-drawers disclosure, and report downloads. No matches retains
+  filter selections and offers Show all leads. Notes-only and day-only runs work.
+- More detail contains closed lead counts, day totals, cashier totals, and all
+  drawers, each with a visible preview. The three tables still render lazily.
+- Next-drawer navigation, a new Drawer title/outcome strip, and zero-count-row
+  controls remain block 4 work, not part of this authorization.
 
 ### Data the screens need from Python
 

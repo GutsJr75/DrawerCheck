@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "value": "constructor",
+      "normalized": "#/results"
+    },
+    {
+      "value": "toString",
+      "normalized": "#/results"
+    },
+    {
+      "value": "__proto__",
+      "normalized": "#/results"
+    },
+    {
+      "value": "unknown",
+      "normalized": "#/results"
+    },
+    {
+      "value": "",
+      "normalized": "#/results"
+    },
+    {
+      "case": "missing-drawer-recovery",
+      "passed": true
+    }
+  ]
+}

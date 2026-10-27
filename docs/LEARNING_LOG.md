@@ -1251,3 +1251,36 @@ See [block 2 evidence](M10_BLOCK2.md) for raw records and limits.
 
 No new hosted CI, deployment, WebKit/zoom, screen-reader, unfamiliar-user, or
 OS-popup keyboard pass is claimed. Stop for `next` before M10 block 3 grouping.
+
+## M10 block 3: grouped Results (2026-10-27)
+
+- Built: Grouped Results by unique drawer and whole-day date, with server-counted
+  severity sections, linked human titles, exact outcomes, filter-aware ordering,
+  rule-code disclosures, More detail previews, and required empty states.
+  Reused one lead-row renderer and retained full reports and core calculations.
+- Learned: Filter leads before grouping, then use each drawer's full-run level
+  and order so lower-level notes remain findable. A visible unique code matters
+  when register/date titles repeat. Native disclosure toggle events need time
+  to fire before checking lazily rendered rows. Shared rendering keeps the
+  fixed code budget viable; only 557 bytes remain for later blocks.
+- Interview question: How can a filter show a matching note without losing the
+  higher-priority context of the drawer it belongs to?
+
+Final checks: 717 pytest tests passed in 13.63 seconds with local-socket
+permission; the targeted page suite passed 20 tests. Both Ruff checks and
+`git diff --check` passed. Chrome checked the 20-case view/theme/width matrix,
+48 date/level combinations, exact grouping and outcomes, keyboard/Back and
+breadcrumb restoration, seven synthetic upload cases, all report hashes under
+filters, both Cancel flows, error/retry, reduced motion, forced colors, and
+refresh recovery. Unsupported object-property filter names normalize safely.
+
+Combined CSS/JS is 59,443 bytes; fonts remain 51,748 bytes. The combined workload
+returns 8,620,061 bytes under the unchanged 10 MB cap. A first budget check
+failed while both list implementations existed; final shared-row cleanup passes.
+The generic strict audit retains its seven external-handler detection findings;
+actual button behavior passed. DESIGN.md lint had zero errors and one existing
+Markdown-only warning. There are 34 new dated screenshots, with initial and
+mid-animation captures retained. See [block 3 evidence](M10_BLOCK3.md).
+
+No new hosted CI, deployment, WebKit/zoom, OS-popup keyboard, screen-reader, or
+unfamiliar-user pass is claimed. Stop for `next` before M10 block 4, Drawer details.

@@ -3,8 +3,9 @@
 This guide covers the website and the existing M4 HTML report. M10 block 1,
 authorized on 2026-10-26, applies the approved "Tick and tie" shared palette,
 fonts, type/spacing, logo, header, breadcrumbs, and footer. M10 block 2 adds the
-Full run Results slip and responsive review/sidebar layout. The other M8 view
-structures remain until their later M10 blocks. See
+Full run Results slip and responsive review/sidebar layout. Block 3, authorized
+on 2026-10-27, groups the review list by drawer and whole-day date and adds
+More detail previews. Other M8 view structures remain until their later blocks. See
 [REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
 
 The original M8 delivery history follows.
@@ -294,12 +295,34 @@ that order. There is only one set of controls. DOM and keyboard order put
 filters before review links and downloads after them, with no positive tabindex.
 Use the existing native select, radio group, buttons, status labels, and hints.
 
-The lead list remains flat during block 2. Grouping, severity section counts,
-and the complete More detail treatment belong to block 3. Results rows still
-show the Python title/message, date, drawer or whole-day scope, and rule code.
-M9's "Possible swapped digits" Notes retain their "Hint only" wording and the
-shared Note treatment in both Results and Drawer details. All money, counts,
-rule labels, and date wording remain Python-owned.
+M10 block 3 groups individual leads into one ruled sheet per level. Unfiltered
+sections appear as Needs review, Whole-day leads, Check, and Note, omitting
+empty sections. Drawer headings use Python's disjoint highest-level counts;
+whole-day headings use its distinct date count. Each drawer appears once,
+ordered by highest own level, date, and unique code. A linked human title and
+one visible drawer code distinguish multiple shifts on the same register/date.
+Python's exact difference and status sit beside the title on wide screens and
+wrap below it on phones. Unknown is never rendered as zero.
+
+Nested rows retain each lead's own level, title, and unchanged Python message.
+A shared `leadRow` helper serves grouped Results and the existing Drawer
+lead lists. Drawer details retains rule codes, with its header supplying date
+and drawer context rather than repeating that context on every row. Results
+omits drawer rule codes; whole-day leads keep theirs in native disclosures.
+Whole-day groups link to that date's drawers once, and bank-only dates get no
+invented drawer links.
+
+Filter individual leads before grouping. Keep the full-run drawer order and
+highest overall level when showing matching leads, even when a Note belongs
+to a Needs review drawer. Filtered headings say Matching drawers and Whole-day
+leads without counts. Full run stays unchanged. With no leads, hide the queue
+heading and filters but retain the qualified message, downloads, and all drawers.
+
+The sidebar headings are Show, Keep a copy, and What the levels mean. Below the
+review area, More detail introduces four closed native disclosures: lead counts,
+day totals, cashier totals, and all drawers, each with a plain preview. Tables
+still fill only when opened. No new tokens, controls, or reconciliation math
+are introduced. M9's swapped-digit Notes retain their Hint only wording.
 
 ## What to avoid
 

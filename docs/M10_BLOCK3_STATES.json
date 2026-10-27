@@ -1,0 +1,250 @@
+{
+  "checks": [
+    {
+      "case": "clean",
+      "summary": {
+        "deposit_lead_days": 0,
+        "drawer_leads_total": 0,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 0,
+          "warn": 0
+        },
+        "drawers_checked": 1,
+        "drawers_needing_review": 0,
+        "drawers_with_leads": 0,
+        "drawers_without_leads": 1,
+        "leads_by_severity": {
+          "info": 0,
+          "review": 0,
+          "warn": 0
+        },
+        "leads_total": 0,
+        "whole_day_lead_days": 0,
+        "whole_day_leads_total": 0
+      },
+      "groups": [],
+      "outcomes": [],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-clean-dark-320.png"
+    },
+    {
+      "case": "notes",
+      "summary": {
+        "deposit_lead_days": 0,
+        "drawer_leads_total": 1,
+        "drawers_by_highest_severity": {
+          "info": 1,
+          "review": 0,
+          "warn": 0
+        },
+        "drawers_checked": 1,
+        "drawers_needing_review": 0,
+        "drawers_with_leads": 1,
+        "drawers_without_leads": 0,
+        "leads_by_severity": {
+          "info": 1,
+          "review": 0,
+          "warn": 0
+        },
+        "leads_total": 1,
+        "whole_day_lead_days": 0,
+        "whole_day_leads_total": 0
+      },
+      "groups": [
+        "Note (1 drawer)"
+      ],
+      "outcomes": [
+        {
+          "code": "FAKE-1",
+          "amount": "$1.00",
+          "status": "Balanced (within $1.00)"
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-notes-dark-320.png"
+    },
+    {
+      "case": "day-only",
+      "summary": {
+        "deposit_lead_days": 0,
+        "drawer_leads_total": 0,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 0,
+          "warn": 0
+        },
+        "drawers_checked": 1,
+        "drawers_needing_review": 0,
+        "drawers_with_leads": 0,
+        "drawers_without_leads": 1,
+        "leads_by_severity": {
+          "info": 0,
+          "review": 1,
+          "warn": 0
+        },
+        "leads_total": 1,
+        "whole_day_lead_days": 1,
+        "whole_day_leads_total": 1
+      },
+      "groups": [
+        "Whole-day leads (1 date)"
+      ],
+      "outcomes": [],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-day-only-dark-320.png"
+    },
+    {
+      "case": "bank-only",
+      "summary": {
+        "deposit_lead_days": 1,
+        "drawer_leads_total": 0,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 0,
+          "warn": 0
+        },
+        "drawers_checked": 0,
+        "drawers_needing_review": 0,
+        "drawers_with_leads": 0,
+        "drawers_without_leads": 0,
+        "leads_by_severity": {
+          "info": 1,
+          "review": 0,
+          "warn": 0
+        },
+        "leads_total": 1,
+        "whole_day_lead_days": 1,
+        "whole_day_leads_total": 1
+      },
+      "groups": [
+        "Whole-day leads (1 date)"
+      ],
+      "outcomes": [],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-bank-only-dark-320.png"
+    },
+    {
+      "case": "missing",
+      "summary": {
+        "deposit_lead_days": 0,
+        "drawer_leads_total": 7,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 3,
+          "warn": 0
+        },
+        "drawers_checked": 3,
+        "drawers_needing_review": 3,
+        "drawers_with_leads": 3,
+        "drawers_without_leads": 0,
+        "leads_by_severity": {
+          "info": 0,
+          "review": 7,
+          "warn": 0
+        },
+        "leads_total": 7,
+        "whole_day_lead_days": 0,
+        "whole_day_leads_total": 0
+      },
+      "groups": [
+        "Needs review (3 drawers)"
+      ],
+      "outcomes": [
+        {
+          "code": "FAKE-1",
+          "amount": "-$200.00",
+          "status": "Short"
+        },
+        {
+          "code": "FAKE-2",
+          "amount": "unknown",
+          "status": "Missing records"
+        },
+        {
+          "code": "FAKE-3",
+          "amount": "unknown",
+          "status": "Still open"
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-missing-dark-320.png"
+    },
+    {
+      "case": "balanced-problem",
+      "summary": {
+        "deposit_lead_days": 0,
+        "drawer_leads_total": 2,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 2,
+          "warn": 0
+        },
+        "drawers_checked": 2,
+        "drawers_needing_review": 2,
+        "drawers_with_leads": 2,
+        "drawers_without_leads": 0,
+        "leads_by_severity": {
+          "info": 0,
+          "review": 2,
+          "warn": 0
+        },
+        "leads_total": 2,
+        "whole_day_lead_days": 0,
+        "whole_day_leads_total": 0
+      },
+      "groups": [
+        "Needs review (2 drawers)"
+      ],
+      "outcomes": [
+        {
+          "code": "FAKE-1",
+          "amount": "$0.00",
+          "status": "Balanced (within $1.00)"
+        },
+        {
+          "code": "FAKE-2",
+          "amount": "$0.00",
+          "status": "Balanced (within $1.00)"
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-balanced-problem-dark-320.png"
+    },
+    {
+      "case": "long",
+      "summary": {
+        "deposit_lead_days": 2,
+        "drawer_leads_total": 2,
+        "drawers_by_highest_severity": {
+          "info": 2,
+          "review": 0,
+          "warn": 0
+        },
+        "drawers_checked": 2,
+        "drawers_needing_review": 0,
+        "drawers_with_leads": 2,
+        "drawers_without_leads": 0,
+        "leads_by_severity": {
+          "info": 2,
+          "review": 2,
+          "warn": 0
+        },
+        "leads_total": 4,
+        "whole_day_lead_days": 2,
+        "whole_day_leads_total": 2
+      },
+      "groups": [
+        "Whole-day leads (2 dates)",
+        "Note (2 drawers)"
+      ],
+      "outcomes": [
+        {
+          "code": "FAKE <drawer & path/#?> XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX0",
+          "amount": "$1.00",
+          "status": "Balanced (within $1.00)"
+        },
+        {
+          "code": "FAKE <drawer & path/#?> XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
+          "amount": "$1.00",
+          "status": "Balanced (within $1.00)"
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-27-m10-block3/2026-10-27-m10-block3-results-long-dark-320.png"
+    }
+  ]
+}

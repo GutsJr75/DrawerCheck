@@ -187,7 +187,7 @@
 
       <div class="results-layout">
         <div class="filters" id="filters">
-          <h2>Filter leads</h2>
+          <h2>Show</h2>
           <div class="field">
             <label for="filter-date">Date</label>
             <select id="filter-date" data-all="All dates"></select>
@@ -200,26 +200,27 @@
 
         <div class="review-main">
           <h2 id="leads-heading">Review leads</h2>
-          <p class="hint">A lead is something in the records worth checking. It is not a finding about anyone. Leads that need review come first.</p>
+          <p class="hint" id="leads-intro">A lead is something in the records worth checking. It is not a finding about anyone.</p>
           <p class="hint" id="filter-status" aria-live="polite"
              data-all="Showing all leads."
              data-level="Showing leads marked {level}."
              data-date="Showing all leads on {date}."
              data-both="Showing leads marked {level} on {date}."></p>
-          <ol class="lead-list" id="lead-list" aria-labelledby="leads-heading"
-              data-whole-day="Whole day"
-              data-drawer-template="Drawer {code}"
-              data-rule-template="Rule {code}"
-              data-open-text="Open drawer details"
-              data-day-drawers="Drawers on {date}:"></ol>
-          <p id="no-leads" hidden>No leads were found in these records.</p>
+          <div id="lead-list" role="group" aria-labelledby="leads-heading"
+              data-whole-day="Whole-day leads" data-matching="Matching drawers"
+              data-title="Register {register}, {date}" data-difference="Difference"
+              data-drawers="{level} ({count} {unit})" data-drawers-one="drawer" data-drawers-many="drawers"
+              data-dates="{level} ({count} {unit})" data-dates-one="date" data-dates-many="dates"
+              data-drawer-template="Drawer {code}" data-rule-template="Rule {code}"
+              data-rule-label="Rule code" data-day-drawers="Drawers on {date}:"></div>
+          <p id="no-leads" hidden>No leads found by these checks.</p>
           <div id="no-matches" hidden>
             <p>No leads match these filters.</p>
             <a class="button button-secondary" href="#/results" data-role="clear-filters">Show all leads</a>
           </div>
         </div>
         <div class="downloads" role="group" aria-labelledby="downloads-heading">
-          <h2 id="downloads-heading" class="downloads-heading">Download the full report</h2>
+          <h2 id="downloads-heading" class="downloads-heading">Keep a copy</h2>
           <div class="actions">
             <button type="button" class="button button-secondary" data-report="html">Web page (.html)</button>
             <button type="button" class="button button-secondary" data-report="csv">Spreadsheet (.csv)</button>
@@ -229,7 +230,7 @@
         </div>
 
         <details class="help levels-help">
-          <summary>What do Note, Check, and Needs review mean?</summary>
+          <summary>What the levels mean</summary>
           <dl class="definitions">
             <dt>Needs review</dt>
             <dd>A person should look at these records and recount the cash where possible.</dd>
@@ -241,13 +242,14 @@
         </details>
       </div>
 
+      <h2 id="more-detail-heading">More detail</h2>
       <details class="help">
-        <summary>Lead counts for the full run</summary>
+        <summary>Lead counts for the full run<span class="help-preview">Lead totals, separate from drawer counts.</span></summary>
         <p><span data-fact="leads_total"></span> <span data-one="lead total:" data-many="leads total:"></span> <span id="severity-chips"></span></p>
       </details>
 
       <details class="help" id="day-details">
-        <summary>Totals by day</summary>
+        <summary>Totals by day<span class="help-preview">Drawers and expected bank deposit by date.</span></summary>
         <div class="table-scroll" role="region" aria-labelledby="day-caption" tabindex="0">
           <table class="data-table" id="day-table">
             <caption id="day-caption">Drawers and expected bank deposit for each day</caption>
@@ -269,7 +271,7 @@
       </details>
 
       <details class="help" id="cashier-details">
-        <summary>Totals by cashier</summary>
+        <summary>Totals by cashier<span class="help-preview">Known differences and missing records by cashier ID.</span></summary>
         <p class="hint">These totals describe records, not people. They include every known difference, even small ones counted as balanced. Drawers with missing records or still open are left out of the money totals.</p>
         <div class="table-scroll" role="region" aria-labelledby="cashier-caption" tabindex="0">
           <table class="data-table" id="cashier-table">
@@ -292,7 +294,7 @@
       </details>
 
       <details class="help" id="drawer-list-details">
-        <summary>All drawers</summary>
+        <summary>All drawers<span class="help-preview">Every drawer, including those without leads.</span></summary>
         <p class="hint">Every drawer in these results, including balanced ones. Open any drawer to see its calculation.</p>
         <div class="table-scroll" role="region" aria-labelledby="drawer-list-caption" tabindex="0">
           <table class="data-table" id="drawer-table">

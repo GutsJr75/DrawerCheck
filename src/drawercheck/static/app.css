@@ -777,22 +777,18 @@ main {
   padding: var(--space-4);
 }
 
+.lead-item > .status {
+  justify-self: start;
+}
+
 .lead-item + .lead-item {
   border-top: 1px solid var(--line);
 }
 
 @media (min-width: 40em) {
   .lead-item {
-    grid-template-columns: 8rem minmax(0, 1fr) auto;
+    grid-template-columns: 8rem minmax(0, 1fr);
     align-items: baseline;
-  }
-
-  .review-main .lead-item {
-    grid-template-columns: 7rem minmax(0, 1fr);
-  }
-
-  .review-main .lead-open {
-    grid-column: 2;
   }
 }
 
@@ -811,11 +807,6 @@ main {
   font-size: 0.9375rem;
 }
 
-.lead-open {
-  justify-self: start;
-  white-space: nowrap;
-}
-
 .lead-drawers {
   margin: var(--space-2) 0 0;
   font-size: 0.9375rem;
@@ -823,6 +814,93 @@ main {
 
 .lead-drawers a {
   margin-right: var(--space-3);
+}
+
+/* Each ruled sheet groups unique drawers; nested rows are individual leads. */
+.lead-section + .lead-section {
+  margin-top: var(--space-topic);
+}
+
+.lead-section h3 {
+  margin-bottom: var(--space-3);
+}
+
+.group-list,
+.group-leads {
+  padding: 0;
+  list-style: none;
+}
+
+.group-list {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+}
+
+.drawer-group {
+  padding: var(--space-5);
+  overflow-wrap: anywhere;
+}
+
+.drawer-group + .drawer-group {
+  border-top: 1px solid var(--line);
+}
+
+.group-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.group-heading > div {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.drawer-group h4 {
+  margin: 0 0 var(--space-item);
+  font-size: 1.1875rem;
+  line-height: 1.4;
+}
+
+.drawer-title {
+  display: inline-block;
+  min-height: 1.5rem;
+}
+
+.group-outcome {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.group-leads {
+  margin: var(--space-group) 0 0;
+}
+
+.group-lead + .group-lead {
+  margin-top: var(--space-group);
+}
+
+.group-lead .lead-body {
+  display: inline;
+}
+
+.group-lead strong {
+  margin-left: var(--space-item);
+}
+
+.rule-detail {
+  margin-top: var(--space-item);
+}
+
+.help-preview {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-weight: 400;
 }
 
 /* Sidebar controls follow the list in the narrow-screen reading order. */

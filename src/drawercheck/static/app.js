@@ -59,6 +59,7 @@
   const showSeverity = { all: null, review: "review", check: "warn", note: "info" };
   let results = null;
   let sortedLeads = [];
+  let drawerGroups = new Map();
   let leadDates = new Set();
   let shiftsByCode = new Map();
   let shiftsByDate = new Map();
@@ -123,8 +124,6 @@
     }
     return `${(bytes / 1000000).toFixed(2)} MB`;
   }
-
-  // Addresses: #/, #/prepare, #/results?date=&show=, and #/drawer/<code>.
 
   function drawerAddress(code) {
     return `#/drawer/${encodeURIComponent(code)}`;
@@ -233,10 +232,7 @@
     showView(address.view, { focus: !initial });
   }
 
-  // Requests, with Cancel, the slow-start notice, and the time limit.
-
   async function send(url, requestBody, signal) {
-    // Resolves to {payload} on success, or {error, status} for anything else.
     let response;
     try {
       response = await fetch(url, { method: "POST", body: requestBody, signal });
@@ -322,7 +318,6 @@
   }
 
   function handledStop(outcome, button, box, retry) {
-    // True when the request stopped early and there is nothing more to show.
     if (outcome.stopped === "cancel") {
       announce(announcer.dataset.stopped);
       button.focus();
@@ -331,8 +326,6 @@
     }
     return Boolean(outcome.stopped);
   }
-
-  // Results.
 
   function amountCell(value) {
     // Amounts arrive formatted from Python; "unknown" and other words stay in the body font.
@@ -348,7 +341,6 @@
   }
 
   function sortLeads(flags) {
-    // Needs review first, then by date and drawer; the server's order is kept otherwise.
     return [...flags].sort(
       (first, second) =>
         severityOrder.indexOf(first.severity) - severityOrder.indexOf(second.severity) ||
@@ -357,41 +349,108 @@
     );
   }
 
-  function leadItem(flag, shiftCode, openable) {
-    const item = element("li", "lead-item");
-    const level = element("div", "lead-level");
-    level.append(levelLabel(flag.severity));
-    const leadBody = element("div", "lead-body");
-    const place = shiftCode
-      ? fill(leadList.dataset.drawerTemplate, { code: shiftCode })
-      : leadList.dataset.wholeDay;
-    leadBody.append(
-      element("h3", "lead-title", results.labels.rules[flag.rule_code] ?? flag.rule_code),
+  function groupLeads(flags, key) {
+    const groups = new Map();
+    for (const flag of flags) {
+      if (!groups.has(flag[key])) groups.set(flag[key], []);
+      groups.get(flag[key]).push(flag);
+    }
+    return groups;
+  }
+
+  function leadRow(flag, scope) {
+    const row = element("li", scope === "drawer" ? "lead-item" : "group-lead");
+    const content = element("div", "lead-body");
+    content.append(
+      element("strong", "lead-title", results.labels.rules[flag.rule_code] ?? flag.rule_code),
       element("p", "lead-message", flag.message),
-      element(
-        "p",
-        "lead-meta",
-        `${formatDate(flag.business_date)}. ${place}. ${fill(leadList.dataset.ruleTemplate, { code: flag.rule_code })}.`,
-      ),
     );
-    const sameDay = shiftsByDate.get(flag.business_date) ?? [];
-    if (openable && !shiftCode && sameDay.length > 0) {
-      // Whole-day leads link to the drawers on that date; bank-only dates have none.
-      const drawers = element(
-        "p",
-        "lead-drawers",
-        `${fill(leadList.dataset.dayDrawers, { date: formatDate(flag.business_date) })} `,
-      );
-      drawers.append(...sameDay.map((code) => link(code, drawerAddress(code))));
-      leadBody.append(drawers);
+    if (scope === "day") {
+      const detail = element("details", "help rule-detail");
+      detail.append(element("summary", "", leadList.dataset.ruleLabel), element("p", "", flag.rule_code));
+      content.append(detail);
+    } else if (scope === "drawer") {
+      content.append(element("p", "lead-meta", fill(leadList.dataset.ruleTemplate, { code: flag.rule_code })));
     }
-    item.append(level, leadBody);
-    if (openable && shiftCode && shiftsByCode.has(shiftCode)) {
-      const open = link(leadList.dataset.openText, drawerAddress(shiftCode), "lead-open");
-      open.append(element("span", "visually-hidden", ` ${shiftCode}`));
-      item.append(open);
+    row.append(levelLabel(flag.severity), content);
+    return row;
+  }
+
+  function drawerGroup(code, flags) {
+    const item = shiftsByCode.get(code);
+    const row = element("li", "drawer-group");
+    row.dataset.drawer = code;
+    const heading = element("div", "group-heading");
+    const title = element("h4");
+    const open = link(fill(leadList.dataset.title, {
+      register: item.shift.register_id, date: formatDate(item.shift.business_date),
+    }), drawerAddress(code), "drawer-title");
+    open.append(element("span", "visually-hidden", ` ${code}`));
+    title.append(open);
+    const about = element("div");
+    about.append(title, element("p", "lead-meta", fill(leadList.dataset.drawerTemplate, { code })),
+      levelLabel(worstSeverity(drawerGroups.get(code))));
+    const outcome = element("p", "group-outcome");
+    outcome.append(
+      element("span", "hint", leadList.dataset.difference),
+      element("strong", /^-?\$/.test(item.variance_amount) ? "money" : "", item.variance_amount),
+      element("span", "", results.labels.statuses[item.status]),
+    );
+    heading.append(about, outcome);
+    const leads = element("ul", "group-leads");
+    leads.append(...flags.map(flag => leadRow(flag, "group")));
+    row.append(heading, leads);
+    return row;
+  }
+
+  function dayGroup(date, flags) {
+    const row = element("li", "drawer-group");
+    row.dataset.day = date;
+    row.append(element("h4", "", formatDate(date)));
+    const leads = element("ul", "group-leads");
+    leads.append(...flags.map(flag => leadRow(flag, "day")));
+    row.append(leads);
+    const codes = shiftsByDate.get(date) ?? [];
+    if (codes.length) {
+      const drawers = element("p", "lead-drawers", `${fill(leadList.dataset.dayDrawers, { date: formatDate(date) })} `);
+      drawers.append(...codes.map(code => link(code, drawerAddress(code))));
+      row.append(drawers);
     }
-    return item;
+    return row;
+  }
+
+  function renderGroups(shown, filtered) {
+    // Match leads first; retain each drawer's full-run order and highest level.
+    const matching = groupLeads(shown.filter(flag => flag.shift_id !== null), "shift_code");
+    const days = groupLeads(shown.filter(flag => flag.shift_id === null), "business_date");
+    const ordered = [...drawerGroups.keys()].filter(code => matching.has(code));
+    leadList.replaceChildren();
+    // Section counts come from Python and appear only without filters.
+    function section(label, rows, count, unit) {
+      if (!rows.length) return;
+      const panel = element("div", "lead-section");
+      const title = element("h3", "", filtered ? label : fill(leadList.dataset[unit], {
+        level: label, count: count.toLocaleString("en-US"),
+        unit: leadList.dataset[unit + (count === 1 ? "One" : "Many")],
+      }));
+      const list = element("ol", "group-list");
+      list.append(...rows);
+      panel.append(title, list);
+      leadList.append(panel);
+    }
+    const dayRows = [...days].sort(([first], [second]) => first.localeCompare(second)).map(([date, flags]) => dayGroup(date, flags));
+    if (filtered) {
+      section(leadList.dataset.matching, ordered.map(code => drawerGroup(code, matching.get(code))));
+      section(leadList.dataset.wholeDay, dayRows);
+    } else {
+      for (const severity of severityOrder) {
+        const codes = ordered.filter(code => worstSeverity(drawerGroups.get(code)) === severity);
+        section(results.labels.severities[severity],
+          codes.map(code => drawerGroup(code, matching.get(code))),
+          results.summary.drawers_by_highest_severity[severity], "drawers");
+        if (severity === "review") section(leadList.dataset.wholeDay, dayRows, results.summary.whole_day_lead_days, "dates");
+      }
+    }
   }
 
   function renderSummary() {
@@ -418,10 +477,7 @@
           levelLabel(severity),
           ` ${results.summary.leads_by_severity[severity].toLocaleString("en-US")}`,
         );
-        if (index < severityOrder.length - 1) {
-          // Spoken separator; the gap between labels is enough on screen.
-          chip.append(element("span", "visually-hidden", ","));
-        }
+        if (index < severityOrder.length - 1) chip.append(", ");
         return chip;
       }),
     );
@@ -453,7 +509,6 @@
   }
 
   function changeFilters() {
-    // Changing a filter replaces the address, so Back does not step through filters.
     const address = resultsAddress(dateSelect.value, selectedShow());
     history.replaceState(null, "", address);
     applyFilters(new URLSearchParams(address.split("?")[1] ?? ""));
@@ -462,7 +517,7 @@
   function applyFilters(params) {
     let date = params.get("date") ?? "";
     let show = params.get("show") ?? "all";
-    if (!(show in showSeverity)) {
+    if (!Object.hasOwn(showSeverity, show)) {
       show = "all";
     }
     if (date && !leadDates.has(date)) {
@@ -483,9 +538,11 @@
     const shown = sortedLeads.filter(
       (flag) => (!date || flag.business_date === date) && (!severity || flag.severity === severity),
     );
-    leadList.replaceChildren(...shown.map((flag) => leadItem(flag, flag.shift_code, true)));
+    renderGroups(shown, Boolean(date || severity));
     const noneAtAll = sortedLeads.length === 0;
     filters.hidden = noneAtAll;
+    document.getElementById("leads-heading").hidden = noneAtAll;
+    document.getElementById("leads-intro").hidden = noneAtAll;
     leadList.hidden = shown.length === 0;
     noLeads.hidden = !noneAtAll;
     noMatches.hidden = noneAtAll || shown.length > 0;
@@ -560,7 +617,6 @@
     );
   }
 
-  // The day, cashier, and drawer tables fill when first opened, so large uploads show quickly.
   const lazyTables = [
     [document.getElementById("day-details"), fillDayTable],
     [document.getElementById("cashier-details"), fillCashierTable],
@@ -570,6 +626,7 @@
   function showResults(payload) {
     results = payload;
     sortedLeads = sortLeads(payload.flags);
+    drawerGroups = groupLeads(sortedLeads.filter(flag => flag.shift_id !== null), "shift_code");
     leadDates = new Set(payload.flags.map((flag) => flag.business_date));
     shiftsByCode = new Map(payload.shifts.map((item) => [item.shift.shift_code, item]));
     shiftsByDate = new Map();
@@ -594,7 +651,6 @@
   }
 
   function downloadReport(name) {
-    // The report text is already in the page, so the server keeps no files.
     const report = results.reports[name];
     const url = URL.createObjectURL(
       new Blob([report.content], { type: `${report.media_type};charset=utf-8` }),
@@ -607,10 +663,7 @@
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  // Drawer details.
-
   function clockTime(timestamp, businessDate) {
-    // Show only the time, plus the date when a shift crosses midnight.
     const time = timestamp.slice(11, 16);
     const day = timestamp.slice(0, 10);
     return day === businessDate ? time : `${formatDate(day)} ${time}`;
@@ -649,7 +702,6 @@
     for (const [line, value] of Object.entries(amounts)) {
       drawerTape.querySelector(`[data-line="${line}"] td`).textContent = value;
     }
-    // Each drawer opens with its line meanings closed.
     for (const term of drawerTape.querySelectorAll("details")) {
       term.open = false;
     }
@@ -679,7 +731,6 @@
     countSheet.tBodies[0].replaceChildren(
       ...shift.counts.map((count) => {
         const row = element("tr");
-        // The bill or coin labels its row, so it lines up with its heading on the left.
         const denomination = element("th", "money", count.denomination);
         denomination.scope = "row";
         row.append(
@@ -697,11 +748,11 @@
       item.status === "open" ? countMissing.dataset.open : countMissing.dataset.none;
 
     drawerLeads.replaceChildren(
-      ...sortLeads(item.flags).map((flag) => leadItem(flag, shift.shift_code, false)),
+      ...sortLeads(item.flags).map((flag) => leadRow(flag, "drawer")),
     );
     drawerLeads.hidden = item.flags.length === 0;
     drawerNoLeads.hidden = item.flags.length > 0;
-    dayLeads.replaceChildren(...sortLeads(item.daily_flags).map((flag) => leadItem(flag, "", false)));
+    dayLeads.replaceChildren(...sortLeads(item.daily_flags).map((flag) => leadRow(flag, "drawer")));
     dayLeadsBlock.hidden = item.daily_flags.length === 0;
 
     limitsText.textContent =
@@ -735,8 +786,6 @@
       daily: item.daily_deposit_amount,
     });
   }
-
-  // Prepare files.
 
   function setRow(name, state, detail = "") {
     const row = rows.get(name);
@@ -858,7 +907,6 @@
       return;
     }
     hideErrorSummary();
-    // Rows describe the latest attempt, so earlier problems clear before resending.
     for (const name of [...problemFiles]) {
       setRow(name, "ready", formatSize(chosen.get(name).size));
     }
@@ -916,7 +964,6 @@
   }
 
   document.querySelector('[data-role="clear-filters"]').addEventListener("click", (event) => {
-    // Clearing filters replaces the address like any other filter change.
     event.preventDefault();
     history.replaceState(null, "", "#/results");
     applyFilters(new URLSearchParams());
