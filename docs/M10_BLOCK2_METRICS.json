@@ -1,0 +1,88 @@
+{
+  "demo": {
+    "status": 200,
+    "response_bytes": 159958,
+    "summary": {
+      "deposit_lead_days": 2,
+      "drawer_leads_total": 16,
+      "drawers_by_highest_severity": {
+        "info": 0,
+        "review": 4,
+        "warn": 5
+      },
+      "drawers_checked": 60,
+      "drawers_needing_review": 4,
+      "drawers_with_leads": 9,
+      "drawers_without_leads": 51,
+      "leads_by_severity": {
+        "info": 4,
+        "review": 7,
+        "warn": 7
+      },
+      "leads_total": 18,
+      "whole_day_lead_days": 2,
+      "whole_day_leads_total": 2
+    }
+  },
+  "combined": {
+    "status": 200,
+    "response_bytes": 8620061,
+    "drawers": 1000,
+    "days": 2000,
+    "date_labels": 2000
+  },
+  "combined_long_identifiers": {
+    "status": 400,
+    "response_bytes": 136
+  },
+  "clean": {
+    "status": 200,
+    "summary": {
+      "deposit_lead_days": 0,
+      "drawer_leads_total": 0,
+      "drawers_by_highest_severity": {
+        "info": 0,
+        "review": 0,
+        "warn": 0
+      },
+      "drawers_checked": 2,
+      "drawers_needing_review": 0,
+      "drawers_with_leads": 0,
+      "drawers_without_leads": 2,
+      "leads_by_severity": {
+        "info": 0,
+        "review": 0,
+        "warn": 0
+      },
+      "leads_total": 0,
+      "whole_day_lead_days": 0,
+      "whole_day_leads_total": 0
+    }
+  },
+  "bank-only": {
+    "status": 200,
+    "summary": {
+      "deposit_lead_days": 1,
+      "drawer_leads_total": 0,
+      "drawers_by_highest_severity": {
+        "info": 0,
+        "review": 0,
+        "warn": 0
+      },
+      "drawers_checked": 0,
+      "drawers_needing_review": 0,
+      "drawers_with_leads": 0,
+      "drawers_without_leads": 0,
+      "leads_by_severity": {
+        "info": 1,
+        "review": 0,
+        "warn": 0
+      },
+      "leads_total": 1,
+      "whole_day_lead_days": 1,
+      "whole_day_leads_total": 1
+    }
+  },
+  "css_js_bytes": 56141,
+  "font_bytes": 51748
+}

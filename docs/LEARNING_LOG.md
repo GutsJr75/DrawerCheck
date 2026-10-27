@@ -1217,3 +1217,37 @@ packaging/format issues and the preview-cache correction are recorded in
 
 No new hosted CI or deployment result, WebKit/zoom pass, screen-reader session,
 or beginner usability pass is claimed. Stop for `next` before M10 block 2.
+
+## M10 block 2: Results summary and layout (2026-10-26)
+
+- Built: Added the Full run Results slip, qualified no-leads tick, responsive
+  side column, secondary downloads, and a closed detailed-count disclosure.
+  Python supplies separate drawer/day counts and shared weekday labels.
+  Preserved the flat list, report contents, core arithmetic, and all caps.
+- Learned: One drawer can have several leads, so drawer counts must use its
+  highest own level while whole-day leads stay separate. Date labels also need
+  opening/closing clock dates for overnight shifts. CSS columns can preserve
+  a single meaningful DOM and keyboard order without duplicated controls.
+- Interview question: How would you show a useful summary without confusing
+  the number of records with the number of issues found in those records?
+
+Final checks: 716 pytest tests passed in 15.71 seconds with local-socket
+permission; the targeted web/page suites passed 119 tests before the final
+summary tick addition. Both Ruff checks passed (63 files formatted), and
+`git diff --check` passed. Chrome passed the final 20-case view/theme/width
+matrix, keyboard/filter restoration, exact report-download hashes, real fake
+uploads for no-leads and bank-only states, Cancel, error/retry, and refresh.
+The summary tick passed once-per-run, reduced-motion, and zero-drawer checks.
+
+Combined CSS/JS is 56,141 bytes; fonts remain 51,748 bytes. The combined capped
+workload returns 8,620,061 bytes without increasing the 10 MB limit. The generic
+strict audit retains seven known external-handler detection findings, with
+actual button behavior exercised. DESIGN.md lint had zero errors and one
+Markdown-only warning. There are 34 new dated screenshots, retaining initial
+and intermediate captures; final Results filenames show the shipped tick.
+A 959 px light PNG with repeated header pixels was retained and replaced in
+the final evidence by a settled capture, with one header verified in the DOM.
+See [block 2 evidence](M10_BLOCK2.md) for raw records and limits.
+
+No new hosted CI, deployment, WebKit/zoom, screen-reader, unfamiliar-user, or
+OS-popup keyboard pass is claimed. Stop for `next` before M10 block 3 grouping.

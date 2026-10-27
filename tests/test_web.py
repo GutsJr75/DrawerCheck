@@ -6,6 +6,7 @@ import re
 import sqlite3
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from io import BytesIO, StringIO
 from pathlib import Path
@@ -17,12 +18,13 @@ import pytest
 
 from drawercheck import db, errors, rules
 from drawercheck.cli import main
+from drawercheck.config import Config
 from drawercheck.csv_contract import CSV_HEADERS
 from drawercheck.demo import generate_demo
 from drawercheck.models import Flag, ShiftResult
 from drawercheck.money import format_cents, parse_dollars
 from drawercheck.reconcile import explain_shift
-from drawercheck.reports import csv_out, html, load_report, text
+from drawercheck.reports import ReportData, csv_out, html, load_report, text
 
 pytest.importorskip("flask")
 web = importlib.import_module("drawercheck.web")
@@ -130,6 +132,12 @@ def test_screen_fields_match_cli_results(app, tmp_path: Path) -> None:
         payload = client.post("/api/demo").get_json()
     severities = Counter(flag.severity for flag in report.flags)
     assert payload["summary"] == {
+        "drawers_with_leads": 9,
+        "drawers_without_leads": 51,
+        "drawers_by_highest_severity": {"info": 0, "warn": 5, "review": 4},
+        "drawer_leads_total": 16,
+        "whole_day_leads_total": 2,
+        "whole_day_lead_days": 2,
         "drawers_checked": len(report.shifts),
         "drawers_needing_review": len(
             {
@@ -152,8 +160,14 @@ def test_screen_fields_match_cli_results(app, tmp_path: Path) -> None:
             }
         ),
     }
-    # The design's plain-facts line, including the two R03 heuristic notes.
+    # Full-run counts include the two R03 heuristic notes, without double-counting drawers.
     assert payload["summary"] == {
+        "drawers_with_leads": 9,
+        "drawers_without_leads": 51,
+        "drawers_by_highest_severity": {"info": 0, "warn": 5, "review": 4},
+        "drawer_leads_total": 16,
+        "whole_day_leads_total": 2,
+        "whole_day_lead_days": 2,
         "drawers_checked": 60,
         "drawers_needing_review": 4,
         "leads_total": 18,
@@ -204,6 +218,77 @@ def test_screen_fields_match_cli_results(app, tmp_path: Path) -> None:
     assert {item["status"] for item in payload["shifts"]} <= set(labels["statuses"])
     # Labels are sent once, never repeated on each flag.
     assert all("label" not in key for flag in payload["flags"] for key in flag)
+
+
+@pytest.mark.parametrize("case", ["empty", "clean", "notes", "mixed", "day-only"])
+def test_summary_counts_keep_drawers_leads_and_days_separate(
+    worked_shift, case: str
+) -> None:
+    """Mixed-level drawers count once; any rule can produce a whole-day lead."""
+    note = Flag(1, "2026-09-03", "R03_TRANSPOSITION_HINT", "info", "Hint only.", {})
+    review = replace(note, rule_code="R01_VARIANCE", severity="review")
+    day = replace(note, shift_id=None, rule_code="R09_DATA_QUALITY", severity="warn")
+    deposit = replace(day, rule_code="R08_DEPOSIT", business_date="2026-09-04")
+    own = {"notes": (note,), "mixed": (note, review)}.get(case, ())
+    shifts = (
+        ()
+        if case in ("empty", "day-only")
+        else (ShiftResult(worked_shift, 0, 0, 0, "balanced", flags=own),)
+    )
+    flags = own + (
+        (day, replace(day, severity="info"), deposit)
+        if case in ("mixed", "day-only")
+        else ()
+    )
+    report = ReportData("2026-09-03", "2026-09-04", "", Config(), shifts, flags, (), ())
+    summary = web._summary(report)
+    affected = int(bool(own))
+    assert summary["drawers_with_leads"] == affected
+    assert summary["drawers_without_leads"] == len(shifts) - affected
+    assert summary["drawers_by_highest_severity"] == {
+        "info": int(case == "notes"),
+        "warn": 0,
+        "review": int(case == "mixed"),
+    }
+    assert (
+        summary["drawers_with_leads"] + summary["drawers_without_leads"]
+        == summary["drawers_checked"]
+    )
+    assert sum(summary["drawers_by_highest_severity"].values()) == affected
+    assert (
+        summary["drawers_needing_review"]
+        == summary["drawers_by_highest_severity"]["review"]
+    )
+    assert summary["drawer_leads_total"] == len(own)
+    assert (
+        summary["drawer_leads_total"] + summary["whole_day_leads_total"]
+        == summary["leads_total"]
+    )
+    assert summary["whole_day_leads_total"] == (
+        3 if case in ("mixed", "day-only") else 0
+    )
+    assert summary["whole_day_lead_days"] == (2 if case in ("mixed", "day-only") else 0)
+    assert summary["deposit_lead_days"] == int(case in ("mixed", "day-only"))
+
+
+def test_date_labels_cover_range_and_overnight_clock_dates(worked_shift) -> None:
+    """Python provides English calendar dates across midnight, months, and years."""
+    shift = replace(
+        worked_shift, opened_at="2026-09-02T23:00:00", closed_at="2026-09-04T01:00:00"
+    )
+    result = ShiftResult(shift, None, None, None, "incomplete")
+    flag = Flag(None, "2027-02-01", "R09_DATA_QUALITY", "info", "Demo note.", {})
+    report = ReportData(
+        "2026-12-31", "2027-01-01", "", Config(), (result,), (flag,), (), ()
+    )
+    assert web._date_labels(report) == {
+        "2026-09-02": "Wednesday, September 2, 2026",
+        "2026-09-03": "Thursday, September 3, 2026",
+        "2026-09-04": "Friday, September 4, 2026",
+        "2026-12-31": "Thursday, December 31, 2026",
+        "2027-01-01": "Friday, January 1, 2027",
+        "2027-02-01": "Monday, February 1, 2027",
+    }
 
 
 def test_labels_cover_every_rule_severity_and_status() -> None:
@@ -597,6 +682,19 @@ def test_bank_only_dates_do_not_invent_shifts(app, csv_directory: Path) -> None:
     assert response.status_code == 200
     payload = response.get_json()
     assert not payload["shifts"] and not payload["cashiers"]
+    assert (
+        payload["summary"]["drawers_checked"]
+        == payload["summary"]["drawers_with_leads"]
+        == 0
+    )
+    dates = {payload["from_date"], payload["to_date"]}
+    dates.update(day["business_date"] for day in payload["days"])
+    dates.update(flag["business_date"] for flag in payload["flags"])
+    assert dates == set(payload["labels"]["dates"])
+    assert all(
+        "undefined" not in value and ", " in value
+        for value in payload["labels"]["dates"].values()
+    )
     assert all(
         day["expected_deposit_amount"] == "Not calculated (no shifts)"
         for day in payload["days"]

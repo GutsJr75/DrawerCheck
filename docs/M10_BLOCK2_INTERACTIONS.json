@@ -1,0 +1,37 @@
+{
+  "checks": [
+    "Keyboard Tab from Results heading reaches date, level radios, then first review link; ArrowRight applies level",
+    "Note on a Needs review drawer remains findable; filtered return and 3px breadcrumb focus preserve context; full-run summary unchanged",
+    "No matches and Show all leads recovery",
+    "Downloaded html matches the full Python report byte for byte",
+    "Downloaded csv matches the full Python report byte for byte",
+    "Downloaded text matches the full Python report byte for byte",
+    "Detailed total and severity counts available in closed-by-default disclosure",
+    "Reduced motion and forced-color scrollbar baseline preserved"
+  ],
+  "downloads": [
+    {
+      "kind": "html",
+      "file": "/tmp/drawercheck-block2-report.html",
+      "expectedSha256": "837a46d79a216f3cc409e87b0b1529ba19b1edba0ebeaafa03fc80ab23388b10"
+    },
+    {
+      "kind": "csv",
+      "file": "/tmp/drawercheck-block2-report.csv",
+      "expectedSha256": "4297343396c28bbd8d4b506157b2c5a7cf04d7d18428ad5079545b0470efec1c"
+    },
+    {
+      "kind": "text",
+      "file": "/tmp/drawercheck-block2-report.text",
+      "expectedSha256": "b9b60107b83147a776347752e28c8d28d6b91a3b67c25a2136c066e38336e064"
+    }
+  ],
+  "focus": {
+    "role": "back-to-results",
+    "ring": "3px"
+  },
+  "filteredAddress": "#/results?date=2026-09-03&show=note",
+  "detailedCounts": "Lead counts for the full run\n\n18 leads total: Needs review 7\n,\nCheck 7\n,\nNote 4",
+  "summary": "Full run\n\n9 of 60 drawers have leads to check.\n\n16 drawer leads; 2 whole-day leads on 2 dates.\n\n51 drawers with no leads\nNo leads found by these checks.",
+  "reducedMotionDuration": "0s"
+}

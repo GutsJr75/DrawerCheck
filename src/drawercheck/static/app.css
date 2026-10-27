@@ -657,45 +657,104 @@ main {
   font-size: 0.9375rem;
 }
 
-/* Results: plain facts on one line, then leads ordered by level. */
-.facts {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin: var(--space-5) 0 var(--space-3);
-  padding: 0;
-  list-style: none;
+/* Full-run ledger slip, then filters, review, and quiet report controls. */
+.run-summary {
+  margin-block: var(--space-group) var(--space-topic);
 }
 
-.fact-number {
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-@media (min-width: 40em) {
-  .facts {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2) 0;
-  }
-
-  .facts li {
-    padding: 0 var(--space-5);
-    border-left: 1px solid var(--line);
-  }
-
-  .facts li:first-child {
-    padding-left: 0;
-    border-left: 0;
-  }
-}
-
-.severity-intro {
-  margin-right: var(--space-2);
+.summary-label {
   color: var(--muted);
   font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.run-summary h2 {
+  max-width: 30ch;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.summary-clear {
+  display: grid;
+  gap: var(--space-item);
+  margin: var(--space-group) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.summary-clear > span {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+#summary-tick {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: var(--space-item);
+  vertical-align: middle;
+  fill: none;
+  stroke: var(--ready);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#summary-tick:not(.drawn) path {
+  stroke-dasharray: 1;
+  animation: tick-in 600ms ease-out;
+}
+
+@keyframes tick-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.results-layout {
+  display: grid;
+  gap: var(--space-group);
+  margin-bottom: var(--space-topic);
+}
+
+.results-layout > * {
+  min-width: 0;
+}
+
+.results-layout h2 {
+  margin-bottom: var(--space-3);
+}
+
+@media (min-width: 60em) {
+  .results-layout {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+    grid-template-rows: auto auto 1fr;
+    column-gap: var(--space-7);
+  }
+
+  .review-main {
+    grid-column: 1;
+    grid-row: 1 / 4;
+  }
+
+  .filters,
+  .downloads,
+  .levels-help {
+    grid-column: 2;
+  }
+
+  .filters {
+    grid-row: 1;
+  }
+
+  .downloads {
+    grid-row: 2;
+  }
+
+  .levels-help {
+    grid-row: 3;
+  }
 }
 
 .severity-count {
@@ -726,6 +785,14 @@ main {
   .lead-item {
     grid-template-columns: 8rem minmax(0, 1fr) auto;
     align-items: baseline;
+  }
+
+  .review-main .lead-item {
+    grid-template-columns: 7rem minmax(0, 1fr);
+  }
+
+  .review-main .lead-open {
+    grid-column: 2;
   }
 }
 
@@ -758,23 +825,24 @@ main {
   margin-right: var(--space-3);
 }
 
-/* Report downloads sit right under the facts, quiet but easy to find. */
-.downloads-heading {
-  margin: var(--space-6) 0 0;
-  font-size: 1.25rem;
+/* Sidebar controls follow the list in the narrow-screen reading order. */
+.downloads-heading,
+.filters h2 {
+  font-size: 1.1875rem;
 }
 
 .downloads .actions {
-  margin: var(--space-3) 0 var(--space-2);
+  margin: var(--space-3) 0;
 }
 
-/* Lead filters: a date list and a level choice, applied as soon as they change. */
 .filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-4) var(--space-6);
-  margin: var(--space-4) 0 var(--space-2);
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.levels-help {
+  margin: 0;
 }
 
 .field {

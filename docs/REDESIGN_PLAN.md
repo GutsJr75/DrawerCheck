@@ -1,9 +1,9 @@
 # Visual redesign plan: "Tick and tie"
 
-**Status: M10 block 1 approved and completed locally on 2026-10-26.** The user
-approved the finalized proposal's next block before the remaining M9 rules.
-[Block 1 evidence](M10_BLOCK1.md) records the shared design changes, tests,
-Chrome checks, screenshots, and limitations. Block 2 awaits `next`.
+**Status: M10 blocks 1 and 2 approved and completed locally on 2026-10-26.**
+The user approved each block before the remaining M9 rules. [Block 1 evidence](M10_BLOCK1.md)
+records the shared design; [block 2 evidence](M10_BLOCK2.md) records the Results
+summary, layout, Python data additions, and local checks. Block 3 awaits `next`.
 
 The sequence is M10, then M9 R06 and R07. [DESIGN.md](../DESIGN.md) and
 [WEB_PLAN.md](WEB_PLAN.md) describe the current app, including the new shell;
@@ -379,8 +379,9 @@ flow, corrected wording, and the seven work areas above. Default scope excludes
 requested later and are not prerequisites for this redesign.
 
 The user approved **M10 block 1 under this plan, before the remaining M9
-rules**, on 2026-10-26. That block is complete locally. **M10 block 2 (Results
-summary and layout) is next and awaits `next`.** Approval does not authorize
+rules**, on 2026-10-26, then explicitly authorized **block 2** with "go for
+block 2". Both are complete locally. **M10 block 3 (Results grouping) awaits
+`next`.** Approval does not authorize
 running all seven areas unattended. Once M10 is delivered, return to M9 R06,
 then R07, with their existing per-block review stops. New rules may change
 group membership, severity, and counts; the frontend must remain generic

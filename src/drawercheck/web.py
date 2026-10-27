@@ -4,6 +4,7 @@ import json
 import sqlite3
 from collections import Counter
 from dataclasses import asdict, dataclass
+from datetime import date
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import IO
@@ -281,12 +282,25 @@ def _labels(config: Config) -> dict:
 def _summary(report: ReportData) -> dict:
     # Leads and drawers are counted separately; one drawer can have several leads.
     severities = Counter(flag.severity for flag in report.flags)
+    priority = {severity: index for index, severity in enumerate(SEVERITY_LABELS)}
+    drawers = Counter(
+        max((flag.severity for flag in result.flags), key=priority.__getitem__)
+        for result in report.shifts
+        if result.flags
+    )
+    affected = sum(drawers.values())
+    whole_day = [flag for flag in report.flags if flag.shift_id is None]
     return {
         "drawers_checked": len(report.shifts),
-        "drawers_needing_review": sum(
-            any(flag.severity == "review" for flag in result.flags)
-            for result in report.shifts
-        ),
+        "drawers_needing_review": drawers["review"],
+        "drawers_with_leads": affected,
+        "drawers_without_leads": len(report.shifts) - affected,
+        "drawers_by_highest_severity": {
+            severity: drawers[severity] for severity in SEVERITY_LABELS
+        },
+        "drawer_leads_total": len(report.flags) - len(whole_day),
+        "whole_day_leads_total": len(whole_day),
+        "whole_day_lead_days": len({flag.business_date for flag in whole_day}),
         "leads_total": len(report.flags),
         "leads_by_severity": {
             severity: severities[severity] for severity in SEVERITY_LABELS
@@ -299,6 +313,48 @@ def _summary(report: ReportData) -> dict:
             }
         ),
     }
+
+
+def _date_labels(report: ReportData) -> dict[str, str]:
+    # Include clock dates too: a shift can close after its business date.
+    dates = {report.from_date, report.to_date}
+    dates.update(day.business_date for day in report.days)
+    dates.update(flag.business_date for flag in report.flags)
+    for result in report.shifts:
+        shift = result.shift
+        dates.update((shift.business_date, shift.opened_at[:10]))
+        if shift.closed_at:
+            dates.add(shift.closed_at[:10])
+    weekdays = (
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    )
+    months = (
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    )
+    labels = {}
+    for value in sorted(dates):
+        day = date.fromisoformat(value)
+        labels[value] = (
+            f"{weekdays[day.weekday()]}, {months[day.month - 1]} {day.day}, {day.year}"
+        )
+    return labels
 
 
 def _response_data(report: ReportData) -> dict:
@@ -323,7 +379,7 @@ def _response_data(report: ReportData) -> dict:
         "from_date": report.from_date,
         "to_date": report.to_date,
         "generated_at": report.generated_at,
-        "labels": _labels(report.config),
+        "labels": {**_labels(report.config), "dates": _date_labels(report)},
         "summary": _summary(report),
         "days": days,
         "cashiers": cashiers,

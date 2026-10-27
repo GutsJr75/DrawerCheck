@@ -8,6 +8,11 @@
   Results grouping and the later view changes remain separate blocks. The
   current visual rules are in [DESIGN.md](../DESIGN.md); the delivery scope is
   in [REDESIGN_PLAN.md](REDESIGN_PLAN.md).
+- **M10 block 2 complete locally (authorized 2026-10-26):** Results now uses
+  a Full run summary, secondary downloads, and a responsive side column.
+  Python supplies separate drawer/day counts and weekday date labels,
+  including overnight clock dates. The list stays flat until block 3.
+  See [block 2 evidence](M10_BLOCK2.md). Stop for `next` before grouping.
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -154,7 +159,7 @@ a second UX contract. Existing native popup geometry is an intentional choice.
 | Capability | Canonical owner | Source of truth | Allowed variants | Verification |
 | --- | --- | --- | --- | --- |
 | Select/Listbox | Native select and radio buttons in index.html, populated by app.js | This document's navigation and filter rules | Browser/OS-owned popup, CSS-styled trigger | Keyboard, opened popup, filter restoration in the local browser |
-| Date | Shared formatDate in app.js, ISO business dates from web.py | Data contract below; current UTC calendar-day formatting | Read-only labels, no date picker; server-owned display labels planned in M10 block 2 | Existing API tests and visible date options |
+| Date | Python labels.dates in web.py, shared formatDate lookup in app.js | M10 data contract below; server-owned English calendar labels | Read-only labels, no date picker; includes overnight clock dates | API date coverage and visible date options |
 | Form | Existing chosen-file map, importer validation, and error summary | Upload and request contracts below | Seven fake CSVs, native chooser, existing drag/drop enhancement | Existing web tests; missing-file error summary and focus in the browser |
 | Scrollbar | Global app.css standards rules and WebKit fallback | DESIGN.md runtime mapping | Document scrolling; optional tables own horizontal overflow | Narrow views and computed styles, system fallback in forced colors |
 
@@ -306,6 +311,40 @@ Built in M8 block 4: both timings come from `web.py` (`SLOW_NOTICE_MS` and
 `GIVE_UP_MS`) through the page, so the docs, page, and tests agree. Cancel, the
 time limit, and leaving the view end the wait at once, even if the network has
 not let go yet; a late answer is ignored rather than shown.
+
+### M10 block 2 Results contract (2026-10-26)
+
+This supersedes the historical M8 plain-facts layout described above.
+
+- Show one server-labelled date range, then the "Full run" slip: affected
+  drawers out of checked drawers, drawer leads, whole-day leads and dates,
+  and drawers with no own leads. No no-leads count implies an exact match.
+- A decorative green tick reinforces the visible no-leads wording only when
+  at least one drawer qualifies. It draws once per new run, never on return
+  from Drawer details. Reduced motion shows a still tick. Zero drawers gets
+  "No drawers in this run." and no tick.
+- At 960 px and above, filters, three secondary downloads, and level
+  definitions sit beside the review list. Below that width they stack:
+  filters, review list, downloads, definitions, then optional detail.
+  DOM/keyboard order is summary, filters, review, downloads, optional detail.
+  Keep one set of controls and preserve heading focus and native input behavior.
+- Full-run counts and report contents stay unchanged when filtering.
+  The live status names active filters in words. Detailed lead/severity
+  totals are in a closed disclosure after the review area.
+- The current list still renders all individual leads with the existing
+  metadata and rule codes. Grouping and the full More detail layout await block 3.
+- Python adds `drawers_with_leads`, `drawers_without_leads`, disjoint
+  `drawers_by_highest_severity`, `drawer_leads_total`, `whole_day_leads_total`,
+  and `whole_day_lead_days` to `summary`. Preserve existing fields and meanings.
+  The demo gives 9, 51, {review: 4, warn: 5, info: 0}, 16, 2, and 2.
+- Whole-day means `shift_id is None`, for any rule. `deposit_lead_days`
+  remains R08-only. Highest-level drawer counts use only each drawer's own leads.
+- `labels.dates` maps ISO dates to English weekday/month/day/year text.
+  Include range endpoints, every day/shift/flag date, bank-only dates, and
+  opening/closing clock dates for shifts crossing midnight. Browser rendering
+  uses this lookup without date arithmetic or the visitor's timezone.
+- Reports, core calculations, response/upload limits, and transient retention
+  remain unchanged. Regression tests cover count invariants and date coverage.
 
 ### Data the screens need from Python
 

@@ -1,0 +1,16 @@
+{
+  "geometry": {
+    "headers": 1,
+    "header": {
+      "top": 0,
+      "bottom": 108.25
+    },
+    "reviewTitle": {
+      "top": 824.921875,
+      "bottom": 856.109375
+    },
+    "at850": "<h2 id=\"leads-heading\">Review leads</h2>",
+    "overflow": false
+  },
+  "screenshot": "docs/screenshots/2026-10-26-m10-block2/2026-10-26-m10-block2-results-final-checked-light-959.png"
+}

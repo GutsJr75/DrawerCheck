@@ -218,6 +218,28 @@ def test_both_tapes_share_one_set_of_lines_and_meanings(client) -> None:
     ).group(1)
 
 
+def test_results_reading_order_and_download_emphasis(client) -> None:
+    """One set of filters precedes review; downloads follow it and stay secondary."""
+    page, _ = _page(client)
+    ids = [attrs.get("id") for tag, attrs in page.tags if "id" in attrs]
+    expected = [
+        "summary-headline",
+        "filters",
+        "leads-heading",
+        "lead-list",
+        "downloads-heading",
+        "day-details",
+    ]
+    assert [name for name in ids if name in expected] == expected
+    assert ids.count("filter-date") == ids.count("filter-level") == 1
+    assert not any(int(attrs.get("tabindex", "0")) > 0 for tag, attrs in page.tags)
+    buttons = [attrs for tag, attrs in page.tags if "data-report" in attrs]
+    assert all(
+        "button-secondary" in attrs["class"] and "button-primary" not in attrs["class"]
+        for attrs in buttons
+    )
+
+
 def test_results_hooks_match_the_response_fields(client) -> None:
     """Every number or word slot in Results points at a field Python sends."""
     page, _ = _page(client)
@@ -229,7 +251,9 @@ def test_results_hooks_match_the_response_fields(client) -> None:
         attrs["data-status"] for tag, attrs in page.tags if "data-status" in attrs
     ]
     assert set(statuses) == set(payload["labels"]["statuses"])
-    plural_labels = [attrs for tag, attrs in page.tags if "data-one" in attrs]
+    plural_labels = [
+        attrs for tag, attrs in page.tags if tag == "span" and "data-one" in attrs
+    ]
     assert len(plural_labels) == len(facts)
     assert all(attrs["data-many"] for attrs in plural_labels)
     # One deposit sentence for each reason a drawer's share can be unknown.

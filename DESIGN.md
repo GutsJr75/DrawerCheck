@@ -2,7 +2,8 @@
 
 This guide covers the website and the existing M4 HTML report. M10 block 1,
 authorized on 2026-10-26, applies the approved "Tick and tie" shared palette,
-fonts, type/spacing, logo, header, breadcrumbs, and footer. The M8 view
+fonts, type/spacing, logo, header, breadcrumbs, and footer. M10 block 2 adds the
+Full run Results slip and responsive review/sidebar layout. The other M8 view
 structures remain until their later M10 blocks. See
 [REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
 
@@ -158,8 +159,10 @@ Font package sources (no package is installed as a runtime dependency):
   supported. Use standards properties and a WebKit fallback; system colors
   take over in forced-colors mode. Never hide scrollbars.
 - **Motion:** existing colour transitions are at most 150 ms and disabled for
-  reduced motion. No new animation ships in block 1. The proposed summary tick
-  animation belongs to the Results block, with a still reduced-motion state.
+  reduced motion. Block 2 draws the no-leads summary tick once per run over 600 ms.
+  Returning from a drawer does not replay it; reduced motion shows it still.
+  Hide it when no drawers qualify. Its wording is about no leads from these
+  checks, never an exact match or a completed human review.
 
 ### Runtime token ownership and mapping
 
@@ -190,7 +193,7 @@ local asset serving, font licences, package contents, and resource budgets.
 | Filters | A native `select` and native radio buttons with `accent-color`, each with a visible label; no custom dropdown widget. The select drops its native look and draws its own arrow in the `text` colour, because WebKit ignores the 44 px height on native-looking selects. |
 | Demo notice placement | Inside the `header` landmark, above the wordmark row, so every piece of content belongs to a landmark. |
 | Favicon | `static/favicon.svg`: a drawer outline and green tick on pale paper, matching the decorative header mark. |
-| Downloads | Three labelled buttons under the facts: "Web page (.html)" as the main button, then "Spreadsheet (.csv)" and "Text (.txt)". |
+| Downloads | Three secondary buttons in the Results side column: "Web page (.html)", "Spreadsheet (.csv)", and "Text (.txt)". Below 960 px they follow the review list. |
 | Waiting | The busy button's own words, a Cancel button beside it, and after 5 seconds a sentence with a `control` left rule. Failures show in `review` text with a "Try again" button. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |
 | Demo notice | A full-width strip at the top of every view: "Example data only. Do not upload real store records." |
@@ -269,26 +272,34 @@ copy of the drawer tape for the demo shift `2026-09-03-R1`, captioned "Example
 from the built-in demo". It teaches the idea in five seconds and sits beside
 the main "Try the example" button.
 
-### Results summary as plain facts
+### Results full-run summary and side column
 
-The top of Results is one line of labelled numbers, not a grid of icon cards.
-Keep counts of leads and counts of drawers separate. For the demo:
-"60 drawers checked", "4 drawers need review", "18 leads in total", and
-"2 days with bank-deposit leads".
+M10 block 2 replaces the M8 facts line with one surface slip, using the shared
+torn tape edge and the label "Full run". Its headline reads "9 of 60 drawers
+have leads to check." Supporting text distinguishes 16 drawer leads from two
+whole-day leads on two dates. A ruled line separates "51 drawers with no leads"
+and "No leads found by these checks." The green tick has exactly that limited
+meaning; a small difference within tolerance can have no lead. Zero drawers
+uses "No drawers in this run." Singular/plural wording uses the response counts.
 
-M9 block 1 adds two R03 notes to the unchanged fictional inputs. R03's public
-label is "Possible swapped digits" and its message explicitly says "Hint only."
-Reuse the existing note styling and lead components for both Results and Drawer
-details. Public labels are owned by `web.py`, messages by the Python rule, and
-the browser renders both through `app.js`; no new token, control, or calculation
-belongs in the browser for this rule.
+Keep the date range directly under Results and get every calendar label,
+including the weekday and year, from Python's shared `labels.dates` map.
+The full-run summary stays unchanged under filters. Detailed lead and severity
+counts are in a closed disclosure below the review area, outside this slip.
 
-The current M8 structure remains during M10 block 1: the number is semibold at 24 px and the words stay at body
-size on the same baseline, separated by thin `line` rules, so the row reads as
-a sentence rather than as stat cards. On phones the facts stack. A second line
-gives the leads by level as status labels with counts. Leads then follow in one
-panel, one row each: level, plain title, Python's message, and a muted line
-with the date, the drawer or "Whole day", and the rule code.
+At 960 px and above, the review list fills the main column and filters,
+secondary report downloads, and level definitions occupy a 19rem side column.
+Below that width, stack filters, review list, downloads, and definitions in
+that order. There is only one set of controls. DOM and keyboard order put
+filters before review links and downloads after them, with no positive tabindex.
+Use the existing native select, radio group, buttons, status labels, and hints.
+
+The lead list remains flat during block 2. Grouping, severity section counts,
+and the complete More detail treatment belong to block 3. Results rows still
+show the Python title/message, date, drawer or whole-day scope, and rule code.
+M9's "Possible swapped digits" Notes retain their "Hint only" wording and the
+shared Note treatment in both Results and Drawer details. All money, counts,
+rule labels, and date wording remain Python-owned.
 
 ## What to avoid
 

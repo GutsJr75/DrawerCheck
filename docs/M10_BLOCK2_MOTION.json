@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "case": "tick-once-per-run",
+      "initialDuration": "0.6s",
+      "returnAnimation": "none"
+    },
+    {
+      "case": "reduced-motion",
+      "animation": "none",
+      "stillTickVisible": true
+    },
+    {
+      "case": "zero-qualifying-drawers",
+      "tickVisible": false
+    }
+  ]
+}

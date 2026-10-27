@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "case": "clean",
+      "headline": "0 of 2 drawers have leads to check.",
+      "screenshot": "docs/screenshots/2026-10-26-m10-block2/2026-10-26-m10-block2-results-clean-dark-320.png"
+    },
+    {
+      "case": "bank-only",
+      "headline": "No drawers in this run.",
+      "screenshot": "docs/screenshots/2026-10-26-m10-block2/2026-10-26-m10-block2-results-bank-only-dark-320.png"
+    },
+    {
+      "case": "busy-and-cancel",
+      "passed": true
+    },
+    {
+      "case": "503-and-real-retry",
+      "passed": true
+    },
+    {
+      "case": "refresh-recovery",
+      "passed": true
+    }
+  ]
+}

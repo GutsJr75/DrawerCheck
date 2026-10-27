@@ -172,53 +172,79 @@
       <h1 id="results-heading" tabindex="-1">Results</h1>
       <p class="lead" id="results-range" data-template="Records from {from} to {to}."></p>
 
-      <ul class="facts" aria-label="Summary">
-        <li><span class="fact-number" data-fact="drawers_checked"></span> <span data-one="drawer checked" data-many="drawers checked"></span></li>
-        <li><span class="fact-number" data-fact="drawers_needing_review"></span> <span data-one="drawer needs review" data-many="drawers need review"></span></li>
-        <li><span class="fact-number" data-fact="leads_total"></span> <span data-one="lead in total" data-many="leads in total"></span></li>
-        <li><span class="fact-number" data-fact="deposit_lead_days"></span> <span data-one="day with bank-deposit leads" data-many="days with bank-deposit leads"></span></li>
-      </ul>
-      <p class="severity-counts"><span class="severity-intro">Leads by level:</span> <span id="severity-chips"></span></p>
-
-      <div class="downloads" role="group" aria-labelledby="downloads-heading">
-        <h2 id="downloads-heading" class="downloads-heading">Download the full report</h2>
-        <div class="actions">
-          <button type="button" class="button button-primary" data-report="html">Web page (.html)</button>
-          <button type="button" class="button button-secondary" data-report="csv">Spreadsheet (.csv)</button>
-          <button type="button" class="button button-secondary" data-report="text">Text (.txt)</button>
-        </div>
-        <p class="hint">The files are made from these results in your browser. The web page works offline and has no scripts.</p>
-        <p class="hint">Results disappear when you refresh or close this page. Download a report to keep a copy.</p>
+      <div class="run-summary tape-paper" role="group" aria-labelledby="summary-headline">
+        <p class="summary-label">Full run</p>
+        <h2 id="summary-headline"
+            data-empty="No drawers in this run."
+            data-one="{affected} of {checked} drawer has leads to check."
+            data-many="{affected} of {checked} drawers have leads to check."></h2>
+        <p><span data-fact="drawer_leads_total"></span> <span data-one="drawer lead;" data-many="drawer leads;"></span>
+          <span data-fact="whole_day_leads_total"></span> <span data-one="whole-day lead on" data-many="whole-day leads on"></span>
+          <span data-fact="whole_day_lead_days"></span> <span data-one="date." data-many="dates."></span></p>
+        <p class="summary-clear"><strong><svg id="summary-tick" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="m5 17 7 7L27 7" pathLength="1"/></svg><span data-fact="drawers_without_leads"></span> <span data-one="drawer with no leads" data-many="drawers with no leads"></span></strong>
+          <span>No leads found by these checks.</span></p>
       </div>
 
-      <h2 id="leads-heading">Review leads</h2>
-      <p class="hint">A lead is something in the records worth checking. It is not a finding about anyone. Leads that need review come first.</p>
-      <div class="filters" id="filters">
-        <div class="field">
-          <label for="filter-date">Date</label>
-          <select id="filter-date" data-all="All dates"></select>
+      <div class="results-layout">
+        <div class="filters" id="filters">
+          <h2>Filter leads</h2>
+          <div class="field">
+            <label for="filter-date">Date</label>
+            <select id="filter-date" data-all="All dates"></select>
+          </div>
+          <fieldset class="field">
+            <legend>Level</legend>
+            <div class="choices" id="filter-level" data-all="All"></div>
+          </fieldset>
         </div>
-        <fieldset class="field">
-          <legend>Level</legend>
-          <div class="choices" id="filter-level" data-all="All"></div>
-        </fieldset>
+
+        <div class="review-main">
+          <h2 id="leads-heading">Review leads</h2>
+          <p class="hint">A lead is something in the records worth checking. It is not a finding about anyone. Leads that need review come first.</p>
+          <p class="hint" id="filter-status" aria-live="polite"
+             data-all="Showing all leads."
+             data-level="Showing leads marked {level}."
+             data-date="Showing all leads on {date}."
+             data-both="Showing leads marked {level} on {date}."></p>
+          <ol class="lead-list" id="lead-list" aria-labelledby="leads-heading"
+              data-whole-day="Whole day"
+              data-drawer-template="Drawer {code}"
+              data-rule-template="Rule {code}"
+              data-open-text="Open drawer details"
+              data-day-drawers="Drawers on {date}:"></ol>
+          <p id="no-leads" hidden>No leads were found in these records.</p>
+          <div id="no-matches" hidden>
+            <p>No leads match these filters.</p>
+            <a class="button button-secondary" href="#/results" data-role="clear-filters">Show all leads</a>
+          </div>
+        </div>
+        <div class="downloads" role="group" aria-labelledby="downloads-heading">
+          <h2 id="downloads-heading" class="downloads-heading">Download the full report</h2>
+          <div class="actions">
+            <button type="button" class="button button-secondary" data-report="html">Web page (.html)</button>
+            <button type="button" class="button button-secondary" data-report="csv">Spreadsheet (.csv)</button>
+            <button type="button" class="button button-secondary" data-report="text">Text (.txt)</button>
+          </div>
+          <p class="hint">Results disappear when you refresh or close this page. Download a report to keep a copy.</p>
+        </div>
+
+        <details class="help levels-help">
+          <summary>What do Note, Check, and Needs review mean?</summary>
+          <dl class="definitions">
+            <dt>Needs review</dt>
+            <dd>A person should look at these records and recount the cash where possible.</dd>
+            <dt>Check</dt>
+            <dd>Worth a closer look, at a lower priority than Needs review.</dd>
+            <dt>Note</dt>
+            <dd>Background that may help explain another lead, such as a difference that equals exactly one bill.</dd>
+          </dl>
+        </details>
       </div>
-      <p class="hint" id="filter-status" aria-live="polite"
-         data-all="Showing all leads."
-         data-level="Showing leads marked {level}."
-         data-date="Showing all leads on {date}."
-         data-both="Showing leads marked {level} on {date}."></p>
-      <ol class="lead-list" id="lead-list" aria-labelledby="leads-heading"
-          data-whole-day="Whole day"
-          data-drawer-template="Drawer {code}"
-          data-rule-template="Rule {code}"
-          data-open-text="Open drawer details"
-          data-day-drawers="Drawers on {date}:"></ol>
-      <p id="no-leads" hidden>No leads were found in these records.</p>
-      <div id="no-matches" hidden>
-        <p>No leads match these filters.</p>
-        <a class="button button-secondary" href="#/results" data-role="clear-filters">Show all leads</a>
-      </div>
+
+      <details class="help">
+        <summary>Lead counts for the full run</summary>
+        <p><span data-fact="leads_total"></span> <span data-one="lead total:" data-many="leads total:"></span> <span id="severity-chips"></span></p>
+      </details>
 
       <details class="help" id="day-details">
         <summary>Totals by day</summary>
@@ -286,17 +312,7 @@
         </div>
       </details>
 
-      <details class="help">
-        <summary>What do Note, Check, and Needs review mean?</summary>
-        <dl class="definitions">
-          <dt>Needs review</dt>
-          <dd>A person should look at these records and recount the cash where possible.</dd>
-          <dt>Check</dt>
-          <dd>Worth a closer look, at a lower priority than Needs review.</dd>
-          <dt>Note</dt>
-          <dd>Background that may help explain another lead, such as a difference that equals exactly one bill.</dd>
-        </dl>
-      </details>
+
 
       <div class="actions">
         <a class="button button-secondary" href="#/">Start a new check</a>

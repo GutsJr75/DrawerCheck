@@ -29,6 +29,8 @@
   const errorSummary = document.getElementById("error-summary");
   const errorList = document.getElementById("error-list");
   const resultsRange = document.getElementById("results-range");
+  const summaryTick = document.getElementById("summary-tick");
+  summaryTick.addEventListener("animationend", () => summaryTick.classList.add("drawn"));
   const severityChips = document.getElementById("severity-chips");
   const filters = document.getElementById("filters");
   const dateSelect = document.getElementById("filter-date");
@@ -55,8 +57,6 @@
   const severityClass = { review: "status-review", warn: "status-check", info: "status-note" };
   // Address words for the level filter, and the severity each one shows.
   const showSeverity = { all: null, review: "review", check: "warn", note: "info" };
-  // Business dates are calendar days; formatting in UTC keeps them from shifting.
-  const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "UTC" });
   let results = null;
   let sortedLeads = [];
   let leadDates = new Set();
@@ -111,7 +111,7 @@
   }
 
   function formatDate(isoDate) {
-    return dateFormat.format(new Date(`${isoDate}T00:00:00Z`));
+    return results.labels.dates[isoDate];
   }
 
   function formatSize(bytes) {
@@ -394,7 +394,17 @@
     return item;
   }
 
-  function renderFacts() {
+  function renderSummary() {
+    const summary = results.summary;
+    summaryTick.toggleAttribute("hidden", summary.drawers_without_leads === 0);
+    summaryTick.classList.remove("drawn");
+    const headline = document.getElementById("summary-headline");
+    const wording =
+      summary.drawers_checked === 0 ? "empty" : summary.drawers_checked === 1 ? "one" : "many";
+    headline.textContent = fill(headline.dataset[wording], {
+      affected: summary.drawers_with_leads.toLocaleString("en-US"),
+      checked: summary.drawers_checked.toLocaleString("en-US"),
+    });
     for (const number of views.results.querySelectorAll("[data-fact]")) {
       const count = results.summary[number.dataset.fact];
       const label = number.nextElementSibling;
@@ -572,7 +582,7 @@
       from: formatDate(payload.from_date),
       to: formatDate(payload.to_date),
     });
-    renderFacts();
+    renderSummary();
     buildFilters();
     for (const [details] of lazyTables) {
       details.open = false;

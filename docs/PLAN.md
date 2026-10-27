@@ -34,9 +34,16 @@
   and scrollbar styles now apply to all views. Final local verification:
   709 tests, both Ruff checks, and Chrome checks at 320/1,280 px in both themes.
   [Block 1 evidence](M10_BLOCK1.md) records screenshots and audit limitations.
-  No new hosted CI or deployment result is claimed. Stop for **next** before
-  M10 block 2 (Results summary and layout). Review checkboxes and report
-  restyling remain deferred.
+  No new hosted CI or deployment result is claimed.
+- **M10 block 2 complete locally (authorized 2026-10-26):** the user's "go for
+  block 2" authorized the Results summary and layout. Results now separates
+  drawers, drawer leads, and whole-day leads in a Full run slip. Filters,
+  secondary downloads, and level definitions form a responsive side column.
+  Python supplies the added counts and weekday labels, including overnight
+  clock dates. The list remains flat until block 3. See
+  [block 2 evidence](M10_BLOCK2.md). Stop for **next** before block 3 grouping.
+  Review checkboxes and report restyling remain deferred.
+
 
 How the scope grew:
 
@@ -88,7 +95,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M7: Web request handling | Optional Flask installation and shared pipeline; bounded uploads and isolated temporary runs; web error handling and in-process tests. | `src/drawercheck/web.py`, `pyproject.toml`, `errors.py`, `tests/test_web.py`, CI updates, `docs/WEB_PLAN.md` | The same demo or CSV data gives the same results through CLI and web. Failed and concurrent requests cannot leave shared data. Upload limits, cleanup, escaping, and report contents are tested. Stop before M8. |
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
-| M10: Proposed frontend redesign | Block 1 authorized and completed locally 2026-10-26. Shared design done; Results summary and grouping, Drawer details, Start, Prepare files, then verification remain. M10 precedes M9 R06/R07. Stop for next before each further block. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. Block 1 evidence in docs/M10_BLOCK1.md; no automatic continuation to later blocks. |
+| M10: Frontend redesign | Blocks 1 and 2 authorized and completed locally 2026-10-26. Shared design and Results summary/layout done; Results grouping, Drawer details, Start, Prepare files, then verification remain. M10 precedes M9 R06/R07. Stop for next before each further block. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. Evidence in docs/M10_BLOCK1.md and docs/M10_BLOCK2.md; no automatic continuation to later blocks. |
 
 ## Intended structure
 
@@ -260,6 +267,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 
 
 73. **Deliver M10 block 1 only (authorized 2026-10-26).** The user's "I give you my approval" approves the next block under the finalized redesign plan, before the remaining M9 rules. Apply the shared ledger palette, Atkinson fonts, responsive type/spacing, drawer-and-tick brand mark, surface header, wrapping footer, and breadcrumbs. Keep the existing views and calculations until their own blocks. Use two Fontsource 5.3.0 Latin variable fonts (51,748 bytes total), preload Next only, and ship each original licence through package data. Reuse the existing hash routing and back-to-results role in the shared breadcrumb macro, preserving filters and heading focus. The existing CSS remains the canonical token owner; DESIGN.md mirrors it, with a drift test. WEB_PLAN.md remains the behavior contract and the audit manifest points to it. Verified local browser evidence and the generic static audit's seven external-handler detection limitations are in docs/M10_BLOCK1.md. Stop for next before block 2; no push, deployment, rule changes, or optional review checkboxes are included.
+
+74. **Deliver M10 block 2 only (authorized 2026-10-26).** The user's "go for block 2" authorizes the Full run Results slip, responsive side column, quiet downloads, and Python count/date additions. Count affected drawers once by their highest own severity; count any flag without a shift identity as whole-day, while preserving R08-only deposit-day semantics. Shared English date labels also include opening/closing clock dates because the existing drawer view can cross midnight. Keep the DOM order filters, review, downloads, definitions and optional detail, with one control set and no positive tabindex. Put detailed lead counts in a closed disclosure. The no-leads tick draws once per run, stays still under reduced motion, and hides when no drawers qualify; it never means an exact match. Retain the flat list, current report contents, financial arithmetic, and all resource caps. Stop for next before block 3 grouping. Local checks, screenshots, budgets, and the unchanged generic audit limitations are in docs/M10_BLOCK2.md; no new hosted CI or deployment claim.
 
 ## Math and test commitments
 
