@@ -21,9 +21,9 @@ a copy. The free server may take about a minute to wake up after inactivity.
 
 **The redesigned screens are implemented:** grouped drawer review, exact cash
 outcomes, and two-step file preparation. On 2026-10-28 the public assets
-matched block 6, and the example and fake upload each returned 18 leads.
-Two local block 7 accessibility/layout fixes await publication and a final
-hosted check. See the [redesign checklist](docs/M10_CHECKLIST.md).
+matched block 7 commit `62650f9`, including its two QA fixes. Chrome and WebKit
+each passed the public example, fake upload, reports, and refresh checks.
+See the [redesign checklist](docs/M10_CHECKLIST.md) for remaining manual checks.
 R06 and R07 remain later M9 blocks.
 
 ## Why I am building it
@@ -40,13 +40,13 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit heuristic | Done; R03 verified locally, on GitHub, and live |
 | Web request layer, website screens, public hosting, and documentation | Delivered through M8 block 7; live at [drawercheck.onrender.com](https://drawercheck.onrender.com) |
-| M10 Tick and tie redesign | All views implemented and locally checked; two block 7 fixes await publication and final hosted verification |
+| M10 Tick and tie redesign | All views implemented; local and hosted checks recorded, with manual validation gaps listed below |
 | Remaining optional rules (R06, R07) | Later M9 blocks; stop for review after each block |
 
-**Automated checks:** [GitHub Actions run 40664015982](https://github.com/GutsJr75/DrawerCheck/actions/runs/40664015982)
-for block 6 commit `17875c1` passed on Python 3.12, 3.13, and 3.14, including
+**Automated checks:** [GitHub Actions run 40706484429](https://github.com/GutsJr75/DrawerCheck/actions/runs/40706484429)
+for block 7 commit `62650f9` passed on Python 3.12, 3.13, and 3.14, including
 both Ruff checks and optional web/server tests, observed on 2026-10-28.
-It predates the block 7 fixes. Final local checks pass 729 tests and 216
+It includes both block 7 fixes. Final local checks pass 729 tests and 216
 Chrome/WebKit accessibility scans with no detected violations. Actual 400%
 browser zoom, a real screen reader, and first-time-user usability remain
 unverified. No full accessibility certification is claimed; the

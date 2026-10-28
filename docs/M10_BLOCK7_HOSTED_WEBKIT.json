@@ -1,0 +1,240 @@
+{
+  "checks": [
+    {
+      "case": "live-start-and-matching-assets",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7-hosted/2026-10-28-m10-block7-hosted-start-published-webkit-light-1280.png"
+    },
+    {
+      "case": "public-example",
+      "status": 200,
+      "summary": {
+        "deposit_lead_days": 2,
+        "drawer_leads_total": 16,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 4,
+          "warn": 5
+        },
+        "drawers_checked": 60,
+        "drawers_needing_review": 4,
+        "drawers_with_leads": 9,
+        "drawers_without_leads": 51,
+        "leads_by_severity": {
+          "info": 4,
+          "review": 7,
+          "warn": 7
+        },
+        "leads_total": 18,
+        "whole_day_lead_days": 2,
+        "whole_day_leads_total": 2
+      },
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7-hosted/2026-10-28-m10-block7-hosted-results-published-webkit-light-1280.png"
+    },
+    {
+      "case": "expanded-counts-wrap",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7-hosted/2026-10-28-m10-block7-hosted-results-counts-fixed-webkit-dark-320.png"
+    },
+    {
+      "case": "valid-live-tape-region",
+      "role": {
+        "tag": "DIV",
+        "role": "region",
+        "label": "tape-heading",
+        "tabIndex": 0
+      },
+      "outcomes": [
+        "$518.75",
+        "$498.75",
+        "-$20.00"
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7-hosted/2026-10-28-m10-block7-hosted-drawer-region-fixed-webkit-dark-320.png"
+    },
+    {
+      "case": "three-public-report-downloads",
+      "formats": [
+        "html",
+        "csv",
+        "text"
+      ]
+    },
+    {
+      "case": "seven-bundled-fake-files",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7-hosted/2026-10-28-m10-block7-hosted-prepare-ready-published-webkit-light-320.png"
+    },
+    {
+      "case": "public-seven-file-upload",
+      "status": 200,
+      "drawers": 60,
+      "flags": 18,
+      "flagsEqualExample": true
+    },
+    {
+      "case": "public-refresh-recovery",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7-hosted/2026-10-28-m10-block7-hosted-start-not-saved-webkit-light-320.png"
+    },
+    {
+      "case": "downloaded-html-opened",
+      "title": "DrawerCheck cash review: 2026-09-01 to 2026-09-30"
+    }
+  ],
+  "scans": [
+    {
+      "view": "results-expanded-counts",
+      "width": 320,
+      "theme": "light",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "results-expanded-counts",
+      "width": 1280,
+      "theme": "light",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 12
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "results-expanded-counts",
+      "width": 320,
+      "theme": "dark",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "results-expanded-counts",
+      "width": 1280,
+      "theme": "dark",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 12
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "drawer-named-region",
+      "width": 320,
+      "theme": "light",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "drawer-named-region",
+      "width": 1280,
+      "theme": "light",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "drawer-named-region",
+      "width": 320,
+      "theme": "dark",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "view": "drawer-named-region",
+      "width": 1280,
+      "theme": "dark",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "overflow": false
+    }
+  ],
+  "downloads": [
+    {
+      "kind": "html",
+      "path": "/tmp/drawercheck-block7-hosted/webkit-report.html",
+      "name": "drawercheck.html",
+      "sha256": "f0d9532ccd848c714d76735de06e8de764d7ba568f8236a4e370e4657a9150b5"
+    },
+    {
+      "kind": "csv",
+      "path": "/tmp/drawercheck-block7-hosted/webkit-report.csv",
+      "name": "drawercheck.csv",
+      "sha256": "4297343396c28bbd8d4b506157b2c5a7cf04d7d18428ad5079545b0470efec1c"
+    },
+    {
+      "kind": "text",
+      "path": "/tmp/drawercheck-block7-hosted/webkit-report.text",
+      "name": "drawercheck.txt",
+      "sha256": "d254bc1f44e87c954d09b8802d37ff1537fc4b6048070b264f5694b97c35fccd"
+    }
+  ],
+  "assets": {
+    "app.css": {
+      "bytes": 23345,
+      "sha256": "594443575a4747261cb3d5882b2e92cc7d6647d237686adf9253d80b3b5c8639"
+    },
+    "app.js": {
+      "bytes": 36642,
+      "sha256": "dd1d624817ec70c8c48d61cbd66c10812af2af9288650781bc930883def321ca"
+    }
+  },
+  "errors": [],
+  "hosts": [
+    "drawercheck.onrender.com"
+  ],
+  "browser": "26.6",
+  "indexStatus": 200,
+  "contentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+  "runtimeAssetsMatchCommit": "62650f9b08f98fc05d2b6ebcfba38642c3e9b552",
+  "renderBackendCommitIdObserved": false,
+  "saved_download_hashes_verified": true,
+  "report_read_checks": [
+    {
+      "kind": "html",
+      "rendered_in_browser": true
+    },
+    {
+      "kind": "csv",
+      "rows_including_header": 19
+    },
+    {
+      "kind": "text",
+      "utf8_read": true
+    }
+  ]
+}

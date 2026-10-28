@@ -1,0 +1,14 @@
+{
+  "app.css": {
+    "matches_checkout": true,
+    "sha256": "594443575a4747261cb3d5882b2e92cc7d6647d237686adf9253d80b3b5c8639",
+    "bytes": 23345
+  },
+  "app.js": {
+    "matches_checkout": true,
+    "sha256": "dd1d624817ec70c8c48d61cbd66c10812af2af9288650781bc930883def321ca",
+    "bytes": 36642
+  },
+  "named_tape_div_present": true,
+  "invalid_figure_role_absent": true
+}

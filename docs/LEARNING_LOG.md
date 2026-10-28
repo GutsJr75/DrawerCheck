@@ -1406,3 +1406,27 @@ because native app control timed out; real screen-reader speech and a new
 participant's usability check remain open. Generic static audit retains seven
 known external-handler detection findings; DESIGN.md lint has zero errors
 and one Markdown-only warning. Stop for next before further milestone work.
+
+## 2026-10-28: M10 block 7, hosted follow-up
+
+- Built: the final hosted record for published runtime 62650f9, with observed
+  CI jobs, exact asset/markup comparison, Chrome/WebKit smoke checks, report
+  hashes, and twelve dated screenshots. Updated the current project documents.
+- Learned: a tracking reference alone does not establish deployment. Match
+  real assets/markup, exercise the public app, and record CI for the exact
+  runtime. Render's initial loading-page 503 differs from later app success;
+  report hashes must match each run's own response because timestamps vary.
+- Interview question: How can you verify a public fix without claiming a
+  backend revision that the host does not expose?
+
+Observed CI run 40706484429 passing on Python 3.12/3.13/3.14 for 62650f9.
+Both engines pass the example and fake upload with 60 drawers and 18 equal
+flags, three report download/read checks, and refresh. Sixteen focused public
+scans detect no violation or page overflow, and both fixes are present.
+Local checks: 729 tests passed in 14.83 seconds, both Ruff checks and
+git diff --check passed. See [hosted evidence](M10_BLOCK7_HOSTED.md).
+
+Documentation/evidence changes only; no agent push or deployment. Actual
+browser zoom, screen-reader speech, and first-time-user usability remain
+unverified. M9 R06 and R07 remain unstarted and separately authorized.
+Stop for next after the local evidence commit.

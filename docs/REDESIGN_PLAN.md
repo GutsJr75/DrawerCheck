@@ -2,8 +2,8 @@
 
 **Status: M10 blocks 1/2 completed locally on 2026-10-26; blocks 3/4
 completed locally on 2026-10-27; blocks 5/6 and block 7 local verification
-completed on 2026-10-28. Final hosted verification of block 7 fixes and
-manual checks remain open.**
+completed on 2026-10-28. Hosted verification of block 7 fixes also passed
+on that date for `62650f9`; manual checks remain open.**
 [Block 1 evidence](M10_BLOCK1.md) covers the shared design,
 [block 2 evidence](M10_BLOCK2.md) the Results summary/layout,
 [block 3 evidence](M10_BLOCK3.md) grouping and filters, and
@@ -391,8 +391,8 @@ rules**, on 2026-10-26, then explicitly authorized **block 2** with "go for
 block 2", then authorized **blocks 3, 4, and 5** separately on 2026-10-27.
 Block 6 was separately authorized on 2026-10-28 with "Go for it".
 Block 7 local checks were separately authorized and completed on 2026-10-28.
-All views and local checks are delivered. Two QA fixes await publication and
-final hosted verification; real browser zoom, a screen reader, and usability
+All views and local checks are delivered. The two QA fixes are published and
+hosted-verified in [the follow-up](M10_BLOCK7_HOSTED.md); real browser zoom, a screen reader, and usability
 testing remain unverified. Approval does not authorize
 running all seven areas unattended. Once M10 is delivered, return to M9 R06,
 then R07, with their existing per-block review stops. New rules may change

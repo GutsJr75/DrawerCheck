@@ -15,8 +15,8 @@ Cross-view local verification is recorded in block 7. See
 
 Block 7 local verification completed on 2026-10-28 with two fixes: give the
 tape a valid named `div` scroll region around its semantic figure, and make
-severity count chips inline blocks so they wrap in Chrome. Final hosted
-verification of these fixes and the manual checks in
+severity count chips inline blocks so they wrap in Chrome. Hosted verification
+of these fixes passed for `62650f9` on the same date. The manual checks in
 [M10_CHECKLIST.md](docs/M10_CHECKLIST.md) remain open.
 
 The original M8 delivery history follows.

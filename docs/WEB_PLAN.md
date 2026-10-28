@@ -36,8 +36,8 @@
   verified fixes give the tape a valid named scroll wrapper and let expanded
   severity counts wrap in Chrome. Final checks cover 216 accessibility scans,
   both engines' 200% text/reflow/keyboard behavior, all demo outcomes, and
-  original-report parity. Block 6 CI/public behavior is observed; these new
-  fixes await publication and final hosted verification. Actual 400% browser
+  original-report parity. The subsequent [hosted follow-up](M10_BLOCK7_HOSTED.md)
+  observes passing CI and both public fixes for `62650f9`. Actual 400% browser
   zoom, a screen reader, and unfamiliar-user testing remain unverified.
   See [current checklist](M10_CHECKLIST.md) and [evidence](M10_BLOCK7.md).
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and

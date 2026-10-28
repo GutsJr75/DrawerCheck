@@ -1,9 +1,9 @@
 # M10 redesign verification checklist
 
 Updated 2026-10-28. All four views are implemented. Block 7 local verification
-and documentation are complete with the limits below. Two local fixes still
-need publication and final hosted verification; this is not a full acceptance
-or accessibility certification.
+and documentation are complete with the limits below. Hosted verification of
+the published block 7 fixes is also complete for `62650f9`; this is not a full
+acceptance or accessibility certification.
 
 | Check | Status | Evidence |
 | --- | --- | --- |
@@ -21,16 +21,16 @@ or accessibility certification.
 | Caps, cleanup, and safe insertion | PASS within tested scope | Existing regression suite; 8,701,107-byte combined response, strict cap retained; CSS/JS 59,987 bytes and fonts 51,748 bytes |
 | Generic premium static audit | Seven known findings remain | Exit 1 for external-handler detection; actual button behavior has browser evidence. This is not a clean static-audit pass |
 | Block 6 GitHub CI | PASS, observed | Run 40664015982 for 17875c1; Python 3.12/3.13/3.14 including optional web/server steps |
-| Existing public runtime | PASS within smoke scope | Assets match 17875c1; real example/upload each return 60 drawers and 18 leads; drawer, reports, and refresh work |
-| Block 7 fixes on hosted CI/public site | PENDING publication | Valid tape-region wrapper and wrapping count chips are local changes; no push or deployment performed |
+| Existing public runtime | PASS within smoke scope | Assets match 62650f9; Chrome/WebKit example/upload each return 60 drawers and 18 leads; drawer, three reports, and refresh work |
+| Block 7 fixes on hosted CI/public site | PASS, observed | CI run 40706484429 passes Python 3.12/3.13/3.14. Both fixes are present; 16 focused public accessibility scans have zero detected violations/overflow |
 | README, interview notes, and screenshot timeline | Updated | Current screenshots and honest local/hosted/manual distinctions |
 
 Two defects found and fixed during block 7: a region role placed on a figure,
 and a Chrome-only overflow when full lead-count chips were expanded. Initial
-and final scans/screenshots are retained. After publication, inspect the CI
-for the new commit, confirm matching deployed assets, and repeat the public
-example, fake upload, and all report downloads. Carry the manual checks above
-forward until they are actually observed.
+and final scans/screenshots are retained. The published commit's CI, matching
+assets, public example, fake upload, and all reports were verified in the
+[hosted follow-up](M10_BLOCK7_HOSTED.md). The agent did not push or deploy.
+Carry the manual checks above forward until they are actually observed.
 
 See [block 7 evidence](M10_BLOCK7.md) for exact checks, raw files, browser
 limitations, and screenshot provenance. The remaining M9 rules still require

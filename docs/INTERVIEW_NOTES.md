@@ -2,9 +2,9 @@
 
 DrawerCheck is a personal learning project with fictional data. These notes
 describe the core, M9 block 1 R03 heuristic, and M10 redesigned website.
-Final local M10 checks cover all screens in Chrome and WebKit. Block 6 has
-observed passing hosted CI and matching public assets; two local block 7
-fixes still need publication and hosted verification. The public example and
+Final local M10 checks cover all screens in Chrome and WebKit. Block 7 commit
+`62650f9` has observed passing CI, matching public assets, and verified fixes
+in both browsers. The public example and
 fake upload both returned 18 leads on 2026-10-28.
 [Open the public demo](https://drawercheck.onrender.com), or use the
 offline sample report if the free server is waking up. The

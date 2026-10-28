@@ -1,5 +1,9 @@
 # M10 block 7: final local verification
 
+Hosted follow-up, 2026-10-28: CI and public checks now pass for `62650f9`,
+including both fixes. See [hosted evidence](M10_BLOCK7_HOSTED.md). The local
+delivery record below preserves its earlier pending-publication status.
+
 Authorized by "Go for it" on 2026-10-28 after the block 6 summary named final
 verification. Started from `17875c1` with a clean working tree. Local checks
 and documentation are complete. Publication and hosted verification of the
