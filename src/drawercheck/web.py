@@ -169,6 +169,8 @@ FILE_DESCRIPTIONS = {
 }
 # The page reads these from the template, so browser messages stay in errors.py.
 CLIENT_MESSAGES = {
+    "needed": errors.WEB_CLIENT_NEEDED,
+    "fix_files": errors.WEB_CLIENT_FIX_FILES,
     "missing": errors.WEB_CLIENT_MISSING,
     "unknown_name": errors.WEB_CLIENT_UNKNOWN_NAME,
     "rename": errors.WEB_CLIENT_RENAME,

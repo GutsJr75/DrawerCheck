@@ -408,6 +408,29 @@ def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:
     assert "up to 2 MiB (2,097,152 bytes)" in text
 
 
+def test_prepare_steps_keep_native_selection_and_filename_help(client) -> None:
+    """Selection precedes checking, with named examples and honest readiness wording."""
+    html = client.get("/").get_data(as_text=True)
+    prepare = html.split('id="view-prepare"', 1)[1].split('id="view-results"', 1)[0]
+    steps = re.search(r'<ol class="prepare-steps work-main">(.*?)</ol>', prepare, re.S)
+    assert steps
+    assert re.findall(r"<h2[^>]*>(.*?)</h2>", steps.group(1)) == [
+        "Add the seven files",
+        "Check the files",
+    ]
+    assert "Ready means added. Check my files checks the contents." in prepare
+    assert steps.group(1).index('class="file-list"') < steps.group(1).index(
+        'id="check-files"'
+    )
+    assert 'id="check-files" aria-describedby="files-progress"' in prepare
+    assert "Still needed: " + ", ".join(CSV_HEADERS) + "." in prepare
+    assert re.search(r'id="file-input"[^>]+>\s*<label for="file-input"', prepare)
+    for name in CSV_HEADERS:
+        assert f'Example<span class="visually-hidden"> {name}</span>' in prepare
+    assert prepare.index('class="work-help"') > prepare.index('id="check-files"')
+    assert re.findall(r'<details class="help"([^>]*)>', prepare) == ["", ""]
+
+
 def test_script_never_inserts_markup_or_runs_strings() -> None:
     """Server text reaches the page only through textContent."""
     script = (STATIC / "app.js").read_text(encoding="utf-8")

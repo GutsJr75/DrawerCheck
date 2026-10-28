@@ -65,8 +65,15 @@
   the shared tape's input ticks, and explains Count, Compare, Review in a
   numbered sequence. The always-visible sleeping-server hint is removed;
   request notices, Cancel, retry, upload, and refresh recovery remain.
-  See [block 5 evidence](M10_BLOCK5.md). Stop for **next** before block 6,
-  Prepare files. No new hosted CI or deployment claim.
+  See [block 5 evidence](M10_BLOCK5.md). No new hosted CI or deployment claim.
+
+- **M10 block 6 complete locally (authorized 2026-10-28):** Prepare files
+  has two numbered steps, a native chooser/drop area, compact file rows with
+  qualified Ready ticks, named missing-file guidance, and responsive side help.
+  File replacement, real validation errors, focus links, size limits, Cancel,
+  and retry are verified. See [block 6 evidence](M10_BLOCK6.md).
+  Stop for **next** before block 7, cross-view verification and documentation.
+  No new hosted CI or deployment claim.
 
 How the scope grew:
 
@@ -118,7 +125,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M7: Web request handling | Optional Flask installation and shared pipeline; bounded uploads and isolated temporary runs; web error handling and in-process tests. | `src/drawercheck/web.py`, `pyproject.toml`, `errors.py`, `tests/test_web.py`, CI updates, `docs/WEB_PLAN.md` | The same demo or CSV data gives the same results through CLI and web. Failed and concurrent requests cannot leave shared data. Upload limits, cleanup, escaping, and report contents are tested. Stop before M8. |
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
-| M10: Frontend redesign | Blocks 1/2 completed locally 2026-10-26, 3/4 on 2026-10-27, and 5 on 2026-10-28, each separately authorized. Shared design, Results, Drawer details, and Start done; Prepare files and verification remain. M10 precedes M9 R06/R07. Stop for next before block 6. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK5.md; no automatic continuation to later blocks. |
+| M10: Frontend redesign | Blocks 1/2 completed locally 2026-10-26, 3/4 on 2026-10-27, and 5/6 on 2026-10-28, each separately authorized. All four views implemented; cross-view verification and documentation remain. M10 precedes M9 R06/R07. Stop for next before block 7. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK6.md; no automatic continuation to later blocks. |
 
 ## Intended structure
 
@@ -298,6 +305,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 76. **Deliver M10 block 4 only (authorized 2026-10-27).** After reporting the block 3 commit pushed, the user authorized Drawer details. Use a human register/date title with unique code/cashier/times beneath, and three exact Python outcome values. Status and own-lead level remain independent. Mark known tape inputs with qualified availability ticks; no outputs or unknowns are ticked. Fold only supplied zero rows when positive quantities exist, preserving all-zero versus absent counts and native aria-expanded/controls behavior. Keep full own/day leads and provide applicable saved-policy limit_text in Python's drawer response fields. Add Next through the filtered unique drawer sequence with no wrap and retain filtered Back links. Permit internal tape/count scrolling for large values and wrap outcome figures. Preserve core flags, reports, all resource ceilings, and the deferred checkboxes. Reuse existing styles and trim duplicate source comments already documented in DESIGN.md to stay under 60 KB. Stop for next before block 5; local evidence and remaining validation limits are in docs/M10_BLOCK4.md.
 
 77. **Deliver M10 block 5 only (authorized 2026-10-27).** The user's "Start block 5" authorizes Start under the approved plan. Reuse the shared title scale, actions, example tape, six input-availability ticks, definitions, route handler, and request controls. Shorten the lead and move the example description after the actions. Add Count, Compare, Review as a native ordered list with responsive columns and existing spacing. Remove only the always-on sleeping-server hint, retaining the five-second notice and 90-second browser timeout. Preserve fake-data wording, keyboard focus, duplicate prevention, Cancel, retry, upload, and refresh recovery. No JavaScript or server/core changes are needed. Keep the 60 KB CSS/JS cap unchanged; 130 bytes remain. Finish evidence in separate October 27/28 screenshot folders without replacing earlier captures. Stop for next before block 6. See docs/M10_BLOCK5.md for checks and remaining limits.
+
+78. **Deliver M10 block 6 only (authorized 2026-10-28).** After block 5's summary named Prepare files as next, the user's "Go for it" authorizes that block. Use a native two-step list, dashed drop area around the normal chooser, compact state/size/purpose/Example rows, Ready ticks qualified as added files, named missing-file guidance, and side help below/above the existing 960 px breakpoint. Both selection paths call addFiles and preserve same-name replacement, limits, server file problems, summary/row/input focus, waiting, Cancel, retry, and refresh behavior. New progress messages stay in errors.py. Rename the shared Results grid classes to work-layout/work-main and reuse them; remove unused legacy styles and redundant high-level comments while retaining why-comments. Keep all resource caps and calculations unchanged. Wrap long Prepare text and align long error links with the first bullet line. Stop for next before block 7; local evidence and remaining gaps are in docs/M10_BLOCK6.md.
 
 ## Math and test commitments
 

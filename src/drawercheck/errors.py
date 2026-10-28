@@ -154,6 +154,8 @@ WEB_HTTP_ERROR = "The request could not be completed. Start a new check."
 
 # Checks made in the browser before sending. The page fills each {placeholder}.
 WEB_CLIENT_MISSING = "Choose {name}. It has not been added yet."
+WEB_CLIENT_NEEDED = "Still needed: {names}."
+WEB_CLIENT_FIX_FILES = "Correct the files marked Problem, then check again."
 WEB_CLIENT_UNKNOWN_NAME = (
     "{name} was not added because it is not one of the seven required files."
 )

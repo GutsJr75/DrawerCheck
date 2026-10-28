@@ -26,7 +26,12 @@
   Start has a shorter lead, actions before the example description, qualified
   input ticks, and the numbered Count, Compare, Review sequence. Remove the
   always-on hosting hint and preserve the existing request/recovery behavior.
-  See [block 5 evidence](M10_BLOCK5.md). Stop for `next` before Prepare files.
+  See [block 5 evidence](M10_BLOCK5.md).
+- **M10 block 6 complete locally (authorized 2026-10-28):** Prepare files
+  now uses two steps, a dashed drop area with its native chooser, compact
+  Ready/Problem rows, named missing-file guidance, and responsive side help.
+  Both input paths share the existing chosen-file map and validation flow.
+  See [block 6 evidence](M10_BLOCK6.md). Stop for `next` before block 7.
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -174,7 +179,7 @@ a second UX contract. Existing native popup geometry is an intentional choice.
 | --- | --- | --- | --- | --- |
 | Select/Listbox | Native select and radio buttons in index.html, populated by app.js | This document's navigation and filter rules | Browser/OS-owned popup, CSS-styled trigger | Keyboard, opened popup, filter restoration in the local browser |
 | Date | Python labels.dates in web.py, shared formatDate lookup in app.js | M10 data contract below; server-owned English calendar labels | Read-only labels, no date picker; includes overnight clock dates | API date coverage and visible date options |
-| Form | Existing chosen-file map, importer validation, and error summary | Upload and request contracts below | Seven fake CSVs, native chooser, existing drag/drop enhancement | Existing web tests; missing-file error summary and focus in the browser |
+| Form | Existing chosen-file map, shared addFiles handler, importer validation, and error summary | Upload and request contracts below | Seven fake CSVs; native chooser and drop area; both use addFiles | Web/page tests; chooser/drop/replacement, file errors, limits, and focus in the browser |
 | Scrollbar | Global app.css standards rules and WebKit fallback | DESIGN.md runtime mapping | Document scrolling; optional tables own horizontal overflow | Narrow views and computed styles, system fallback in forced colors |
 
 There is no table selection, account CRUD, or toast system. Existing polite
@@ -425,7 +430,7 @@ report, and core-calculation contracts still apply.
   without wrapping; it hides at the end and for drawers outside the list.
   All-drawers/day-link entries get Next only if they belong to the active list.
   Back links restore the active filters. Drawer details always shows full leads.
-- Review checkboxes remain deferred. Prepare changes await block 6.
+- Review checkboxes remain deferred.
 
 ### M10 Start sequence (block 5, completed 2026-10-28)
 
@@ -444,6 +449,32 @@ report, and core-calculation contracts still apply.
   recovery. The upload view and server/core calculations are unchanged.
 - Local evidence: [block 5](M10_BLOCK5.md). These checks do not replace the
   final cross-browser, screen-reader, zoom, or unfamiliar-user checks.
+
+### M10 Prepare files contract (block 6, 2026-10-28)
+
+- The two-step ordered list contains Add the seven files and Check the files.
+  The native chooser and dashed drop area call the same addFiles handler;
+  drops add/replace file objects without reading contents or auto-submitting.
+  Non-file drags do not advertise file acceptance.
+- Keep Waiting, Ready with size/tick, and Problem with the full server message.
+  Ready means added; checking still happens through the existing request.
+  Server-rejected files remain chosen but lose Ready and their tick. Replacing
+  one clears its problem and restores Ready. Empty input selection keeps the
+  chosen map; clearing the native input permits selecting an edited file again.
+- Below Check my files, the live progress sentence gives the ready count and
+  names still missing. With seven chosen but a Problem row, it instead asks
+  for correction. Check my files refers to this sentence with aria-describedby.
+  New progress wording comes from errors.py via CLIENT_MESSAGES.
+- Each compact row keeps its purpose and an Example download with a filename
+  in its accessible name. Optional help is a side column at 960 px and follows
+  both steps below that width. Preserve both existing native disclosures.
+- Keep validation limits, focused error summary and its row/input links,
+  same-name replacement, slow waiting, duplicate guard, Cancel, and retry.
+  Long names and full errors wrap; multiline error links align with the first
+  bullet line. Native input, row, and button focus remain visible.
+- Prepare and Results reuse one work-layout/work-main CSS owner. No rule,
+  financial calculation, report, request cap, or result-response change.
+  Evidence and verification limits: [block 6](M10_BLOCK6.md).
 
 ### Data the screens need from Python
 

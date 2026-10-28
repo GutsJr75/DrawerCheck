@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "case": "long-unrecognized-filename",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-long-filename-dark-320.png"
+    },
+    {
+      "case": "long-money-error-summary",
+      "error": {
+        "column": "opening_float",
+        "file_name": "shifts.csv",
+        "line_number": 2,
+        "message": "shifts.csv: source line 2, field opening_float: This value exceeds 256 characters. Shorten it and save the file again. Correct the file and upload all seven CSVs again."
+      },
+      "alignment": "top",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-long-error-summary-dark-320.png"
+    },
+    {
+      "case": "long-money-row-problem",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-long-error-row-light-320.png"
+    },
+    {
+      "case": "correct-long-error-and-upload",
+      "drawers": 60,
+      "leads": 18
+    },
+    {
+      "case": "final-reduced-motion",
+      "transitions": "0s"
+    }
+  ],
+  "errors": []
+}

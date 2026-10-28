@@ -1344,3 +1344,30 @@ and official DESIGN.md lint reports zero errors and one Markdown-only warning.
 No new hosted CI, deployment, WebKit/zoom, screen-reader, or unfamiliar-user
 pass is claimed. See [block 5 evidence](M10_BLOCK5.md). Stop for `next` before
 block 6, Prepare files.
+
+## 2026-10-28: M10 block 6, Prepare files
+
+- Built: two numbered preparation steps, a dashed drop area around the native
+  chooser, compact state/size/purpose/Example rows, qualified Ready ticks,
+  named missing-file guidance, and responsive side help. Both file paths use
+  addFiles; real errors, replacement, limits, focus, Cancel, and retry remain.
+- Learned: keep added files separate from validated contents. Sharing the
+  Results grid avoids a second layout owner, and wrapping file sizes below
+  Ready keeps filenames whole on phones. Measure actual text lines rather
+  than stretched grid cells, reload changed styles, and handle native chooser
+  modals separately in CLI checks. CSS/JS remains 59,975 bytes under 60,000.
+- Interview question: Why should dropping or replacing a file use the same
+  handler as the chooser, and why must Ready not imply its contents are valid?
+
+Final verification: 729 tests passed in 14.64 seconds; the page suite passed
+23 tests. Both Ruff checks and `git diff --check` passed. Chrome covered the
+20-case shared-view matrix, eight empty and eight final Ready layouts, 20
+file/recovery cases, a separate keyboard-opened native chooser, and ten edge
+cases. Real corrected uploads return 60 drawers and 18 leads, and all seven
+downloaded fake CSV hashes match. Full response limits and financial rules
+remain unchanged. The static audit retains seven known external-handler
+detection findings; DESIGN.md lint reports zero errors and one Markdown-only
+warning. Screenshots and raw evidence are in [block 6](M10_BLOCK6.md).
+
+No new hosted CI, deployment, WebKit/zoom, screen-reader, OS-dialog usability,
+or unfamiliar-user pass is claimed. Stop for `next` before block 7.

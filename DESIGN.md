@@ -8,7 +8,9 @@ on 2026-10-27, groups the review list by drawer and whole-day date and adds
 More detail previews. Block 4 updates Drawer details with a human title, outcome
 strip, zero-row disclosure, input-availability ticks, rule limits, and Next.
 Block 5, completed on 2026-10-28, simplifies Start and adds the numbered
-Count, Compare, Review sequence. Prepare files awaits block 6. See
+Count, Compare, Review sequence. Block 6, completed on 2026-10-28, updates
+Prepare files with two steps, shared layout, drop area, and compact file rows.
+Cross-view verification remains in block 7. See
 [REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
 
 The original M8 delivery history follows.
@@ -192,7 +194,7 @@ local asset serving, font licences, package contents, and resource budgets.
 | Main button | `accent` fill with `on-accent` text, 44 px tall. One per view. On hover it turns to `text` with `surface` lettering. |
 | Secondary button | `surface` with a `control` border and `accent` text. |
 | Status label | Short word on its tinted background: Note, Check, Needs review, Ready, Missing, Problem. "Waiting" uses `muted` text with a `line` outline. |
-| File chooser | A normal labelled "Choose files" button; dragging files onto the list is optional extra help. |
+| File chooser | A normal labelled "Choose files" input inside a dashed drop area. Both selection paths use the same file handler. |
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
 | Filters | A native `select` and native radio buttons with `accent-color`, each with a visible label; no custom dropdown widget. The select drops its native look and draws its own arrow in the `text` colour, because WebKit ignores the 44 px height on native-looking selects. |
 | Demo notice placement | Inside the `header` landmark, above the wordmark row, so every piece of content belongs to a landmark. |
@@ -287,6 +289,33 @@ sleep explanation is removed; the five-second request notice remains.
 native ordered list for Count, Compare, Review because these are real steps.
 The list fits three columns on desktop and stacks on phones, using existing
 group spacing and typography without additional surfaces or animation.
+
+### Prepare files
+
+M10 block 6 uses a native ordered list with two real steps: Add the seven
+files, then Check the files. A dashed `control` border marks the drop area;
+the native Choose files button stays inside with its visible focus ring.
+The input immediately precedes its label so the shared focus style works.
+
+The checklist remains one `surface` sheet with ruled rows. Each row shows its
+filename, written state, size when Ready, purpose, and an Example link whose
+accessible name includes the filename. Ready rows reuse the static decorative
+tick. The checking step explicitly says Ready means added, not content-checked.
+Problem rows lose the tick and retain the server's full correction message.
+On narrow screens the size can wrap under Ready so each filename stays whole.
+The progress sentence below Check my files lists all files still needed by name.
+
+Prepare and Results share `work-layout` and `work-main`, renamed from the
+Results-specific classes. At 960 px, Prepare help uses the side column; below
+that width it follows both steps in DOM/reading order. Help has a short note
+and the two existing native disclosures. Keep topic spacing between steps
+and group spacing inside them, without new colours or surfaces.
+
+Long filenames and errors wrap within Prepare. Wrapped error links align with
+their first-line bullet. Error summaries and file rows retain their focus
+rings and focus targets. Remove unused legacy layout/link styles and redundant
+high-level JavaScript comments already covered by WEB_PLAN.md to preserve the
+unchanged 60 KB budget; retain comments explaining browser/focus behavior.
 
 ### Results full-run summary and side column
 

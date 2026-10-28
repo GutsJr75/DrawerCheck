@@ -1,0 +1,308 @@
+{
+  "checks": [
+    {
+      "case": "empty-missing-summary",
+      "requests": 0,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-missing-checked-light-320.png"
+    },
+    {
+      "case": "missing-error-link-row-focus",
+      "rowRing": "3px"
+    },
+    {
+      "case": "native-input-focus-and-empty-selection",
+      "chooserRing": "3px"
+    },
+    {
+      "case": "drop-unknown-and-case-mismatch",
+      "notes": "CASHIERS.CSV was not added. Rename it to cashiers.csv and choose it again.\n\n<img src=x>.csv was not added because it is not one of the seven required files.",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-rename-checked-light-1280.png"
+    },
+    {
+      "case": "partial-drop-shared-handler",
+      "rows": [
+        {
+          "name": "cashiers.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "159 bytes",
+          "problem": ""
+        },
+        {
+          "name": "registers.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "56 bytes",
+          "problem": ""
+        },
+        {
+          "name": "shifts.csv",
+          "status": "Waiting",
+          "tick": false,
+          "size": "",
+          "problem": ""
+        },
+        {
+          "name": "pos_totals.csv",
+          "status": "Waiting",
+          "tick": false,
+          "size": "",
+          "problem": ""
+        },
+        {
+          "name": "safe_drops.csv",
+          "status": "Waiting",
+          "tick": false,
+          "size": "",
+          "problem": ""
+        },
+        {
+          "name": "cash_counts.csv",
+          "status": "Waiting",
+          "tick": false,
+          "size": "",
+          "problem": ""
+        },
+        {
+          "name": "bank_deposits.csv",
+          "status": "Waiting",
+          "tick": false,
+          "size": "",
+          "problem": ""
+        }
+      ],
+      "progress": "2 of 7 files ready. Still needed: shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-partial-checked-dark-320.png"
+    },
+    {
+      "case": "native-chooser-completes-drop",
+      "rows": [
+        {
+          "name": "cashiers.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "159 bytes",
+          "problem": ""
+        },
+        {
+          "name": "registers.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "56 bytes",
+          "problem": ""
+        },
+        {
+          "name": "shifts.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "5.4 KB",
+          "problem": ""
+        },
+        {
+          "name": "pos_totals.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "3.0 KB",
+          "problem": ""
+        },
+        {
+          "name": "safe_drops.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "3.9 KB",
+          "problem": ""
+        },
+        {
+          "name": "cash_counts.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "15.3 KB",
+          "problem": ""
+        },
+        {
+          "name": "bank_deposits.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "1.2 KB",
+          "problem": ""
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-ready-complete-checked-light-1280.png"
+    },
+    {
+      "case": "ready-phone",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-ready-check-checked-dark-320.png"
+    },
+    {
+      "case": "empty-input-selection-keeps-seven",
+      "passed": true
+    },
+    {
+      "case": "real-server-file-problem",
+      "status": 400,
+      "error": {
+        "column": "<header>",
+        "file_name": "shifts.csv",
+        "line_number": 1,
+        "message": "shifts.csv: source line 1, the first row (column names): Missing required columns: shift_code. Correct the file and upload all seven CSVs again."
+      },
+      "rows": [
+        {
+          "name": "cashiers.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "159 bytes",
+          "problem": ""
+        },
+        {
+          "name": "registers.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "56 bytes",
+          "problem": ""
+        },
+        {
+          "name": "shifts.csv",
+          "status": "Problem",
+          "tick": false,
+          "size": "",
+          "problem": "shifts.csv: source line 1, the first row (column names): Missing required columns: shift_code. Correct the file and upload all seven CSVs again."
+        },
+        {
+          "name": "pos_totals.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "3.0 KB",
+          "problem": ""
+        },
+        {
+          "name": "safe_drops.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "3.9 KB",
+          "problem": ""
+        },
+        {
+          "name": "cash_counts.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "15.3 KB",
+          "problem": ""
+        },
+        {
+          "name": "bank_deposits.csv",
+          "status": "Ready",
+          "tick": true,
+          "size": "1.2 KB",
+          "problem": ""
+        }
+      ],
+      "progress": "6 of 7 files ready. Correct the files marked Problem, then check again.",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-server-error-checked-dark-320.png"
+    },
+    {
+      "case": "problem-error-link",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-problem-row-checked-light-1280.png"
+    },
+    {
+      "case": "same-name-corrected-replacement",
+      "progress": "7 of 7 files ready."
+    },
+    {
+      "case": "all-seven-named-example-downloads",
+      "names": [
+        "cashiers.csv",
+        "registers.csv",
+        "shifts.csv",
+        "pos_totals.csv",
+        "safe_drops.csv",
+        "cash_counts.csv",
+        "bank_deposits.csv"
+      ]
+    },
+    {
+      "case": "combined-size-precheck-and-input-focus",
+      "requests": 1,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-too-large-checked-dark-1280.png"
+    },
+    {
+      "case": "real-five-second-upload-wait",
+      "count": 1,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-slow-checked-dark-320.png"
+    },
+    {
+      "case": "cancel-keeps-file-state",
+      "passed": true
+    },
+    {
+      "case": "503-inline-retry",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-unavailable-checked-light-1280.png"
+    },
+    {
+      "case": "actual-retry-and-upload-success",
+      "status": 200,
+      "drawers": 60,
+      "leads": 18
+    },
+    {
+      "case": "optional-help-disclosures",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-help-open-checked-light-320.png"
+    },
+    {
+      "case": "static-ticks-and-system-colours",
+      "media": {
+        "animation": "none",
+        "scrollbar": "auto"
+      }
+    },
+    {
+      "case": "refresh-clears-files",
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv."
+    }
+  ],
+  "errors": [],
+  "downloads": [
+    {
+      "name": "cashiers.csv",
+      "path": "/tmp/drawercheck-block6-example-cashiers.csv",
+      "sha256": "e7a014d5fe53753797cf6cd0cfb68f93ac78cc369f95e109835d2c5e72a1e4d7"
+    },
+    {
+      "name": "registers.csv",
+      "path": "/tmp/drawercheck-block6-example-registers.csv",
+      "sha256": "f464012d3f7ea035600412f3621c368430673d8a22e24b30702e94964cc2a74c"
+    },
+    {
+      "name": "shifts.csv",
+      "path": "/tmp/drawercheck-block6-example-shifts.csv",
+      "sha256": "adbc773e200e690200131d2a8711c576e21e37f18d9e4a12891cf8a8e0e933c8"
+    },
+    {
+      "name": "pos_totals.csv",
+      "path": "/tmp/drawercheck-block6-example-pos_totals.csv",
+      "sha256": "ecd3c64ddb0874f98a8065db35db942f5b73e8e5570c7d9d213e80ca7aa49e20"
+    },
+    {
+      "name": "safe_drops.csv",
+      "path": "/tmp/drawercheck-block6-example-safe_drops.csv",
+      "sha256": "f255c72c3b763d7b17fa00883321ea466098ebd16a3794d25f209d829ff82f1e"
+    },
+    {
+      "name": "cash_counts.csv",
+      "path": "/tmp/drawercheck-block6-example-cash_counts.csv",
+      "sha256": "84e76c03c77b2888f51e7c576625e66642d32a50765cb4abbbf4865883e9a97f"
+    },
+    {
+      "name": "bank_deposits.csv",
+      "path": "/tmp/drawercheck-block6-example-bank_deposits.csv",
+      "sha256": "858c2f06a3750cb6c9e4f3791769a93e9ba6a7c4b33ca92e74488ed1589353b8"
+    }
+  ],
+  "resources": [
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/app.css",
+    "http://127.0.0.1:5080/static/app.js",
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-mono-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/favicon.svg"
+  ]
+}

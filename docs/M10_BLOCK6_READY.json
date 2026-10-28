@@ -1,0 +1,368 @@
+{
+  "checks": [
+    {
+      "width": 320,
+      "theme": "light",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 142,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "96px",
+      "wrap": "anywhere",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-ready-final-light-320.png"
+    },
+    {
+      "width": 959,
+      "theme": "light",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 765,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "96px",
+      "wrap": "anywhere"
+    },
+    {
+      "width": 960,
+      "theme": "light",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 284.984375,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 290.96875,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 303.9375,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 303.609375,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 304.40625,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 298.40625,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 307.640625,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "none",
+      "wrap": "anywhere"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 572.984375,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 578.96875,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 591.9375,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 591.609375,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 592.40625,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 586.40625,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 595.640625,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "none",
+      "wrap": "anywhere",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-ready-final-light-1280.png"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 142,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 142,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "96px",
+      "wrap": "anywhere",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-ready-final-dark-320.png"
+    },
+    {
+      "width": 959,
+      "theme": "dark",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 765,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 765,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "96px",
+      "wrap": "anywhere"
+    },
+    {
+      "width": 960,
+      "theme": "dark",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 284.984375,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 290.96875,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 303.9375,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 303.609375,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 304.40625,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 298.40625,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 307.640625,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "none",
+      "wrap": "anywhere"
+    },
+    {
+      "width": 1280,
+      "theme": "dark",
+      "overflow": false,
+      "names": [
+        {
+          "name": "cashiers.csv",
+          "width": 572.984375,
+          "textLines": 1
+        },
+        {
+          "name": "registers.csv",
+          "width": 578.96875,
+          "textLines": 1
+        },
+        {
+          "name": "shifts.csv",
+          "width": 591.9375,
+          "textLines": 1
+        },
+        {
+          "name": "pos_totals.csv",
+          "width": 591.609375,
+          "textLines": 1
+        },
+        {
+          "name": "safe_drops.csv",
+          "width": 592.40625,
+          "textLines": 1
+        },
+        {
+          "name": "cash_counts.csv",
+          "width": 586.40625,
+          "textLines": 1
+        },
+        {
+          "name": "bank_deposits.csv",
+          "width": 595.640625,
+          "textLines": 1
+        }
+      ],
+      "ready": 7,
+      "stateMax": "none",
+      "wrap": "anywhere",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-ready-final-dark-1280.png"
+    }
+  ]
+}

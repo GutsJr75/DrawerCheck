@@ -111,7 +111,7 @@
       </section>
     </section>
 
-    <section id="view-prepare" class="view view-narrow" aria-labelledby="prepare-heading" data-title="Prepare your files | DrawerCheck" hidden>
+    <section id="view-prepare" class="view" aria-labelledby="prepare-heading" data-title="Prepare your files | DrawerCheck" hidden>
       {{ breadcrumbs("Prepare files") }}
 
       <div class="error-summary" id="error-summary" tabindex="-1" hidden>
@@ -122,57 +122,72 @@
       </div>
 
       <h1 id="prepare-heading" tabindex="-1">Prepare your files</h1>
-      <p class="lead">DrawerCheck needs seven CSV files, one for each kind of record. Download the example of any file below to see what it should contain.</p>
+      <p class="lead">DrawerCheck needs seven CSV files, one for each kind of record. Use the examples below to make your own fictional records.</p>
 
-      <div class="chooser">
-        <input type="file" id="file-input" class="visually-hidden file-input" multiple accept=".csv,text/csv" aria-describedby="chooser-hint chooser-privacy">
-        <label for="file-input" class="button button-secondary">Choose files</label>
-        <p class="hint" id="chooser-hint">You can choose all seven at once. Choosing a file with the same name again replaces it.</p>
-        <p class="hint" id="chooser-privacy">Use example data only. Files are checked and then deleted; nothing is saved.</p>
-        <div class="chooser-notes" id="chooser-notes" aria-live="polite"></div>
+      <div class="work-layout">
+        <ol class="prepare-steps work-main">
+          <li>
+            <h2 id="files-heading">Add the seven files</h2>
+            <div class="chooser" id="file-drop">
+              <p>Drop your demo CSVs here, or choose them.</p>
+              <input type="file" id="file-input" class="visually-hidden file-input" multiple accept=".csv,text/csv" aria-describedby="chooser-hint chooser-privacy">
+              <label for="file-input" class="button button-secondary">Choose files</label>
+              <p class="hint" id="chooser-hint">You can choose all seven at once. Choosing a file with the same name again replaces it.</p>
+              <p class="hint" id="chooser-privacy">Use example data only. Files are checked and then deleted; nothing is saved.</p>
+              <div class="chooser-notes" id="chooser-notes" aria-live="polite"></div>
+            </div>
+
+            <ul class="file-list" aria-labelledby="files-heading">
+              {% for name, about in files.items() %}
+              <li class="file-row" id="file-{{ name[:-4] }}" data-file="{{ name }}" tabindex="-1">
+                <span class="file-name">{{ name }}</span>
+                <span class="file-state"><svg class="input-tick" viewBox="0 0 32 32" aria-hidden="true" focusable="false" hidden><path d="m5 17 7 7L27 7"/></svg><span class="status status-waiting" data-role="status">Waiting</span><span class="file-size" data-role="size"></span></span>
+                <span class="file-about">{{ about }}</span>
+                <p class="file-problem" data-role="problem" hidden></p>
+                <a class="file-example" href="{{ url_for('example_file', file_name=name) }}" download>Example<span class="visually-hidden"> {{ name }}</span></a>
+              </li>
+              {% endfor %}
+            </ul>
+
+          </li>
+          <li>
+            <h2>Check the files</h2>
+            <p>Ready means added. Check my files checks the contents.</p>
+            <div class="actions">
+              <button type="button" class="button button-primary" id="check-files" aria-describedby="files-progress" data-busy-text="Checking your files...">Check my files</button>
+              <button type="button" class="button button-secondary" id="prepare-cancel" hidden>Cancel</button>
+            </div>
+            <p class="hint" id="files-progress" aria-live="polite" data-template="{ready} of {total} files ready.">0 of {{ files|length }} files ready. {{ messages["needed"].format(names=files|join(", ")) }}</p>
+            <p class="waiting-slow" id="prepare-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
+            <div class="request-error" id="prepare-error" role="alert" data-retry="Try again"></div>
+
+          </li>
+        </ol>
+        <aside class="work-help" aria-labelledby="file-help-heading">
+          <h2 id="file-help-heading">Not sure what goes in a file?</h2>
+          <p>Each Example link downloads that file with fictional records and the column names to keep.</p>
+          <details class="help">
+            <summary>How to prepare your files</summary>
+            <ul>
+              <li>Keep each file name exactly as listed, and keep the column names in the first row.</li>
+              <li>Write money with two decimal places and no dollar sign or commas, such as 1250.75.</li>
+              <li>Write dates as 2026-09-03 and times as 2026-09-03T08:00:00.</li>
+              <li>Use the same IDs in every file. For example, each shift's cashier_id must also appear in cashiers.csv.</li>
+              <li>Save from your spreadsheet as CSV UTF-8.</li>
+            </ul>
+          </details>
+          <details class="help">
+            <summary>Limits for this demo</summary>
+            <ul>
+              <li>All seven files together: up to {{ max_upload_bytes // 1048576 }} MiB ({{ "{:,}".format(max_upload_bytes) }} bytes), including a little space the browser adds when sending.</li>
+              <li>Up to {{ "{:,}".format(row_limits["registers.csv"]) }} registers and {{ "{:,}".format(row_limits["cashiers.csv"]) }} people.</li>
+              <li>Up to {{ "{:,}".format(row_limits["shifts.csv"]) }} shifts, {{ "{:,}".format(row_limits["safe_drops.csv"]) }} safe drops, and {{ "{:,}".format(row_limits["bank_deposits.csv"]) }} bank deposits.</li>
+              <li>Each value: up to {{ max_field_characters }} characters.</li>
+            </ul>
+            <p>These limits keep the free demo responsive. They are not rules for real stores.</p>
+          </details>
+        </aside>
       </div>
-
-      <h2 id="files-heading">Required files</h2>
-      <p class="hint" id="files-progress" aria-live="polite" data-template="{ready} of {total} files ready.">0 of {{ files|length }} files ready.</p>
-      <ul class="file-list" aria-labelledby="files-heading">
-        {% for name, about in files.items() %}
-        <li class="file-row" id="file-{{ name[:-4] }}" data-file="{{ name }}" tabindex="-1">
-          <span class="file-name">{{ name }}</span>
-          <span class="file-state"><span class="status status-waiting" data-role="status">Waiting</span><span class="file-size" data-role="size"></span></span>
-          <span class="file-about">{{ about }}</span>
-          <p class="file-problem" data-role="problem" hidden></p>
-          <a class="file-example" href="{{ url_for('example_file', file_name=name) }}" download>Download example<span class="visually-hidden"> {{ name }}</span></a>
-        </li>
-        {% endfor %}
-      </ul>
-
-      <div class="actions">
-        <button type="button" class="button button-primary" id="check-files" data-busy-text="Checking your files...">Check my files</button>
-        <button type="button" class="button button-secondary" id="prepare-cancel" hidden>Cancel</button>
-      </div>
-      <p class="waiting-slow" id="prepare-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
-      <div class="request-error" id="prepare-error" role="alert" data-retry="Try again"></div>
-
-      <details class="help">
-        <summary>How to prepare your files</summary>
-        <ul>
-          <li>Keep each file name exactly as listed, and keep the column names in the first row.</li>
-          <li>Write money with two decimal places and no dollar sign or commas, such as 1250.75.</li>
-          <li>Write dates as 2026-09-03 and times as 2026-09-03T08:00:00.</li>
-          <li>Use the same IDs in every file. For example, each shift's cashier_id must also appear in cashiers.csv.</li>
-          <li>Save from your spreadsheet as CSV UTF-8.</li>
-        </ul>
-      </details>
-      <details class="help">
-        <summary>Limits for this demo</summary>
-        <ul>
-          <li>All seven files together: up to {{ max_upload_bytes // 1048576 }} MiB ({{ "{:,}".format(max_upload_bytes) }} bytes), including a little space the browser adds when sending.</li>
-          <li>Up to {{ "{:,}".format(row_limits["registers.csv"]) }} registers and {{ "{:,}".format(row_limits["cashiers.csv"]) }} people.</li>
-          <li>Up to {{ "{:,}".format(row_limits["shifts.csv"]) }} shifts, {{ "{:,}".format(row_limits["safe_drops.csv"]) }} safe drops, and {{ "{:,}".format(row_limits["bank_deposits.csv"]) }} bank deposits.</li>
-          <li>Each value: up to {{ max_field_characters }} characters.</li>
-        </ul>
-        <p>These limits keep the free demo responsive. They are not rules for real stores.</p>
-      </details>
     </section>
 
     <section id="view-results" class="view" aria-labelledby="results-heading" data-title="Results | DrawerCheck" data-announce="Results are ready." hidden>
@@ -193,7 +208,7 @@
           <span>No leads found by these checks.</span></p>
       </div>
 
-      <div class="results-layout">
+      <div class="work-layout">
         <div class="filters" id="filters">
           <h2>Show</h2>
           <div class="field">
@@ -206,7 +221,7 @@
           </fieldset>
         </div>
 
-        <div class="review-main">
+        <div class="work-main">
           <h2 id="leads-heading">Review leads</h2>
           <p class="hint" id="leads-intro">A lead is something in the records worth checking. It is not a finding about anyone.</p>
           <p class="hint" id="filter-status" aria-live="polite"

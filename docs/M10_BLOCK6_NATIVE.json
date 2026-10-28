@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "case": "native-keyboard-chooser",
+      "steps": [
+        "Focus native input; label has 3px ring",
+        "Space opens File chooser modal",
+        "CLI upload selects cashiers.csv and registers.csv"
+      ],
+      "ready": [
+        "cashiers.csv",
+        "registers.csv"
+      ],
+      "progress": "2 of 7 files ready. Still needed: shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-native-keyboard-dark-320.png"
+    }
+  ]
+}

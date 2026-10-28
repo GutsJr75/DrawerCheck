@@ -1,5 +1,3 @@
-// Python calculates; JavaScript handles views, files, and requests.
-// Server strings use textContent, never HTML.
 "use strict";
 
 (() => {
@@ -19,6 +17,7 @@
   const startSlow = document.getElementById("start-slow");
   const tryExample = document.getElementById("try-example");
   const fileInput = document.getElementById("file-input");
+  const fileDrop = document.getElementById("file-drop");
   const chooserNotes = document.getElementById("chooser-notes");
   const filesProgress = document.getElementById("files-progress");
   const checkFiles = document.getElementById("check-files");
@@ -56,7 +55,6 @@
   const missingCode = document.getElementById("missing-code");
   const severityOrder = ["review", "warn", "info"];
   const severityClass = { review: "status-review", warn: "status-check", info: "status-note" };
-  // Address words for the level filter, and the severity each one shows.
   const showSeverity = { all: null, review: "review", check: "warn", note: "info" };
   let results = null;
   let sortedLeads = [];
@@ -84,7 +82,6 @@
   }
 
   function message(name, values = {}) {
-    // Python owns user-facing errors.
     return fill(document.querySelector(`[data-message="${name}"]`).textContent, values);
   }
 
@@ -172,7 +169,6 @@
   }
 
   function navigate(hash) {
-    // Moving to a view adds a history entry; the hashchange handler shows it.
     if (location.hash === hash) {
       route();
     } else {
@@ -185,7 +181,6 @@
       view.hidden = key !== name;
     }
     if (name === "start") {
-      // An old example failure should not greet a visitor who comes back later.
       clearRequestError(startError);
     }
     document.title = views[name].dataset.title;
@@ -211,7 +206,6 @@
       history.replaceState(null, "", "#/");
     }
     if ((address.view === "results" || address.view === "drawer") && !results) {
-      // A new page has no stored results.
       history.replaceState(null, "", "#/");
       notSaved.hidden = false;
       showView("start", { focus: !initial });
@@ -329,7 +323,7 @@
   }
 
   function amountCell(value) {
-    // Amounts arrive formatted from Python; "unknown" and other words stay in the body font.
+    // Keep unknown values in the text font; money strings use Mono.
     return element("td", /^-?\$/.test(value) ? "number money" : "number", value);
   }
 
@@ -422,13 +416,11 @@
   }
 
   function renderGroups(shown, filtered) {
-    // Match leads first; retain each drawer's full-run order and highest level.
     const matching = groupLeads(shown.filter(flag => flag.shift_id !== null), "shift_code");
     const days = groupLeads(shown.filter(flag => flag.shift_id === null), "business_date");
     const ordered = [...drawerGroups.keys()].filter(code => matching.has(code));
     reviewOrder = ordered;
     leadList.replaceChildren();
-    // Section counts come from Python and appear only without filters.
     function section(label, rows, count, unit) {
       if (!rows.length) return;
       const panel = element("div", "lead-section");
@@ -823,6 +815,7 @@
     const [label, className] = fileStatus[state];
     status.textContent = label;
     status.className = `status ${className}`;
+    row.querySelector("svg").toggleAttribute("hidden", state !== "ready");
     row.querySelector('[data-role="size"]').textContent = state === "ready" ? detail : "";
     const problem = row.querySelector('[data-role="problem"]');
     problem.textContent = state === "problem" ? detail : "";
@@ -832,11 +825,12 @@
     } else {
       problemFiles.delete(name);
     }
-    // A chosen file that the server reported a problem with is not ready.
+    const needed = [...rows.keys()].filter((name) => !chosen.has(name));
     filesProgress.textContent = fill(filesProgress.dataset.template, {
       ready: chosen.size - problemFiles.size,
       total: rows.size,
-    });
+    }) + (needed.length ? ` ${message("needed", { names: needed.join(", ") })}`
+      : problemFiles.size ? ` ${message("fix_files")}` : "");
   }
 
   function hideErrorSummary() {
@@ -911,7 +905,6 @@
     if (request) {
       return;
     }
-    // The browser checks only names, the number of files, and their total size.
     const problems = [];
     let totalBytes = 0;
     for (const [name, row] of rows) {
@@ -961,7 +954,6 @@
     }
     const { error, status } = outcome;
     if (status !== 400 && status !== 413) {
-      // Not a file problem: the server or connection failed, so offer Try again.
       showRequestError(prepareError, error.message, checkMyFiles);
       return;
     }
@@ -1007,6 +999,16 @@
     addFiles([...fileInput.files]);
     // Clearing the input lets the same file be chosen again after it is edited.
     fileInput.value = "";
+  });
+  fileDrop.addEventListener("dragover", (event) => {
+    if (event.dataTransfer.types.includes("Files")) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    }
+  });
+  fileDrop.addEventListener("drop", (event) => {
+    event.preventDefault();
+    addFiles([...event.dataTransfer.files]);
   });
   window.addEventListener("hashchange", () => route());
   route({ initial: true });

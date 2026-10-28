@@ -1,0 +1,422 @@
+{
+  "checks": [
+    {
+      "theme": "light",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-light-320.png",
+      "columns": "288px",
+      "main": {
+        "top": 391.0625,
+        "bottom": 2083.46875,
+        "left": 16,
+        "right": 304,
+        "width": 288
+      },
+      "help": {
+        "top": 2107.46875,
+        "bottom": 2377.5625,
+        "left": 16,
+        "right": 304,
+        "width": 288
+      },
+      "check": {
+        "top": 1906.46875,
+        "bottom": 1950.46875,
+        "left": 40,
+        "right": 204.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 434.25,
+        "bottom": 760.4375,
+        "left": 40,
+        "right": 304,
+        "width": 264
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "light",
+      "width": 959,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-light-959.png",
+      "columns": "911px",
+      "main": {
+        "top": 324.03125,
+        "bottom": 1708,
+        "left": 24,
+        "right": 935,
+        "width": 911
+      },
+      "help": {
+        "top": 1732,
+        "bottom": 1918.21875,
+        "left": 24,
+        "right": 935,
+        "width": 911
+      },
+      "check": {
+        "top": 1577.5,
+        "bottom": 1621.5,
+        "left": 48,
+        "right": 212.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 367.21875,
+        "bottom": 574.0625,
+        "left": 48,
+        "right": 935,
+        "width": 887
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "light",
+      "width": 960,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-light-960.png",
+      "columns": "560px 304px",
+      "main": {
+        "top": 324.03125,
+        "bottom": 1514.09375,
+        "left": 24,
+        "right": 584,
+        "width": 560
+      },
+      "help": {
+        "top": 324.03125,
+        "bottom": 1514.09375,
+        "left": 632,
+        "right": 936,
+        "width": 304
+      },
+      "check": {
+        "top": 1383.59375,
+        "bottom": 1427.59375,
+        "left": 48,
+        "right": 212.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 367.21875,
+        "bottom": 620.5625,
+        "left": 48,
+        "right": 584,
+        "width": 536
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-light-1280.png",
+      "columns": "848px 304px",
+      "main": {
+        "top": 340.03125,
+        "bottom": 1499.59375,
+        "left": 40,
+        "right": 888,
+        "width": 848
+      },
+      "help": {
+        "top": 340.03125,
+        "bottom": 1499.59375,
+        "left": 936,
+        "right": 1240,
+        "width": 304
+      },
+      "check": {
+        "top": 1369.09375,
+        "bottom": 1413.09375,
+        "left": 64,
+        "right": 228.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 383.21875,
+        "bottom": 590.0625,
+        "left": 64,
+        "right": 888,
+        "width": 824
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-dark-320.png",
+      "columns": "288px",
+      "main": {
+        "top": 391.0625,
+        "bottom": 2083.46875,
+        "left": 16,
+        "right": 304,
+        "width": 288
+      },
+      "help": {
+        "top": 2107.46875,
+        "bottom": 2377.5625,
+        "left": 16,
+        "right": 304,
+        "width": 288
+      },
+      "check": {
+        "top": 1906.46875,
+        "bottom": 1950.46875,
+        "left": 40,
+        "right": 204.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 434.25,
+        "bottom": 760.4375,
+        "left": 40,
+        "right": 304,
+        "width": 264
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "dark",
+      "width": 959,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-dark-959.png",
+      "columns": "911px",
+      "main": {
+        "top": 324.03125,
+        "bottom": 1708,
+        "left": 24,
+        "right": 935,
+        "width": 911
+      },
+      "help": {
+        "top": 1732,
+        "bottom": 1918.21875,
+        "left": 24,
+        "right": 935,
+        "width": 911
+      },
+      "check": {
+        "top": 1577.5,
+        "bottom": 1621.5,
+        "left": 48,
+        "right": 212.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 367.21875,
+        "bottom": 574.0625,
+        "left": 48,
+        "right": 935,
+        "width": 887
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "dark",
+      "width": 960,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-dark-960.png",
+      "columns": "560px 304px",
+      "main": {
+        "top": 324.03125,
+        "bottom": 1514.09375,
+        "left": 24,
+        "right": 584,
+        "width": 560
+      },
+      "help": {
+        "top": 324.03125,
+        "bottom": 1514.09375,
+        "left": 632,
+        "right": 936,
+        "width": 304
+      },
+      "check": {
+        "top": 1383.59375,
+        "bottom": 1427.59375,
+        "left": 48,
+        "right": 212.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 367.21875,
+        "bottom": 620.5625,
+        "left": 48,
+        "right": 584,
+        "width": 536
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block6/2026-10-28-m10-block6-prepare-empty-complete-dark-1280.png",
+      "columns": "848px 304px",
+      "main": {
+        "top": 340.03125,
+        "bottom": 1499.59375,
+        "left": 40,
+        "right": 888,
+        "width": 848
+      },
+      "help": {
+        "top": 340.03125,
+        "bottom": 1499.59375,
+        "left": 936,
+        "right": 1240,
+        "width": 304
+      },
+      "check": {
+        "top": 1369.09375,
+        "bottom": 1413.09375,
+        "left": 64,
+        "right": 228.9375,
+        "width": 164.9375
+      },
+      "chooser": {
+        "top": 383.21875,
+        "bottom": 590.0625,
+        "left": 64,
+        "right": 888,
+        "width": 824
+      },
+      "stepLabels": [
+        "Add the seven files",
+        "Check the files"
+      ],
+      "chooserBorder": "dashed",
+      "ticks": 0,
+      "progress": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv.",
+      "overflow": false,
+      "exampleNames": [
+        "Example cashiers.csv",
+        "Example registers.csv",
+        "Example shifts.csv",
+        "Example pos_totals.csv",
+        "Example safe_drops.csv",
+        "Example cash_counts.csv",
+        "Example bank_deposits.csv"
+      ],
+      "fileCount": 7
+    }
+  ],
+  "errors": [],
+  "browserVersion": "156.0.8078.48"
+}
