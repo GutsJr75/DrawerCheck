@@ -1,0 +1,301 @@
+{
+  "checks": [
+    {
+      "case": "start-complete",
+      "width": 320,
+      "theme": "light",
+      "layout": {
+        "example": {
+          "top": 437.453125,
+          "bottom": 481.453125,
+          "left": 16,
+          "right": 192.171875,
+          "height": 44
+        },
+        "upload": {
+          "top": 493.453125,
+          "bottom": 537.453125,
+          "height": 44
+        },
+        "processColumns": "264px",
+        "steps": [
+          "Count",
+          "Compare",
+          "Review"
+        ],
+        "ticks": [
+          {
+            "key": "opening_float",
+            "animation": "none"
+          },
+          {
+            "key": "cash_sales",
+            "animation": "none"
+          },
+          {
+            "key": "paid_ins",
+            "animation": "none"
+          },
+          {
+            "key": "cash_refunds",
+            "animation": "none"
+          },
+          {
+            "key": "paid_outs",
+            "animation": "none"
+          },
+          {
+            "key": "safe_drops",
+            "animation": "none"
+          }
+        ],
+        "outputTicks": 0,
+        "slowHidden": true,
+        "overflow": false
+      },
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-complete-checked-light-320.png"
+    },
+    {
+      "case": "start-complete",
+      "width": 1280,
+      "theme": "light",
+      "layout": {
+        "example": {
+          "top": 376.8125,
+          "bottom": 420.8125,
+          "left": 40,
+          "right": 216.171875,
+          "height": 44
+        },
+        "upload": {
+          "top": 376.8125,
+          "bottom": 420.8125,
+          "height": 44
+        },
+        "processColumns": "376px 376px 376px 0px",
+        "steps": [
+          "Count",
+          "Compare",
+          "Review"
+        ],
+        "ticks": [
+          {
+            "key": "opening_float",
+            "animation": "none"
+          },
+          {
+            "key": "cash_sales",
+            "animation": "none"
+          },
+          {
+            "key": "paid_ins",
+            "animation": "none"
+          },
+          {
+            "key": "cash_refunds",
+            "animation": "none"
+          },
+          {
+            "key": "paid_outs",
+            "animation": "none"
+          },
+          {
+            "key": "safe_drops",
+            "animation": "none"
+          }
+        ],
+        "outputTicks": 0,
+        "slowHidden": true,
+        "overflow": false
+      },
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-complete-checked-light-1280.png"
+    },
+    {
+      "case": "start-complete",
+      "width": 320,
+      "theme": "dark",
+      "layout": {
+        "example": {
+          "top": 437.453125,
+          "bottom": 481.453125,
+          "left": 16,
+          "right": 192.171875,
+          "height": 44
+        },
+        "upload": {
+          "top": 493.453125,
+          "bottom": 537.453125,
+          "height": 44
+        },
+        "processColumns": "264px",
+        "steps": [
+          "Count",
+          "Compare",
+          "Review"
+        ],
+        "ticks": [
+          {
+            "key": "opening_float",
+            "animation": "none"
+          },
+          {
+            "key": "cash_sales",
+            "animation": "none"
+          },
+          {
+            "key": "paid_ins",
+            "animation": "none"
+          },
+          {
+            "key": "cash_refunds",
+            "animation": "none"
+          },
+          {
+            "key": "paid_outs",
+            "animation": "none"
+          },
+          {
+            "key": "safe_drops",
+            "animation": "none"
+          }
+        ],
+        "outputTicks": 0,
+        "slowHidden": true,
+        "overflow": false
+      },
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-complete-checked-dark-320.png"
+    },
+    {
+      "case": "start-complete",
+      "width": 1280,
+      "theme": "dark",
+      "layout": {
+        "example": {
+          "top": 376.8125,
+          "bottom": 420.8125,
+          "left": 40,
+          "right": 216.171875,
+          "height": 44
+        },
+        "upload": {
+          "top": 376.8125,
+          "bottom": 420.8125,
+          "height": 44
+        },
+        "processColumns": "376px 376px 376px 0px",
+        "steps": [
+          "Count",
+          "Compare",
+          "Review"
+        ],
+        "ticks": [
+          {
+            "key": "opening_float",
+            "animation": "none"
+          },
+          {
+            "key": "cash_sales",
+            "animation": "none"
+          },
+          {
+            "key": "paid_ins",
+            "animation": "none"
+          },
+          {
+            "key": "cash_refunds",
+            "animation": "none"
+          },
+          {
+            "key": "paid_outs",
+            "animation": "none"
+          },
+          {
+            "key": "safe_drops",
+            "animation": "none"
+          }
+        ],
+        "outputTicks": 0,
+        "slowHidden": true,
+        "overflow": false
+      },
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-complete-checked-dark-1280.png"
+    },
+    {
+      "case": "keyboard-example-to-results",
+      "focusRing": "3px",
+      "drawers": 60,
+      "leads": 18
+    },
+    {
+      "case": "tape-definition-disclosure",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-definitions-open-checked-light-320.png"
+    },
+    {
+      "case": "actual-five-second-slow-notice",
+      "timing": {
+        "slow": 5000,
+        "timeout": 90000
+      },
+      "requests": 1,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-slow-waiting-checked-dark-320.png"
+    },
+    {
+      "case": "cancel-and-ignore-late-response",
+      "passed": true
+    },
+    {
+      "case": "unavailable-error",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-unavailable-retry-checked-light-1280.png"
+    },
+    {
+      "case": "actual-error-retry-button",
+      "drawers": 9
+    },
+    {
+      "case": "refresh-results-recovery",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-not-saved-checked-light-320.png"
+    },
+    {
+      "case": "network-error",
+      "text": "The demo server could not be reached. Check your connection and try again.\n\nTry again"
+    },
+    {
+      "case": "timeout-accelerated-dom-fixture",
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-timeout-checked-dark-320.png"
+    },
+    {
+      "case": "upload-entry-while-example-pending",
+      "passed": true
+    },
+    {
+      "case": "seven-files-upload-cancel",
+      "passed": true
+    },
+    {
+      "case": "real-seven-file-upload-and-drawer",
+      "drawers": 60,
+      "leads": 18
+    },
+    {
+      "case": "refresh-drawer-recovery",
+      "passed": true
+    },
+    {
+      "case": "forced-colors-reduced-motion",
+      "media": {
+        "animation": "none",
+        "stroke": "rgb(147, 211, 166)",
+        "scrollbar": "auto"
+      },
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-forced-colors-checked-dark-320.png"
+    }
+  ],
+  "errors": [],
+  "resources": [
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/app.css",
+    "http://127.0.0.1:5080/static/app.js",
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-mono-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/favicon.svg"
+  ]
+}

@@ -1317,3 +1317,30 @@ See [block 4 evidence](M10_BLOCK4.md) for raw checks and limits.
 
 No new hosted CI, deployment, WebKit/zoom, OS-popup keyboard, screen-reader,
 or unfamiliar-user pass is claimed. Stop for `next` before block 5, Start.
+
+## 2026-10-28: M10 block 5, Start
+
+- Built: a shorter Start introduction with both actions before the example
+  description, qualified shared input ticks, and a native Count, Compare,
+  Review sequence. Removed the always-on hosting hint while preserving slow
+  notices, Cancel, retry, upload, keyboard navigation, and refresh recovery.
+- Learned: a clear process can reuse existing spacing and native list numbers
+  without adding cards or saved state. Theme transitions also need time to
+  settle before screenshots; preserve initial captures and add dated final
+  evidence. CSS/JS is 59,870 bytes, leaving 130 under the unchanged budget.
+- Interview question: Why do available input records not prove that a drawer
+  balances, and how would you keep that distinction clear in the interface?
+
+Verification: 728 tests passed in the full suite; 22 page tests passed after
+the final test-selector cleanup. Both Ruff checks and `git diff --check`
+passed. Chrome covered 20 view/theme/width cases, 18 interaction cases, and
+ten final settled captures. Example and seven-file upload each returned 60
+drawers and 18 leads. The real five-second notice and an accelerated browser
+timeout fixture were checked separately. There are 48 new screenshots across
+the October 27 and 28 folders, retaining all initial captures.
+
+The generic strict audit retains seven external-handler detection findings,
+and official DESIGN.md lint reports zero errors and one Markdown-only warning.
+No new hosted CI, deployment, WebKit/zoom, screen-reader, or unfamiliar-user
+pass is claimed. See [block 5 evidence](M10_BLOCK5.md). Stop for `next` before
+block 6, Prepare files.

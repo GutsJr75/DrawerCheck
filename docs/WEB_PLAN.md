@@ -21,7 +21,12 @@
 - **M10 block 4 complete locally (authorized 2026-10-27):** Drawer details
   has a human title, exact outcome strip, supplied-zero row toggle, qualified
   input ticks, applicable rule limits, and filter-aware Next navigation.
-  See [block 4 evidence](M10_BLOCK4.md). Stop for `next` before the Start view.
+  See [block 4 evidence](M10_BLOCK4.md).
+- **M10 block 5 complete locally (authorized 2026-10-27, completed 2026-10-28):**
+  Start has a shorter lead, actions before the example description, qualified
+  input ticks, and the numbered Count, Compare, Review sequence. Remove the
+  always-on hosting hint and preserve the existing request/recovery behavior.
+  See [block 5 evidence](M10_BLOCK5.md). Stop for `next` before Prepare files.
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -296,8 +301,9 @@ There are two different waits, and only the second one is ours to design:
    loading page in the browser while the server wakes, which
    [Render's documentation](https://render.com/docs/free) says takes about one
    minute. Our page has not loaded yet, so none of our messages can appear.
-   README and the Start view's help text should warn about this first-visit
-   delay.
+   README explains this first-visit delay. M10 block 5 removes the always-on
+   Start explanation, as approved in REDESIGN_PLAN.md; the request notice
+   below still appears when a check is slow.
 2. **Waiting for a check after our page has loaded.** The server may still be
    slow if it fell asleep while the page stayed open. Our page handles this:
 
@@ -419,7 +425,25 @@ report, and core-calculation contracts still apply.
   without wrapping; it hides at the end and for drawers outside the list.
   All-drawers/day-link entries get Next only if they belong to the active list.
   Back links restore the active filters. Drawer details always shows full leads.
-- Review checkboxes remain deferred. Start and Prepare changes await blocks 5/6.
+- Review checkboxes remain deferred. Prepare changes await block 6.
+
+### M10 Start sequence (block 5, completed 2026-10-28)
+
+- Keep the existing title, shorter comparison lead, primary Try the example,
+  and secondary Upload demo CSVs. Put the made-up month description after
+  the actions. Both actions stay visible in the first 900 px at 320/1,280 px.
+- The shared real example tape shows six static availability ticks, with a
+  visible qualification that they do not mean the drawer balances. Calculated
+  outputs remain unticked and the existing definitions stay available.
+- Add an ordered Count, Compare, Review explanation below the title/tape group.
+  It explains the human count, the Python comparison, and human review without
+  adding an interactive task list or saved progress.
+- Remove only the always-visible hosting hint. Preserve the shared request
+  handler, five-second slow notice, 90-second browser timeout, duplicate guard,
+  Cancel, error retry, route focus, stale-response protection, and refresh
+  recovery. The upload view and server/core calculations are unchanged.
+- Local evidence: [block 5](M10_BLOCK5.md). These checks do not replace the
+  final cross-browser, screen-reader, zoom, or unfamiliar-user checks.
 
 ### Data the screens need from Python
 

@@ -107,7 +107,11 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
         "view-drawer",
         "view-missing",
     ]
-    views = {attrs["id"]: attrs for tag, attrs in page.tags if tag == "section"}
+    views = {
+        attrs["id"]: attrs
+        for tag, attrs in page.tags
+        if tag == "section" and "view" in attrs.get("class", "").split()
+    }
     assert "hidden" not in views["view-start"]
     assert all(
         "hidden" in views[name]
@@ -187,6 +191,32 @@ def test_start_tape_matches_the_demo_calculation(client) -> None:
     registers = {item["shift"]["register_id"] for item in payload["shifts"]}
     sentence = f"{payload['summary']['drawers_checked']} drawers on two registers"
     assert sentence in text and len(registers) == 2
+
+
+def test_start_explains_the_sequence_and_qualifies_available_inputs(client) -> None:
+    """Start explains a real process without claiming ticked inputs balance."""
+    html = client.get("/").get_data(as_text=True)
+    start = html.split('id="view-start"', 1)[1].split('id="view-prepare"', 1)[0]
+    assert "How a check works" in start
+    process = re.search(r"<ol>(.*?)</ol>", start, re.S).group(1)
+    assert re.findall(r"<h3>(.*?)</h3>", process) == ["Count", "Compare", "Review"]
+    assert "not a finding about anyone" in process
+    assert "This free demo server sleeps" not in start
+    assert 'id="start-slow" hidden' in start
+    assert (
+        "Ticks mean input records are available, not that the drawer balances." in start
+    )
+    rows = re.findall(r'<tr data-line="([a-z_]+)"[^>]*>(.*?)</tr>', start, re.S)
+    ticked = [key for key, row in rows if 'class="input-tick"' in row]
+    assert ticked == [
+        "opening_float",
+        "cash_sales",
+        "paid_ins",
+        "cash_refunds",
+        "paid_outs",
+        "safe_drops",
+    ]
+    assert all("hidden>" not in row for _, row in rows)
 
 
 def test_both_tapes_share_one_set_of_lines_and_meanings(client) -> None:
@@ -276,7 +306,13 @@ def test_drawer_outcomes_toggle_and_availability_ticks_have_semantics(client) ->
         toggle["aria-expanded"] == "false" and toggle["aria-controls"] == "count-rows"
     )
     assert "hidden" in toggle
-    ticks = [attrs for tag, attrs in page.tags if attrs.get("class") == "input-tick"]
+    html = client.get("/").get_data(as_text=True)
+    drawer = re.search(r'data-tape="drawer">(.*?)</table>', html, re.S).group(1)
+    drawer_page = _Page()
+    drawer_page.feed(drawer)
+    ticks = [
+        attrs for tag, attrs in drawer_page.tags if attrs.get("class") == "input-tick"
+    ]
     assert len(ticks) == 6
     assert all(attrs["aria-hidden"] == "true" and "hidden" in attrs for attrs in ticks)
     assert "Ticked values are available for this calculation." in text

@@ -7,7 +7,8 @@ Full run Results slip and responsive review/sidebar layout. Block 3, authorized
 on 2026-10-27, groups the review list by drawer and whole-day date and adds
 More detail previews. Block 4 updates Drawer details with a human title, outcome
 strip, zero-row disclosure, input-availability ticks, rule limits, and Next.
-Start and Prepare files await their own blocks. See
+Block 5, completed on 2026-10-28, simplifies Start and adds the numbered
+Count, Compare, Review sequence. Prepare files awaits block 6. See
 [REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
 
 The original M8 delivery history follows.
@@ -274,6 +275,18 @@ Instead of a marketing banner, the Start view shows a small, clearly labelled
 copy of the drawer tape for the demo shift `2026-09-03-R1`, captioned "Example
 from the built-in demo". It teaches the idea in five seconds and sits beside
 the main "Try the example" button.
+
+M10 block 5 keeps the shared 52/34 px title, shortens the lead, and puts both
+entry actions before the example description. Six static, decorative input
+ticks reuse the Drawer details shape; the caption explicitly means available
+records, not a balanced drawer. Calculated outputs carry no tick. Keep the
+definitions in their existing native disclosure. The always-visible server
+sleep explanation is removed; the five-second request notice remains.
+
+"How a check works" follows the title/tape group after a topic gap. Use a
+native ordered list for Count, Compare, Review because these are real steps.
+The list fits three columns on desktop and stacks on phones, using existing
+group spacing and typography without additional surfaces or animation.
 
 ### Results full-run summary and side column
 

@@ -22,7 +22,7 @@
       <tr data-line="{{ line.key }}"{% if line.key in ("expected", "difference") %} class="tape-rule tape-total"{% endif %}>
         {#- A label inside a details element does not name its row header, so Drawer details names it here. -#}
         <th scope="row"{% if explain %} aria-label="{{ (line.spoken ~ ' ' ~ line.label)|trim }}"{% endif %}><div class="tape-label"><span class="tape-op" aria-hidden="true">{{ line.sign }}</span>{% if line.spoken %}<span class="visually-hidden">{{ line.spoken }} </span>{% endif %}
-          {%- if explain and line.key in ("opening_float", "cash_sales", "paid_ins", "cash_refunds", "paid_outs", "safe_drops") %}<svg class="input-tick" viewBox="0 0 32 32" aria-hidden="true" focusable="false" hidden><path d="m5 17 7 7L27 7"/></svg>{% endif %}
+          {%- if line.key in ("opening_float", "cash_sales", "paid_ins", "cash_refunds", "paid_outs", "safe_drops") %}<svg class="input-tick" viewBox="0 0 32 32" aria-hidden="true" focusable="false"{% if explain %} hidden{% endif %}><path d="m5 17 7 7L27 7"/></svg>{% endif %}
           {%- if explain %}<details class="term"><summary>{{ line.label }}</summary><p>{{ line.definition }}</p></details>{% else %}{{ line.label }}{% endif %}</div></th>
         <td class="money">{{ amounts[line.key] if amounts else "" }}</td>
       </tr>
@@ -68,16 +68,15 @@
         <div>
           <p class="note" id="not-saved" hidden>Results are not saved. Run the example again or upload your files.</p>
           <h1 id="start-heading" tabindex="-1">Check a cash drawer against its records</h1>
-          <p class="lead">At the end of a shift, a cashier counts the cash in the drawer. DrawerCheck compares that count with the register's records and lists anything worth a second look.</p>
-          <p>Try it with a made-up month from Demo Store #001: 60 drawers on two registers, with a few records set up to need review.</p>
+          <p class="lead">Compare the cash counted at closing with the register's records. See the difference and the records to review.</p>
           <div class="actions">
             <button type="button" class="button button-primary" id="try-example" data-busy-text="Checking the example...">Try the example</button>
             <a class="button button-secondary" href="#/prepare">Upload demo CSVs</a>
             <button type="button" class="button button-secondary" id="start-cancel" hidden>Cancel</button>
           </div>
+          <p class="hint">A made-up month from Demo Store #001: 60 drawers on two registers, with a few records set up to need review.</p>
           <p class="waiting-slow" id="start-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
           <div class="request-error" id="start-error" role="alert" data-retry="Try again"></div>
-          <p class="hint">This free demo server sleeps when nobody is using it. If the page or a check is slow to start, the server is waking up, which usually takes about a minute.</p>
         </div>
 
         <div>
@@ -87,7 +86,7 @@
                 Register R1, September 3, 2026<span class="tape-code">Shift 2026-09-03-R1</span>
               {%- endcall %}
             </div>
-            <figcaption>Example from the built-in demo</figcaption>
+            <figcaption>Example from the built-in demo. Ticks mean input records are available, not that the drawer balances.</figcaption>
           </figure>
           <details class="help">
             <summary>What do these lines mean?</summary>
@@ -102,6 +101,14 @@
           </details>
         </div>
       </div>
+      <section id="check-process" class="check-process" aria-labelledby="process-heading">
+        <h2 id="process-heading">How a check works</h2>
+        <ol>
+          <li><h3>Count</h3><p>A cashier counts the notes and coins in the drawer at closing. The count sheet records how many of each.</p></li>
+          <li><h3>Compare</h3><p>DrawerCheck works out the expected cash from the register's records, then compares it with the count.</p></li>
+          <li><h3>Review</h3><p>Open a drawer to see its calculation and any leads. A lead is a reason to check the records, not a finding about anyone.</p></li>
+        </ol>
+      </section>
     </section>
 
     <section id="view-prepare" class="view view-narrow" aria-labelledby="prepare-heading" data-title="Prepare your files | DrawerCheck" hidden>

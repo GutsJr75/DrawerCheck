@@ -464,6 +464,21 @@ main {
   margin: 0;
 }
 
+.check-process {
+  margin-top: var(--space-topic);
+}
+
+.check-process ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-group);
+  padding-left: 1.5rem;
+}
+
+.check-process h3 {
+  margin: 0;
+}
+
 .tape-paper {
   position: relative;
   padding: var(--space-5) var(--space-5) var(--space-4);

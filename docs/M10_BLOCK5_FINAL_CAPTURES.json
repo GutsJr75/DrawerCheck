@@ -1,0 +1,812 @@
+{
+  "checks": [
+    {
+      "state": "complete-settled",
+      "width": 320,
+      "theme": "light",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-complete-settled-light-320.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(39, 71, 166)",
+          "color": "rgb(255, 255, 255)",
+          "top": 437.453125,
+          "bottom": 481.453125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(251, 252, 248)",
+          "color": "rgb(39, 71, 166)",
+          "top": 493.453125,
+          "bottom": 537.453125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "complete-settled",
+      "width": 1280,
+      "theme": "light",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-complete-settled-light-1280.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(39, 71, 166)",
+          "color": "rgb(255, 255, 255)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(251, 252, 248)",
+          "color": "rgb(39, 71, 166)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "complete-settled",
+      "width": 320,
+      "theme": "dark",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-complete-settled-dark-320.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(163, 182, 255)",
+          "color": "rgb(18, 26, 22)",
+          "top": 437.453125,
+          "bottom": 481.453125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(26, 37, 32)",
+          "color": "rgb(163, 182, 255)",
+          "top": 493.453125,
+          "bottom": 537.453125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "complete-settled",
+      "width": 1280,
+      "theme": "dark",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-complete-settled-dark-1280.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(163, 182, 255)",
+          "color": "rgb(18, 26, 22)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(26, 37, 32)",
+          "color": "rgb(163, 182, 255)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "process-settled",
+      "width": 320,
+      "theme": "light",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-process-settled-light-320.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(39, 71, 166)",
+          "color": "rgb(255, 255, 255)",
+          "top": -875.546875,
+          "bottom": -831.546875
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(251, 252, 248)",
+          "color": "rgb(39, 71, 166)",
+          "top": -819.546875,
+          "bottom": -775.546875
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "process-settled",
+      "width": 1280,
+      "theme": "dark",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-process-settled-dark-1280.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(163, 182, 255)",
+          "color": "rgb(18, 26, 22)",
+          "top": 171.8125,
+          "bottom": 215.8125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(26, 37, 32)",
+          "color": "rgb(163, 182, 255)",
+          "top": 171.8125,
+          "bottom": 215.8125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "slow-settled",
+      "width": 320,
+      "theme": "dark",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-slow-settled-dark-320.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Checking the example...",
+          "background": "rgb(163, 182, 255)",
+          "color": "rgb(18, 26, 22)",
+          "top": 437.453125,
+          "bottom": 481.453125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(26, 37, 32)",
+          "color": "rgb(163, 182, 255)",
+          "top": 493.453125,
+          "bottom": 537.453125
+        },
+        {
+          "label": "Cancel",
+          "background": "rgb(26, 37, 32)",
+          "color": "rgb(163, 182, 255)",
+          "top": 549.453125,
+          "bottom": 593.453125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "slow-settled",
+      "width": 1280,
+      "theme": "light",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-slow-settled-light-1280.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Checking the example...",
+          "background": "rgb(39, 71, 166)",
+          "color": "rgb(255, 255, 255)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(251, 252, 248)",
+          "color": "rgb(39, 71, 166)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        },
+        {
+          "label": "Cancel",
+          "background": "rgb(251, 252, 248)",
+          "color": "rgb(39, 71, 166)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "retry-settled",
+      "width": 320,
+      "theme": "light",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-retry-settled-light-320.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(39, 71, 166)",
+          "color": "rgb(255, 255, 255)",
+          "top": 437.453125,
+          "bottom": 481.453125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(251, 252, 248)",
+          "color": "rgb(39, 71, 166)",
+          "top": 493.453125,
+          "bottom": 537.453125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    },
+    {
+      "state": "retry-settled",
+      "width": 1280,
+      "theme": "dark",
+      "screenshot": "docs/screenshots/2026-10-28-m10-block5/2026-10-28-m10-block5-start-retry-settled-dark-1280.png",
+      "overflow": false,
+      "actions": [
+        {
+          "label": "Try the example",
+          "background": "rgb(229, 237, 230)",
+          "color": "rgb(26, 37, 32)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        },
+        {
+          "label": "Upload demo CSVs",
+          "background": "rgb(26, 37, 32)",
+          "color": "rgb(163, 182, 255)",
+          "top": 376.8125,
+          "bottom": 420.8125
+        }
+      ],
+      "ticks": [
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        },
+        {
+          "hidden": false,
+          "display": "block",
+          "animation": "none"
+        }
+      ],
+      "headings": [
+        {
+          "tag": "H1",
+          "text": "Check a cash drawer against its records"
+        },
+        {
+          "tag": "H2",
+          "text": "How a check works"
+        },
+        {
+          "tag": "H3",
+          "text": "Count"
+        },
+        {
+          "tag": "H3",
+          "text": "Compare"
+        },
+        {
+          "tag": "H3",
+          "text": "Review"
+        }
+      ],
+      "fontsLoaded": true
+    }
+  ],
+  "errors": [],
+  "resources": [
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/app.css",
+    "http://127.0.0.1:5080/static/app.js",
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-mono-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/api/demo",
+    "http://127.0.0.1:5080/api/demo",
+    "http://127.0.0.1:5080/api/demo",
+    "http://127.0.0.1:5080/static/favicon.svg"
+  ],
+  "browserVersion": "156.0.8078.48",
+  "retry": "passed"
+}

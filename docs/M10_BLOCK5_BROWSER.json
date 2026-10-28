@@ -1,0 +1,349 @@
+{
+  "checks": [
+    {
+      "view": "start",
+      "theme": "light",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-verified-light-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "prepare",
+      "theme": "light",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-prepare-verified-light-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "results",
+      "theme": "light",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-verified-light-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true,
+      "headline": "9 of 60 drawers have leads to check.",
+      "filter": {
+        "x": 936,
+        "y": 627.15625,
+        "width": 304,
+        "height": 253.640625
+      },
+      "review": {
+        "x": 40,
+        "y": 627.15625,
+        "width": 848,
+        "height": 3425.546875
+      },
+      "firstLead": {
+        "x": 65,
+        "y": 808.640625,
+        "width": 374.1875,
+        "height": 26.59375
+      },
+      "downloads": {
+        "x": 936,
+        "y": 904.796875,
+        "width": 304,
+        "height": 265.296875
+      },
+      "firstOutcome": {
+        "x": 787.78125,
+        "y": 835.96875,
+        "width": 75.21875,
+        "height": 26.421875
+      }
+    },
+    {
+      "view": "drawer",
+      "theme": "light",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-drawer-verified-light-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "start",
+      "theme": "light",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-verified-light-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "prepare",
+      "theme": "light",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-prepare-verified-light-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "results",
+      "theme": "light",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-verified-light-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true,
+      "headline": "9 of 60 drawers have leads to check.",
+      "filter": {
+        "x": 16,
+        "y": 707.734375,
+        "width": 288,
+        "height": 253.640625
+      },
+      "review": {
+        "x": 16,
+        "y": 985.375,
+        "width": 288,
+        "height": 5868.28125
+      },
+      "firstLead": {
+        "x": 41,
+        "y": 1190.109375,
+        "width": 238,
+        "height": 53.1875
+      },
+      "downloads": {
+        "x": 16,
+        "y": 6877.65625,
+        "width": 288,
+        "height": 288.546875
+      },
+      "firstOutcome": {
+        "x": 41,
+        "y": 1344.140625,
+        "width": 75.21875,
+        "height": 26.34375
+      }
+    },
+    {
+      "view": "drawer",
+      "theme": "light",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-drawer-verified-light-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "results",
+      "theme": "light",
+      "width": 959,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-breakpoint-light-959.png",
+      "columns": "911px",
+      "overflow": false
+    },
+    {
+      "view": "results",
+      "theme": "light",
+      "width": 960,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-breakpoint-light-960.png",
+      "columns": "560px 304px",
+      "overflow": false
+    },
+    {
+      "view": "start",
+      "theme": "dark",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-verified-dark-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "prepare",
+      "theme": "dark",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-prepare-verified-dark-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "results",
+      "theme": "dark",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-verified-dark-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true,
+      "headline": "9 of 60 drawers have leads to check.",
+      "filter": {
+        "x": 936,
+        "y": 627.15625,
+        "width": 304,
+        "height": 253.640625
+      },
+      "review": {
+        "x": 40,
+        "y": 627.15625,
+        "width": 848,
+        "height": 3425.546875
+      },
+      "firstLead": {
+        "x": 65,
+        "y": 808.640625,
+        "width": 374.1875,
+        "height": 26.59375
+      },
+      "downloads": {
+        "x": 936,
+        "y": 904.796875,
+        "width": 304,
+        "height": 265.296875
+      },
+      "firstOutcome": {
+        "x": 787.78125,
+        "y": 835.96875,
+        "width": 75.21875,
+        "height": 26.421875
+      }
+    },
+    {
+      "view": "drawer",
+      "theme": "dark",
+      "width": 1280,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-drawer-verified-dark-1280.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "start",
+      "theme": "dark",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-start-verified-dark-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "prepare",
+      "theme": "dark",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-prepare-verified-dark-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "results",
+      "theme": "dark",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-verified-dark-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true,
+      "headline": "9 of 60 drawers have leads to check.",
+      "filter": {
+        "x": 16,
+        "y": 707.734375,
+        "width": 288,
+        "height": 253.640625
+      },
+      "review": {
+        "x": 16,
+        "y": 985.375,
+        "width": 288,
+        "height": 5868.28125
+      },
+      "firstLead": {
+        "x": 41,
+        "y": 1190.109375,
+        "width": 238,
+        "height": 53.1875
+      },
+      "downloads": {
+        "x": 16,
+        "y": 6877.65625,
+        "width": 288,
+        "height": 288.546875
+      },
+      "firstOutcome": {
+        "x": 41,
+        "y": 1344.140625,
+        "width": 75.21875,
+        "height": 26.34375
+      }
+    },
+    {
+      "view": "drawer",
+      "theme": "dark",
+      "width": 320,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-drawer-verified-dark-320.png",
+      "visibleViews": 1,
+      "overflow": false,
+      "fontsLoaded": true,
+      "focusedHeading": true
+    },
+    {
+      "view": "results",
+      "theme": "dark",
+      "width": 959,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-breakpoint-dark-959.png",
+      "columns": "911px",
+      "overflow": false
+    },
+    {
+      "view": "results",
+      "theme": "dark",
+      "width": 960,
+      "screenshot": "docs/screenshots/2026-10-27-m10-block5/2026-10-27-m10-block5-results-breakpoint-dark-960.png",
+      "columns": "560px 304px",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "remote": [],
+  "resources": [
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/app.css",
+    "http://127.0.0.1:5080/static/app.js",
+    "http://127.0.0.1:5080/static/fonts/atkinson-hyperlegible-mono-latin-wght-normal.woff2",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/api/demo",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg",
+    "http://127.0.0.1:5080/static/favicon.svg"
+  ]
+}
