@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "case": "unfiltered-next-sequence",
+      "codes": [
+        "2026-09-03-R1",
+        "2026-09-08-R2",
+        "2026-09-25-R1",
+        "2026-09-27-R2",
+        "2026-09-05-R1",
+        "2026-09-09-R1",
+        "2026-09-12-R1",
+        "2026-09-14-R1",
+        "2026-09-18-R1"
+      ],
+      "lastDoesNotWrap": true
+    },
+    {
+      "case": "filtered-note-sequence",
+      "codes": [
+        "2026-09-03-R1",
+        "2026-09-08-R2",
+        "2026-09-12-R1",
+        "2026-09-18-R1"
+      ],
+      "address": "#/results?show=note",
+      "allOwnLeadsRetained": true
+    },
+    {
+      "case": "all-drawers-outsider",
+      "nextVisible": false
+    },
+    {
+      "case": "single-drawer-and-keyboard-zero-toggle",
+      "targets": [
+        "count-row-3",
+        "count-row-9",
+        "count-row-10",
+        "count-row-11"
+      ],
+      "address": "#/results?date=2026-09-03&show=note"
+    },
+    {
+      "case": "all-drawers-outcomes-counts-and-inputs",
+      "drawers": 60
+    }
+  ],
+  "errors": []
+}

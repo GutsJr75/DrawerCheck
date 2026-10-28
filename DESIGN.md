@@ -10,8 +10,14 @@ strip, zero-row disclosure, input-availability ticks, rule limits, and Next.
 Block 5, completed on 2026-10-28, simplifies Start and adds the numbered
 Count, Compare, Review sequence. Block 6, completed on 2026-10-28, updates
 Prepare files with two steps, shared layout, drop area, and compact file rows.
-Cross-view verification remains in block 7. See
+Cross-view local verification is recorded in block 7. See
 [REDESIGN_PLAN.md](docs/REDESIGN_PLAN.md) for that delivery order.
+
+Block 7 local verification completed on 2026-10-28 with two fixes: give the
+tape a valid named `div` scroll region around its semantic figure, and make
+severity count chips inline blocks so they wrap in Chrome. Final hosted
+verification of these fixes and the manual checks in
+[M10_CHECKLIST.md](docs/M10_CHECKLIST.md) remain open.
 
 The original M8 delivery history follows.
 M8 block 1 built the page layout, tokens, fonts, demo notice, and footer in

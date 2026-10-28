@@ -1,5 +1,11 @@
 # M8 delivery and verification checklist
 
+Review note, 2026-10-28: the earlier M8 "400% zoom" script used a 320 x 200
+viewport with device scale factor 4. That emulates reflow and does not prove
+actual browser zoom. Treat the historical zoom claim below with that limit.
+The redesigned UI's [current checklist](M10_CHECKLIST.md) verifies 200% text
+and equivalent reflow separately, with actual browser zoom still open.
+
 Updated 2026-10-26. All seven M8 delivery blocks are complete, including the
 README screenshots and interview notes. This is a learning demo with fictional
 data. Delivery does not mean every manual validation item passed.

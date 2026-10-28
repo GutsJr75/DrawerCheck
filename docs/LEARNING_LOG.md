@@ -1371,3 +1371,38 @@ warning. Screenshots and raw evidence are in [block 6](M10_BLOCK6.md).
 
 No new hosted CI, deployment, WebKit/zoom, screen-reader, OS-dialog usability,
 or unfamiliar-user pass is claimed. Stop for `next` before block 7.
+
+## 2026-10-28: M10 block 7, final local verification
+
+- Built: the final two-engine state matrix, original-data/report comparison,
+  current checklist, README/screenshots, and interview notes. Fixed a region
+  role on a figure with a valid named div wrapper, and Chrome's narrow-page
+  overflow by making full-run severity chips wrap as inline blocks.
+- Learned: distinguish an actual browser-zoom test from equivalent reflow
+  emulation. A 320 x 200 viewport and DPR 4 do not prove real 400% zoom.
+  Preserve initial findings, scope waits to the requested route, and separate
+  local fixes from older hosted CI/assets. Final CSS/JS is 59,987 bytes.
+- Interview question: What can automated accessibility scans and viewport
+  emulation establish, and which claims still need a real person or device?
+
+Final local checks: 729 tests passed in 15.01 seconds; the page suite passed
+23 tests. Both Ruff checks and git diff --check passed. Final axe-core scans
+cover 27 states in Chrome/WebKit, both themes, at 320/1,280 px: 216 scans,
+zero detected violations, and color-contrast incomplete results retained.
+Both engines pass 200% text, 320 x 200 reflow, keyboard/live-region checks,
+all 60 drawer outcomes and filtered Next, and named tape/table scrolling.
+All original shift records, 18 global flags, and three reports agree with
+the pre-M10 snapshot, excluding only the added limit_text field.
+
+Observed block 6 CI run 40664015982 passing on Python 3.12/3.13/3.14, matching
+public assets, and successful public example/fake upload/download/refresh
+smoke checks. This does not verify unpublished block 7 fixes. The combined
+response remains 8,701,107 bytes, below the unchanged 10 MB cap. All 136 new
+screenshots, initial and fixed evidence, and verification limits are linked
+from [block 7](M10_BLOCK7.md) and the [M10 checklist](M10_CHECKLIST.md).
+
+No push or deployment performed. Actual browser zoom remains unverified
+because native app control timed out; real screen-reader speech and a new
+participant's usability check remain open. Generic static audit retains seven
+known external-handler detection findings; DESIGN.md lint has zero errors
+and one Markdown-only warning. Stop for next before further milestone work.

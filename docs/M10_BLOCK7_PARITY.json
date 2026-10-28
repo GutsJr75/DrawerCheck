@@ -1,0 +1,44 @@
+{
+  "baseline_commit": "fc4f3ceaeb55490ca6145f0879df085e6d40e512",
+  "drawers": 60,
+  "flags": 18,
+  "outcome_keys": [
+    "status",
+    "expected_amount",
+    "counted_amount",
+    "variance_amount",
+    "daily_deposit_amount"
+  ],
+  "all_global_flags_identical": true,
+  "all_drawer_outcomes_identical": true,
+  "entire_shift_records_equal_excluding_new_limit_text": true,
+  "reports_identical": true,
+  "report_sha256": {
+    "html": "f521a85adf6298739ff39c67b980b2cf8ab4a9b9ebb04d229e415882dc8f4b74",
+    "csv": "4297343396c28bbd8d4b506157b2c5a7cf04d7d18428ad5079545b0470efec1c",
+    "text": "481dd20e4f6151b6850f30ec164d1056793d8694c52f4b409e27202fc4971fe5"
+  },
+  "summary": {
+    "deposit_lead_days": 2,
+    "drawer_leads_total": 16,
+    "drawers_by_highest_severity": {
+      "info": 0,
+      "review": 4,
+      "warn": 5
+    },
+    "drawers_checked": 60,
+    "drawers_needing_review": 4,
+    "drawers_with_leads": 9,
+    "drawers_without_leads": 51,
+    "leads_by_severity": {
+      "info": 4,
+      "review": 7,
+      "warn": 7
+    },
+    "leads_total": 18,
+    "whole_day_lead_days": 2,
+    "whole_day_leads_total": 2
+  },
+  "working_tree_base_commit": "17875c1ec7e7faaf859c32f156069b67dace0e87",
+  "includes_local_block7_presentation_fixes": true
+}

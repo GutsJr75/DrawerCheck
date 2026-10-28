@@ -19,10 +19,12 @@ provided on that screen. Use fictional data only.
 Results disappear when you refresh or close the page. Download a report to keep
 a copy. The free server may take about a minute to wake up after inactivity.
 
-**M9 block 1 is live:** the public example produces 18 leads, including two
-possible swapped-digit hints. The live example and seven-file synthetic upload
-were checked on 2026-10-26; see [verification evidence](docs/M9_BLOCK1.md#public-verification-follow-up-2026-10-26).
-R06 and R07 are later blocks.
+**The redesigned screens are implemented:** grouped drawer review, exact cash
+outcomes, and two-step file preparation. On 2026-10-28 the public assets
+matched block 6, and the example and fake upload each returned 18 leads.
+Two local block 7 accessibility/layout fixes await publication and a final
+hosted check. See the [redesign checklist](docs/M10_CHECKLIST.md).
+R06 and R07 remain later M9 blocks.
 
 ## Why I am building it
 
@@ -38,16 +40,17 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit heuristic | Done; R03 verified locally, on GitHub, and live |
 | Web request layer, website screens, public hosting, and documentation | Delivered through M8 block 7; live at [drawercheck.onrender.com](https://drawercheck.onrender.com) |
+| M10 Tick and tie redesign | All views implemented and locally checked; two block 7 fixes await publication and final hosted verification |
 | Remaining optional rules (R06, R07) | Later M9 blocks; stop for review after each block |
 
-**Automated checks:** [GitHub Actions run 40426134663](https://github.com/GutsJr75/DrawerCheck/actions/runs/40426134663)
-for M9 block 1 commit `c5af7a4` passed on Python 3.12, 3.13, and 3.14, including
-both Ruff checks and the optional web/server tests. This run was inspected on
-2026-10-26; it does not test this later documentation update. The badge above
-shows GitHub's most recent result. The [M8 checklist](docs/M8_CHECKLIST.md)
-separates observed checks, user-reported checks, and remaining validation.
-A real screen-reader session and a usability check with a new participant
-remain unverified; no full accessibility certification is claimed.
+**Automated checks:** [GitHub Actions run 40664015982](https://github.com/GutsJr75/DrawerCheck/actions/runs/40664015982)
+for block 6 commit `17875c1` passed on Python 3.12, 3.13, and 3.14, including
+both Ruff checks and optional web/server tests, observed on 2026-10-28.
+It predates the block 7 fixes. Final local checks pass 729 tests and 216
+Chrome/WebKit accessibility scans with no detected violations. Actual 400%
+browser zoom, a real screen reader, and first-time-user usability remain
+unverified. No full accessibility certification is claimed; the
+[M10 checklist](docs/M10_CHECKLIST.md) separates passes and open checks.
 
 ## Try the command line in 3 steps
 
@@ -81,14 +84,14 @@ shifts and 18 review leads, and works offline with no external files or scripts.
 
 ## Screenshots
 
-The updated M9 local results, captured in Chrome on 2026-10-26 in dark mode:
+M10 local Results, captured in Chrome on 2026-10-28 in light mode:
 
-![Results showing 60 drawers checked, 4 needing review, 18 leads, and report downloads](docs/screenshots/2026-10-26-m9-block1/2026-10-26-m9-block1-results-summary-dark-1390.png)
+![Results grouping 18 leads into nine drawers and two whole-day dates](docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-fixed-chrome-light-1280.png)
 
-The public demo's drawer explanation, captured on Render on 2026-10-24 in
-light mode. The worked drawer expected $518.75 and counted $498.75:
+M10 local Drawer details, captured on the same date in light mode.
+The worked drawer expected $518.75 and counted $498.75:
 
-![Drawer explanation and denomination count sheet showing a twenty-dollar shortage](docs/screenshots/2026-10-24-m8-block6/2026-10-24-m8-block6-drawer-2026-09-03-R1-light-1280.png)
+![Drawer outcome, calculation tape, and count sheet showing a twenty-dollar shortage](docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-fixed-chrome-light-1280.png)
 
 These are pictures of the interactive app. The downloadable HTML report has
 its own layout. See the [screenshot timeline](docs/screenshots/README.md) for
@@ -234,10 +237,10 @@ messages, with checks and fixes.
 The public site has four views: Start with the example
 button, Prepare files for uploads, Results with filters and report downloads,
 and Drawer details. Back, Forward, and copied links work, and results are kept
-only while the page is open. The recorded automated accessibility scans found
-no violations in the tested Chrome and WebKit states, and the recorded
-keyboard, zoom, and text-size checks passed; see the
-[block 5 results](docs/WEB_PLAN.md#verification-and-expanded-definition-of-done).
+only while the page is open. M10 checks cover keyboard access, narrow layouts,
+200% text, and automated accessibility in Chrome and WebKit. The 320 x 200
+reflow test is distinct from actual browser zoom, which remains unverified.
+See the [current checklist](docs/M10_CHECKLIST.md) for evidence and limits.
 The public demo is deployed from the [Render Blueprint](render.yaml) and live at
 [https://drawercheck.onrender.com](https://drawercheck.onrender.com).
 The block 6 repair uses two single-threaded sync workers with a 30-second
@@ -361,6 +364,8 @@ Libraries and tools, in plain language:
   files, not a real overdue payment.
 
 ## More documentation
+
+- [Current redesign verification and open checks](docs/M10_CHECKLIST.md)
 
 - [How it works](docs/HOW_IT_WORKS.md): formulas, a worked example, and every rule.
 - [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact error messages, with checks and fixes.

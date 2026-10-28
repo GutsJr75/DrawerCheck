@@ -1,0 +1,1057 @@
+{
+  "checks": [
+    {
+      "state": "start",
+      "view": "start",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 21
+        }
+      ],
+      "passes": 42,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Check a cash drawer against its records",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-start-start-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "prepare-empty",
+      "view": "prepare",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 40,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Prepare your files",
+      "live": [
+        {
+          "id": "chooser-notes",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "files-progress",
+          "live": "polite",
+          "role": null,
+          "text": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-prepare-prepare-empty-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "prepare-missing",
+      "view": "prepare",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 43,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Prepare your files",
+      "live": [
+        {
+          "id": "chooser-notes",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "files-progress",
+          "live": "polite",
+          "role": null,
+          "text": "0 of 7 files ready. Still needed: cashiers.csv, registers.csv, shifts.csv, pos_totals.csv, safe_drops.csv, cash_counts.csv, bank_deposits.csv."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "state": "prepare-ready",
+      "view": "prepare",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 40,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Prepare your files",
+      "live": [
+        {
+          "id": "chooser-notes",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "files-progress",
+          "live": "polite",
+          "role": null,
+          "text": "7 of 7 files ready."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "state": "prepare-problem",
+      "view": "prepare",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 43,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Prepare your files",
+      "live": [
+        {
+          "id": "chooser-notes",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "files-progress",
+          "live": "polite",
+          "role": null,
+          "text": "6 of 7 files ready. Correct the files marked Problem, then check again."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Checking your files..."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-prepare-prepare-problem-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "prepare-failed",
+      "view": "prepare",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 43,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Prepare your files",
+      "live": [
+        {
+          "id": "chooser-notes",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "files-progress",
+          "live": "polite",
+          "role": null,
+          "text": "7 of 7 files ready."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Checking your files..."
+        }
+      ]
+    },
+    {
+      "state": "prepare-waiting",
+      "view": "prepare",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 40,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Prepare your files",
+      "live": [
+        {
+          "id": "chooser-notes",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "files-progress",
+          "live": "polite",
+          "role": null,
+          "text": "7 of 7 files ready."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "The demo server may be waking up. This usually takes about a minute."
+        }
+      ]
+    },
+    {
+      "state": "start-waiting",
+      "view": "start",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 21
+        }
+      ],
+      "passes": 42,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Check a cash drawer against its records",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "The demo server may be waking up. This usually takes about a minute."
+        }
+      ]
+    },
+    {
+      "state": "start-timeout",
+      "view": "start",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 21
+        }
+      ],
+      "passes": 45,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Check a cash drawer against its records",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "The demo server may be waking up. This usually takes about a minute."
+        }
+      ]
+    },
+    {
+      "state": "results",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 44,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing all leads."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "results-note",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 44,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing leads marked Note."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-note-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "results-no-match",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 44,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing leads marked Note on Saturday, September 5, 2026."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-no-match-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "results-details-open",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 52,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing all leads."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "drawer",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "passes": 47,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register R1, Thursday, September 3, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "drawer-zero-expanded",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "passes": 47,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register R1, Thursday, September 3, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "missing-drawer",
+      "view": "missing",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        }
+      ],
+      "passes": 34,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "This drawer is not in the current results",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "results-clean",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 9
+        }
+      ],
+      "passes": 42,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "results-notes-only",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing all leads."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "results-bank-only",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing all leads."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-bank-only-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "results-balanced-problem",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing all leads."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "results-long",
+      "view": "results",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Results",
+      "live": [
+        {
+          "id": "filter-status",
+          "live": "polite",
+          "role": null,
+          "text": "Showing all leads."
+        },
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "drawer-long",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register FAKE <Register & text> RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR, Thursday, December 31, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-long-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "drawer-all-zero",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register FAKE-R, Thursday, December 31, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-all-zero-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "drawer-missing-count",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register FAKE-R, Thursday, December 31, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-missing-count-verified-webkit-dark-320.png"
+    },
+    {
+      "state": "drawer-missing-pos",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 20
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register FAKE-R, Thursday, December 31, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "drawer-open",
+      "view": "drawer",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        {
+          "id": "aria-allowed-role",
+          "impact": "minor",
+          "tags": [
+            "cat.aria",
+            "best-practice"
+          ],
+          "nodes": [
+            {
+              "target": [
+                "figure[aria-labelledby=\"tape-heading\"]"
+              ],
+              "summary": "Fix any of the following:\n  ARIA role region is not allowed for given element"
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 19
+        }
+      ],
+      "passes": 46,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Register FAKE-R, Thursday, December 31, 2026",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": "Results are ready."
+        }
+      ]
+    },
+    {
+      "state": "start-not-saved",
+      "view": "start",
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-allowed-role",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 21
+        }
+      ],
+      "passes": 42,
+      "overflow": false,
+      "fontsLoaded": true,
+      "heading": "Check a cash drawer against its records",
+      "live": [
+        {
+          "id": "announcer",
+          "live": "polite",
+          "role": null,
+          "text": ""
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "hosts": [
+    "127.0.0.1:5080"
+  ],
+  "consoles": [
+    "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "browser": "26.6",
+  "timingFixture": "30 ms for scan waiting/timeout states; production delays unchanged",
+  "summary": {
+    "scans": 27,
+    "violations": 7,
+    "overflow": []
+  }
+}

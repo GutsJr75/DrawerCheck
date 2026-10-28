@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "case": "public-example",
+      "status": 200,
+      "summary": {
+        "deposit_lead_days": 2,
+        "drawer_leads_total": 16,
+        "drawers_by_highest_severity": {
+          "info": 0,
+          "review": 4,
+          "warn": 5
+        },
+        "drawers_checked": 60,
+        "drawers_needing_review": 4,
+        "drawers_with_leads": 9,
+        "drawers_without_leads": 51,
+        "leads_by_severity": {
+          "info": 4,
+          "review": 7,
+          "warn": 7
+        },
+        "leads_total": 18,
+        "whole_day_lead_days": 2,
+        "whole_day_leads_total": 2
+      },
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-live-before-fixes-verified-chrome-light-1280.png"
+    },
+    {
+      "case": "public-drawer",
+      "difference": "-$20.00"
+    },
+    {
+      "case": "public-three-downloads",
+      "formats": [
+        "html",
+        "csv",
+        "text"
+      ]
+    },
+    {
+      "case": "public-seven-file-upload",
+      "status": 200,
+      "drawers": 60,
+      "flags": 18,
+      "allFlagsEqual": true
+    },
+    {
+      "case": "public-refresh-recovery",
+      "passed": true
+    },
+    {
+      "case": "downloaded-html-opened",
+      "title": "DrawerCheck cash review: 2026-09-01 to 2026-09-30"
+    }
+  ],
+  "downloads": [
+    {
+      "kind": "html",
+      "path": "/tmp/drawercheck-block7-live-report.html",
+      "name": "drawercheck.html",
+      "expectedSha256": "d691a73b212e17d4a3e1c88568913be29bf8971405be58e0e42ddf0466ff3458"
+    },
+    {
+      "kind": "csv",
+      "path": "/tmp/drawercheck-block7-live-report.csv",
+      "name": "drawercheck.csv",
+      "expectedSha256": "4297343396c28bbd8d4b506157b2c5a7cf04d7d18428ad5079545b0470efec1c"
+    },
+    {
+      "kind": "text",
+      "path": "/tmp/drawercheck-block7-live-report.text",
+      "name": "drawercheck.txt",
+      "expectedSha256": "ca1512f60cc4cf1662847f729d9582d87f2827dcc5632240bdd1a4d6266cc0b9"
+    }
+  ],
+  "assets": {
+    "app.css": "afa4c5274aa961f7bebe7b902ec5bc48b74f6f34f14aab9907a31c320cc2f871",
+    "app.js": "dd1d624817ec70c8c48d61cbd66c10812af2af9288650781bc930883def321ca"
+  },
+  "errors": [],
+  "localBlock7FixesPublished": false,
+  "runtime_assets_match_commit": "17875c1ec7e7faaf859c32f156069b67dace0e87"
+}

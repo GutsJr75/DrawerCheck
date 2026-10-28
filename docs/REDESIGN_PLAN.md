@@ -1,14 +1,17 @@
 # Visual redesign plan: "Tick and tie"
 
 **Status: M10 blocks 1/2 completed locally on 2026-10-26; blocks 3/4
-completed locally on 2026-10-27; blocks 5/6 completed locally on 2026-10-28.**
+completed locally on 2026-10-27; blocks 5/6 and block 7 local verification
+completed on 2026-10-28. Final hosted verification of block 7 fixes and
+manual checks remain open.**
 [Block 1 evidence](M10_BLOCK1.md) covers the shared design,
 [block 2 evidence](M10_BLOCK2.md) the Results summary/layout,
 [block 3 evidence](M10_BLOCK3.md) grouping and filters, and
 [block 4 evidence](M10_BLOCK4.md) Drawer details and navigation, and
 [block 5 evidence](M10_BLOCK5.md) Start and its recovery flows, and
 [block 6 evidence](M10_BLOCK6.md) Prepare files and upload guidance.
-Block 7, cross-view verification and documentation, awaits `next`.
+[Block 7 evidence](M10_BLOCK7.md) and the [current checklist](M10_CHECKLIST.md)
+separate local passes, observed block 6 hosted results, and remaining checks.
 
 The sequence is M10, then M9 R06 and R07. [DESIGN.md](../DESIGN.md) and
 [WEB_PLAN.md](WEB_PLAN.md) describe the current app, including the new shell;
@@ -387,7 +390,10 @@ The user approved **M10 block 1 under this plan, before the remaining M9
 rules**, on 2026-10-26, then explicitly authorized **block 2** with "go for
 block 2", then authorized **blocks 3, 4, and 5** separately on 2026-10-27.
 Block 6 was separately authorized on 2026-10-28 with "Go for it".
-All six are complete locally. **M10 block 7 awaits `next`.** Approval does not authorize
+Block 7 local checks were separately authorized and completed on 2026-10-28.
+All views and local checks are delivered. Two QA fixes await publication and
+final hosted verification; real browser zoom, a screen reader, and usability
+testing remain unverified. Approval does not authorize
 running all seven areas unattended. Once M10 is delivered, return to M9 R06,
 then R07, with their existing per-block review stops. New rules may change
 group membership, severity, and counts; the frontend must remain generic

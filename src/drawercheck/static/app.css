@@ -756,6 +756,7 @@ main {
 }
 
 .severity-count {
+  display: inline-block;
   margin-right: var(--space-4);
   white-space: nowrap;
 }
@@ -1335,7 +1336,7 @@ html {
   margin-top: var(--space-group);
 }
 
-.drawer-grid .tape-figure {
+.tape-region {
   overflow-x: auto;
 }
 

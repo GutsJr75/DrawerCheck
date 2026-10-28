@@ -31,7 +31,15 @@
   now uses two steps, a dashed drop area with its native chooser, compact
   Ready/Problem rows, named missing-file guidance, and responsive side help.
   Both input paths share the existing chosen-file map and validation flow.
-  See [block 6 evidence](M10_BLOCK6.md). Stop for `next` before block 7.
+  See [block 6 evidence](M10_BLOCK6.md).
+- **M10 block 7 local verification complete (authorized 2026-10-28):** two
+  verified fixes give the tape a valid named scroll wrapper and let expanded
+  severity counts wrap in Chrome. Final checks cover 216 accessibility scans,
+  both engines' 200% text/reflow/keyboard behavior, all demo outcomes, and
+  original-report parity. Block 6 CI/public behavior is observed; these new
+  fixes await publication and final hosted verification. Actual 400% browser
+  zoom, a screen reader, and unfamiliar-user testing remain unverified.
+  See [current checklist](M10_CHECKLIST.md) and [evidence](M10_BLOCK7.md).
 - **M7, web request handling: done.** Authorized by the user on 2026-10-23 and
   verified locally and on GitHub. [Run 39932017056](https://github.com/GutsJr75/DrawerCheck/actions/runs/39932017056)
   passed for the final M7 commit `2bdbb7a` on Python 3.12, 3.13, and 3.14,
@@ -475,6 +483,23 @@ report, and core-calculation contracts still apply.
 - Prepare and Results reuse one work-layout/work-main CSS owner. No rule,
   financial calculation, report, request cap, or result-response change.
   Evidence and verification limits: [block 6](M10_BLOCK6.md).
+
+### M10 final local verification (block 7, 2026-10-28)
+
+The tape's named, keyboard-focusable scroll region belongs to a `div` around
+the figure. Keep the figure/caption semantics inside it; a region role on the
+figure fails the tested ARIA rule. Expanded severity counts use inline blocks
+so each label/count stays together while chips wrap between one another.
+Tables still scroll inside their named regions rather than widening the page.
+
+The [M10 checklist](M10_CHECKLIST.md) supersedes earlier browser-check claims
+for the redesigned UI. The old M8 zoom automation used a 320 x 200 viewport
+and device scale factor 4; that is reflow emulation, not proof of actual 400%
+browser zoom. M10 separately verifies 200% text and 320 x 200 reflow in both
+engines. Native app calls timed out when trying real zoom, which remains open.
+Keep screen-reader speech and first-time-user checks explicitly unverified.
+No full accessibility certification or passing CI for unpublished fixes is
+implied by local scans or the observed block 6 hosted result.
 
 ### Data the screens need from Python
 

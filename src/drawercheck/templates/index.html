@@ -361,14 +361,16 @@
       <div class="drawer-grid" id="drawer-grid" data-unknown="unknown">
         <div>
           <h2 id="tape-heading">How expected cash is worked out</h2>
-          <figure class="tape-figure" role="region" aria-labelledby="tape-heading" tabindex="0">
-            <div class="tape-paper">
-              {% call tape("drawer", explain=true, caption_class="visually-hidden") -%}
-                Drawer tape. Select a line's name to see what it means.
-              {%- endcall %}
-            </div>
-            <figcaption>Ticked values are available for this calculation. A zero for safe drops does not prove a source row was supplied.</figcaption>
-          </figure>
+          <div class="tape-region" role="region" aria-labelledby="tape-heading" tabindex="0">
+            <figure class="tape-figure">
+              <div class="tape-paper">
+                {% call tape("drawer", explain=true, caption_class="visually-hidden") -%}
+                  Drawer tape. Select a line's name to see what it means.
+                {%- endcall %}
+              </div>
+              <figcaption>Ticked values are available for this calculation. A zero for safe drops does not prove a source row was supplied.</figcaption>
+            </figure>
+          </div>
           <p class="note" id="tape-note"
              data-open="This drawer is still open, so it has no closing count or difference yet."
              data-no-pos="Expected cash is unknown because the register's sales totals are missing."

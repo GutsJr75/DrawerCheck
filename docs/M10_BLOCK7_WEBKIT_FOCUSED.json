@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "case": "results-breakpoint",
+      "width": 959,
+      "columns": "911px",
+      "main": {
+        "x": 24,
+        "y": 824.765625,
+        "width": 911,
+        "height": 3386.859375,
+        "top": 824.765625,
+        "right": 935,
+        "bottom": 4211.625,
+        "left": 24
+      },
+      "filters": {
+        "x": 24,
+        "y": 591.125,
+        "width": 911,
+        "height": 209.640625,
+        "top": 591.125,
+        "right": 935,
+        "bottom": 800.765625,
+        "left": 24
+      },
+      "overflow": false
+    },
+    {
+      "case": "results-breakpoint",
+      "width": 960,
+      "columns": "560px 304px",
+      "main": {
+        "x": 24,
+        "y": 591.15625,
+        "width": 560,
+        "height": 3516.5,
+        "top": 591.15625,
+        "right": 584,
+        "bottom": 4107.65625,
+        "left": 24
+      },
+      "filters": {
+        "x": 632,
+        "y": 591.15625,
+        "width": 304,
+        "height": 253.640625,
+        "top": 591.15625,
+        "right": 936,
+        "bottom": 844.796875,
+        "left": 632
+      },
+      "overflow": false
+    },
+    {
+      "case": "severity-counts-wrap",
+      "width": 320,
+      "scroll": 320,
+      "chips": [
+        {
+          "x": 124.5,
+          "y": 423.09375,
+          "width": 121.546875,
+          "height": 26.34375,
+          "top": 423.09375,
+          "right": 246.046875,
+          "bottom": 449.4375,
+          "left": 124.5
+        },
+        {
+          "x": 16,
+          "y": 449.4375,
+          "width": 74.65625,
+          "height": 26.34375,
+          "top": 449.4375,
+          "right": 90.65625,
+          "bottom": 475.78125,
+          "left": 16
+        },
+        {
+          "x": 106.65625,
+          "y": 449.4375,
+          "width": 63.640625,
+          "height": 26.34375,
+          "top": 449.4375,
+          "right": 170.296875,
+          "bottom": 475.78125,
+          "left": 106.65625
+        }
+      ],
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-counts-wrap-fixed-webkit-dark-320.png"
+    },
+    {
+      "case": "valid-named-tape-keyboard-scroll",
+      "before": {
+        "tag": "DIV",
+        "role": "region",
+        "labelledby": "tape-heading",
+        "width": 288,
+        "scroll": 384,
+        "focused": true
+      },
+      "left": 40,
+      "screenshot": "docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-tape-region-fixed-webkit-light-320.png"
+    },
+    {
+      "case": "media-preferences",
+      "forcedSupported": true,
+      "scrollbar": "auto",
+      "tickAnimation": "none"
+    }
+  ]
+}

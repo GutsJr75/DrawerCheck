@@ -1,12 +1,14 @@
 # Interview and project-sharing notes
 
 DrawerCheck is a personal learning project with fictional data. These notes
-describe the implemented command-line core and public website through M8,
-plus the M9 block 1 R03 heuristic, verified locally, on GitHub, and live. The
-public example and synthetic upload both returned 18 leads on 2026-10-26.
+describe the core, M9 block 1 R03 heuristic, and M10 redesigned website.
+Final local M10 checks cover all screens in Chrome and WebKit. Block 6 has
+observed passing hosted CI and matching public assets; two local block 7
+fixes still need publication and hosted verification. The public example and
+fake upload both returned 18 leads on 2026-10-28.
 [Open the public demo](https://drawercheck.onrender.com), or use the
 offline sample report if the free server is waking up. The
-[core checklist](CORE_CHECKLIST.md) and [M8 checklist](M8_CHECKLIST.md) record
+[core checklist](CORE_CHECKLIST.md) and [M10 checklist](M10_CHECKLIST.md) record
 what was tested, how it was checked, and what remains unverified.
 
 ## A 30-second pitch
@@ -130,11 +132,35 @@ The first five also form a short practice set for a code walkthrough.
 
 5. **What do the accessibility checks establish?**
    The recorded scans found no violations in the tested states, and browser
-   checks covered keyboard access, narrow screens, zoom, and text resizing.
+   checks covered keyboard access, narrow screens, and 200% text resizing.
+   M10 scanned 27 states in two engines, two themes, and two widths, for 216
+   scans with no detected violations after fixing two issues. A 320 x 200
+   viewport checks equivalent reflow; actual 400% browser zoom remains open.
    No real screen-reader session is recorded, and a friend usability check is
    deferred until later.
    These checks do not establish full WCAG compliance; the possible repeated
    spoken operator in the drawer tape still needs a screen-reader check.
+
+## Three questions about the redesign
+
+1. **Why group the review list by drawer?**
+   A drawer can have several leads. Grouping lets someone open it once and
+   see the full story. The example's 18 leads belong to nine drawers and two
+   whole-day dates. Filters select individual leads before grouping, so a
+   Note on a higher-priority drawer still appears.
+
+2. **What do the ticks mean?**
+   They have a written, limited meaning in each place: an added file, an
+   available calculation input, or no leads found by these checks. They do
+   not prove an audit passed or that a person reviewed anything. Review
+   checkboxes are deliberately deferred.
+
+3. **How did you prevent a visual redesign changing the cash results?**
+   Python still owns every financial calculation. A comparison against the
+   pre-redesign snapshot checks all 60 underlying drawer records, all 18
+   global flags, and all report formats. Browser checks compare displayed
+   amounts with the Python response and exercise filtering and navigation.
+   [Block 7 evidence](M10_BLOCK7.md) records results and remaining gaps.
 
 ## Three resume bullet options
 

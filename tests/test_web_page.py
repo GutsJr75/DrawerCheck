@@ -317,6 +317,13 @@ def test_drawer_outcomes_toggle_and_availability_ticks_have_semantics(client) ->
     assert all(attrs["aria-hidden"] == "true" and "hidden" in attrs for attrs in ticks)
     assert "Ticked values are available for this calculation." in text
     assert "A zero for safe drops does not prove a source row was supplied." in text
+    regions = [
+        (tag, attrs)
+        for tag, attrs in page.tags
+        if attrs.get("aria-labelledby") == "tape-heading"
+    ]
+    assert len(regions) == 1 and regions[0][0] == "div"
+    assert regions[0][1]["role"] == "region" and regions[0][1]["tabindex"] == "0"
     next_drawer = next(
         attrs for tag, attrs in page.tags if attrs.get("id") == "next-drawer"
     )

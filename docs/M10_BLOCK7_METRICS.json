@@ -1,0 +1,37 @@
+{
+  "demo": {
+    "status": 200,
+    "response_bytes": 161185,
+    "summary": {
+      "deposit_lead_days": 2,
+      "drawer_leads_total": 16,
+      "drawers_by_highest_severity": {
+        "info": 0,
+        "review": 4,
+        "warn": 5
+      },
+      "drawers_checked": 60,
+      "drawers_needing_review": 4,
+      "drawers_with_leads": 9,
+      "drawers_without_leads": 51,
+      "leads_by_severity": {
+        "info": 4,
+        "review": 7,
+        "warn": 7
+      },
+      "leads_total": 18,
+      "whole_day_lead_days": 2,
+      "whole_day_leads_total": 2
+    }
+  },
+  "combined": {
+    "status": 200,
+    "response_bytes": 8701107
+  },
+  "combined_long_identifiers": {
+    "status": 400,
+    "response_bytes": 136
+  },
+  "css_js_bytes": 59987,
+  "font_bytes": 51748
+}

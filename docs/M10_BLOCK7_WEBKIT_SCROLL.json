@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "case": "horizontal-keyboard-scroll",
+      "before": {
+        "focus": true,
+        "width": 286,
+        "scrollWidth": 955,
+        "left": 0,
+        "role": "region",
+        "tabindex": 0,
+        "rect": {
+          "x": 16,
+          "y": -220.203125,
+          "width": 288,
+          "height": 1339.5,
+          "top": -220.203125,
+          "right": 304,
+          "bottom": 1119.296875,
+          "left": 16
+        }
+      },
+      "keys": [
+        {
+          "key": "ArrowRight",
+          "position": {
+            "focus": true,
+            "left": 0
+          }
+        },
+        {
+          "key": "ArrowRight",
+          "position": {
+            "focus": true,
+            "left": 40
+          }
+        },
+        {
+          "key": "Alt+ArrowRight",
+          "position": {
+            "focus": true,
+            "left": 286
+          }
+        }
+      ]
+    }
+  ]
+}

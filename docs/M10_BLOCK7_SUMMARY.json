@@ -1,0 +1,15 @@
+{
+  "scans": 216,
+  "violations": 0,
+  "overflow_states": [],
+  "browsers": {
+    "chrome": "156.0.8078.48",
+    "webkit": "26.6"
+  },
+  "axe_version": "4.14.0",
+  "axe_sha512": "9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==",
+  "incomplete_rule_ids": [
+    "color-contrast"
+  ],
+  "screenshots": 136
+}

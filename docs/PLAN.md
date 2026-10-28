@@ -72,8 +72,18 @@
   qualified Ready ticks, named missing-file guidance, and responsive side help.
   File replacement, real validation errors, focus links, size limits, Cancel,
   and retry are verified. See [block 6 evidence](M10_BLOCK6.md).
-  Stop for **next** before block 7, cross-view verification and documentation.
   No new hosted CI or deployment claim.
+
+- **M10 block 7 local checks complete (authorized 2026-10-28):** fixed the
+  tape's invalid region role and Chrome's expanded-count overflow. Final local
+  checks pass 729 tests and 216 Chrome/WebKit accessibility scans; original
+  drawer records, all flags, and reports agree. README, interview notes, and
+  [M10 checklist](M10_CHECKLIST.md) record actual evidence. Block 6 CI run
+  40664015982 and its public smoke check are observed. These two new fixes
+  await user publication and final hosted verification. Actual 400% browser
+  zoom, a screen reader, and first-time-user testing remain unverified.
+  See [block 7 evidence](M10_BLOCK7.md). No push or deployment performed.
+  Stop for **next**; do not begin the remaining M9 rules automatically.
 
 How the scope grew:
 
@@ -125,7 +135,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M7: Web request handling | Optional Flask installation and shared pipeline; bounded uploads and isolated temporary runs; web error handling and in-process tests. | `src/drawercheck/web.py`, `pyproject.toml`, `errors.py`, `tests/test_web.py`, CI updates, `docs/WEB_PLAN.md` | The same demo or CSV data gives the same results through CLI and web. Failed and concurrent requests cannot leave shared data. Upload limits, cleanup, escaping, and report contents are tested. Stop before M8. |
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
-| M10: Frontend redesign | Blocks 1/2 completed locally 2026-10-26, 3/4 on 2026-10-27, and 5/6 on 2026-10-28, each separately authorized. All four views implemented; cross-view verification and documentation remain. M10 precedes M9 R06/R07. Stop for next before block 7. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md); later authorized changes to web presentation, tests, and design documents | Accurate drawer/day counts, filter-aware navigation, preserved core results and limits, responsive/accessibility checks, dated screenshots, and observed hosted checks. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK6.md; no automatic continuation to later blocks. |
+| M10: Frontend redesign | All views implemented; block 7 local checks/documentation complete on 2026-10-28. Two QA fixes await publication and final hosted checks; manual gaps remain explicit. M10 precedes M9 R06/R07. Stop for next. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md), [M10_CHECKLIST.md](M10_CHECKLIST.md), web presentation, tests, and design documents | Accurate counts, filter-aware navigation, preserved results/caps, responsive/accessibility evidence, dated screenshots, and separate hosted/manual status. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK7.md; no automatic continuation. |
 
 ## Intended structure
 
@@ -307,6 +317,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 77. **Deliver M10 block 5 only (authorized 2026-10-27).** The user's "Start block 5" authorizes Start under the approved plan. Reuse the shared title scale, actions, example tape, six input-availability ticks, definitions, route handler, and request controls. Shorten the lead and move the example description after the actions. Add Count, Compare, Review as a native ordered list with responsive columns and existing spacing. Remove only the always-on sleeping-server hint, retaining the five-second notice and 90-second browser timeout. Preserve fake-data wording, keyboard focus, duplicate prevention, Cancel, retry, upload, and refresh recovery. No JavaScript or server/core changes are needed. Keep the 60 KB CSS/JS cap unchanged; 130 bytes remain. Finish evidence in separate October 27/28 screenshot folders without replacing earlier captures. Stop for next before block 6. See docs/M10_BLOCK5.md for checks and remaining limits.
 
 78. **Deliver M10 block 6 only (authorized 2026-10-28).** After block 5's summary named Prepare files as next, the user's "Go for it" authorizes that block. Use a native two-step list, dashed drop area around the normal chooser, compact state/size/purpose/Example rows, Ready ticks qualified as added files, named missing-file guidance, and side help below/above the existing 960 px breakpoint. Both selection paths call addFiles and preserve same-name replacement, limits, server file problems, summary/row/input focus, waiting, Cancel, retry, and refresh behavior. New progress messages stay in errors.py. Rename the shared Results grid classes to work-layout/work-main and reuse them; remove unused legacy styles and redundant high-level comments while retaining why-comments. Keep all resource caps and calculations unchanged. Wrap long Prepare text and align long error links with the first bullet line. Stop for next before block 7; local evidence and remaining gaps are in docs/M10_BLOCK6.md.
+
+79. **Deliver M10 block 7 local verification and prepare hosted follow-up (authorized 2026-10-28).** The user's next "Go for it" authorizes final redesign checks and documentation. Run the two-engine/theme/width/state matrix, keyboard, 200% text and narrow reflow, compare the pre-M10 snapshot, and measure unchanged resource ceilings. Fix two observed issues: move the named tape region from figure to a div wrapper, and allow severity count chips to break between inline blocks. Preserve figure/caption semantics, labels, focus, and financial results. Record 216 final scans without detected violations and retain initial failures. Earlier M8 zoom tooling emulated a 320 x 200 viewport plus DPR 4; correct that claim rather than calling it actual browser zoom. Native app control timed out, so real zoom remains unverified alongside screen-reader/usability checks. Observe block 6's real CI and public assets/functions, but do not push/deploy: local QA fixes need a later user publication and specific hosted follow-up. Update README/interview notes and the M10 checklist with these limits. Stop for next, with no remaining M9 rule authorization.
 
 ## Math and test commitments
 
