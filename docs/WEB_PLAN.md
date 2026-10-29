@@ -469,6 +469,12 @@ report, and core-calculation contracts still apply.
   Server-rejected files remain chosen but lose Ready and their tick. Replacing
   one clears its problem and restores Ready. Empty input selection keeps the
   chosen map; clearing the native input permits selecting an edited file again.
+- When a recognized file is added or replaced during an upload check, stop
+  waiting for that check and ignore its eventual success or error. Retain the
+  new selection and restore Check my files so the visitor can run it explicitly.
+  Both the chooser and drop area use this rule. An unrecognized filename does
+  not change the selection and must not interrupt the running check. This does
+  not claim that aborting the browser wait stops Python's work.
 - Below Check my files, the live progress sentence gives the ready count and
   names still missing. With seven chosen but a Problem row, it instead asks
   for correction. Check my files refers to this sentence with aria-describedby.

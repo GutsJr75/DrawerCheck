@@ -24,6 +24,7 @@ acceptance or accessibility certification.
 | Existing public runtime | PASS within smoke scope | Assets match 62650f9; Chrome/WebKit example/upload each return 60 drawers and 18 leads; drawer, three reports, and refresh work |
 | Block 7 fixes on hosted CI/public site | PASS, observed | CI run 40706484429 passes Python 3.12/3.13/3.14. Both fixes are present; 16 focused public accessibility scans have zero detected violations/overflow |
 | README, interview notes, and screenshot timeline | Updated | Current screenshots and honest local/hosted/manual distinctions |
+| Pending-upload file replacement repair | PASS locally, 2026-10-29 | Shared chooser/drop handler ignores the old response and retains the new selection. Repeatable Chrome/WebKit checks cover late errors, late successes, and ignored filenames. See [repair evidence](M10_UPLOAD_REPAIR.md); no hosted verification for this repair yet |
 
 Two defects found and fixed during block 7: a region role placed on a figure,
 and a Chrome-only overflow when full lead-count chips were expanded. Initial

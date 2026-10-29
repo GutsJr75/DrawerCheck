@@ -95,6 +95,17 @@
   only; the agent did not push or deploy. Manual validation gaps remain open.
   M9 R06 is next, then R07, each requiring separate authorization.
 
+- **M10 upload repair complete locally (authorized 2026-10-29):** the
+  whole-M10 review found
+  that replacing a CSV while checking could apply the old response to the new
+  selection. The user's "Go for it" authorizes this contained repair and
+  repeatable browser regression coverage before R06. Accepted files now stop
+  the pending upload wait; unknown filenames leave it running. See
+  [repair evidence](M10_UPLOAD_REPAIR.md). Final checks pass 731 tests with
+  optional browser QA enabled, both Ruff checks, and JavaScript syntax checks.
+  Publication and hosted verification
+  of this repair remain separate from the earlier M10 hosted release.
+
 How the scope grew:
 
 - 2026-10-22: the user approved a public interactive demo, built in M7 and M8
@@ -331,6 +342,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 79. **Deliver M10 block 7 local verification and prepare hosted follow-up (authorized 2026-10-28).** The user's next "Go for it" authorizes final redesign checks and documentation. Run the two-engine/theme/width/state matrix, keyboard, 200% text and narrow reflow, compare the pre-M10 snapshot, and measure unchanged resource ceilings. Fix two observed issues: move the named tape region from figure to a div wrapper, and allow severity count chips to break between inline blocks. Preserve figure/caption semantics, labels, focus, and financial results. Record 216 final scans without detected violations and retain initial failures. Earlier M8 zoom tooling emulated a 320 x 200 viewport plus DPR 4; correct that claim rather than calling it actual browser zoom. Native app control timed out, so real zoom remains unverified alongside screen-reader/usability checks. Observe block 6's real CI and public assets/functions, but do not push/deploy: local QA fixes need a later user publication and specific hosted follow-up. Update README/interview notes and the M10 checklist with these limits. Stop for next, with no remaining M9 rule authorization.
 
 80. **Close block 7's hosted follow-up only (authorized 2026-10-28).** The user requested "do block 7" after the next-step summary identified hosted verification. Verify published runtime 62650f9 using CI run 40706484429, matching CSS/JS hashes and corrected tape markup, and real Chrome/WebKit example, seven-file fake upload, all reports, refresh, and focused count/tape checks. Sixteen public scans detect no WCAG A/AA/best-practice violation or page overflow. Record the initial Render wake-up separately from the later successful application responses. Make documentation/evidence changes only; no agent push or deployment. Keep actual browser zoom, screen-reader speech, and first-time-user testing unverified. The next implementation block remains M9 R06, requiring explicit approval.
+
+81. **Invalidate a pending upload when accepted files change (authorized 2026-10-29).** Reuse stopWaiting in the shared addFiles handler for both the chooser and drop area, before replacing an accepted file. The prior upload's success or error must not update the new selection or a later run, even if abort does not stop delivery. Preserve the replacement and allow an explicit new check; ignored filenames do not interrupt the pending upload. Add opt-in Chrome/WebKit checks against real Flask responses held by test-only gates, with no production endpoints or application dependency. Keep all caps, cash calculations, visual styling, and the remaining M9 rules unchanged. Commit dated captures and evidence, then stop for next.
 
 ## Math and test commitments
 

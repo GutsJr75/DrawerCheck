@@ -1430,3 +1430,30 @@ Documentation/evidence changes only; no agent push or deployment. Actual
 browser zoom, screen-reader speech, and first-time-user usability remain
 unverified. M9 R06 and R07 remain unstarted and separately authorized.
 Stop for next after the local evidence commit.
+
+## 2026-10-29: M10 upload-state repair and browser regression coverage
+
+- Built: stopped pending upload waits when accepted files change through the
+  chooser or drop area. Preserved the new selection, reused the stopped cue
+  without moving chooser focus, and ignored outdated success/error responses.
+  Added committed opt-in browser tests and eight dated fake-data captures.
+- Learned: an upload request is a snapshot of its files; editing the live
+  selection must invalidate that request. Abort alone is insufficient when a
+  response can still arrive. Hold real server responses to test this sequence,
+  and distinguish old and new requests when their endpoint is identical.
+- Interview question: How would you prevent an old network response from
+  showing an error or results for a file the user has already replaced?
+
+Verification: both browser tests first failed on the unfixed source. The
+repair passes 12 scenarios across Chrome/WebKit: chooser/drop, late errors,
+late successes, successful new runs, and ignored filenames. The final full
+suite with browser QA enabled passes 731 tests in 24.60 seconds; both Ruff
+checks, JavaScript syntax checks, and git diff --check pass. The default browser-only invocation
+without the QA module skips two tests explicitly. Existing CI does not install
+or run these optional browsers. CSS/JS totals 59,983 bytes; fonts stay 51,748.
+
+The static UI audit retains seven known handler-detection findings. No new
+full accessibility scan, actual 400% zoom, screen-reader speech, first-time
+usability, hosted CI, push, or deployment is claimed. See
+[repair evidence and repeatable command](M10_UPLOAD_REPAIR.md). R06 and R07
+remain unstarted. Stop for next after this repair's local commit.

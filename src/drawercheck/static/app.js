@@ -282,7 +282,6 @@
       Number(body.dataset.giveUpMs),
     );
     try {
-      // Stop waiting immediately and ignore any late answer.
       const outcome = await Promise.race([
         send(url, requestBody, current.controller.signal),
         stoppedEarly,
@@ -313,9 +312,9 @@
   }
 
   function handledStop(outcome, button, box, retry) {
-    if (outcome.stopped === "cancel") {
+    if (["cancel", "changed"].includes(outcome.stopped)) {
       announce(announcer.dataset.stopped);
-      button.focus();
+      if (outcome.stopped === "cancel") button.focus();
     } else if (outcome.stopped === "timeout") {
       showRequestError(box, message("timeout"), retry);
     }
@@ -323,7 +322,6 @@
   }
 
   function amountCell(value) {
-    // Keep unknown values in the text font; money strings use Mono.
     return element("td", /^-?\$/.test(value) ? "number money" : "number", value);
   }
 
@@ -862,6 +860,7 @@
     const names = [...rows.keys()];
     for (const file of files) {
       if (rows.has(file.name)) {
+        if (request?.view === "prepare") stopWaiting(request, "changed");
         chosen.set(file.name, file);
         setRow(file.name, "ready", formatSize(file.size));
         continue;

@@ -46,11 +46,16 @@ in a job interview.
 **Automated checks:** [GitHub Actions run 40706484429](https://github.com/GutsJr75/DrawerCheck/actions/runs/40706484429)
 for block 7 commit `62650f9` passed on Python 3.12, 3.13, and 3.14, including
 both Ruff checks and optional web/server tests, observed on 2026-10-28.
-It includes both block 7 fixes. Final local checks pass 729 tests and 216
+It includes both block 7 fixes. That block's local checks passed 729 tests and 216
 Chrome/WebKit accessibility scans with no detected violations. Actual 400%
 browser zoom, a real screen reader, and first-time-user usability remain
 unverified. No full accessibility certification is claimed; the
 [M10 checklist](docs/M10_CHECKLIST.md) separates passes and open checks.
+
+The [October 29 upload repair](docs/M10_UPLOAD_REPAIR.md) stops an old check
+from updating replaced files. It adds opt-in, repeatable browser regression
+checks and is verified locally only; the hosted result above predates it.
+The full local suite with optional browser checks enabled passes 731 tests.
 
 ## Try the command line in 3 steps
 
