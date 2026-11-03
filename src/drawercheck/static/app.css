@@ -870,6 +870,7 @@ main {
 
 .group-outcome {
   display: grid;
+  flex: 0 1 12rem;
   gap: var(--space-1);
   margin: 0;
 }

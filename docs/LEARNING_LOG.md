@@ -1510,3 +1510,23 @@ Verification: 729 tests passed and 2 skipped, both Ruff checks and git diff
 and 48 large-text and reflow checks found no violations and no page overflow,
 including 200% text at 320 px. Two captures added. Limit: in that extreme case a
 long word such as "September" breaks across lines in the Drawer title.
+
+## 2026-11-03: Align the Results outcome column
+
+- Built: gave `.group-outcome` a shared width (`flex: 0 1 12rem`) so the
+  Difference label starts at the same place in every review row. Added three
+  dated screenshots.
+- Learned: when each row is its own flex line, a "push to the edge" block takes
+  the width of its own content, so rows only line up by luck. A shared basis
+  fixes it. I measured the left edge of every row at five window widths before
+  choosing 12rem, because 13rem looked fine but would have stacked the rows at
+  960 px. The first version also overflowed at 200% text on a 320 px screen;
+  the earlier large-text checks caught it, and `0 1` (shrinkable) fixed it.
+- Interview question: Why do separate flex or grid rows not align their
+  columns, and what are two ways to make them line up?
+
+Verification: 729 tests passed and 2 skipped, both Ruff checks and git diff
+--check passed. All nine rows share one left edge at 1,440, 1,100, 960 and 820
+px in Chrome and WebKit; they stack below 960 px as before. 72 axe scans and 48
+large-text and reflow checks found no violations and no overflow. CSS/JS totals
+59,977 bytes.
