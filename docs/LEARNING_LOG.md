@@ -1457,3 +1457,56 @@ full accessibility scan, actual 400% zoom, screen-reader speech, first-time
 usability, hosted CI, push, or deployment is claimed. See
 [repair evidence and repeatable command](M10_UPLOAD_REPAIR.md). R06 and R07
 remain unstarted. Stop for next after this repair's local commit.
+
+## 2026-11-03: Hallmark design audit and small CSS polish
+
+- Built: ran the Hallmark audit over the templates and CSS, with rendered
+  screenshots through puppeteer-core in Chrome. Fixed two small items:
+  tokenised the two `1.5rem` paddings and `text-wrap: balance` on headings.
+  Merged two identical CSS rules to stay under the 60 KB budget. Added dated
+  light and dark captures. Then ran 72 axe-core 4.14.0 scans (9 states, Chrome
+  156 and WebKit 27.2, light/dark, 1,280/320 px) plus 48 large-text and
+  reflow checks.
+- Learned: an automated "AI tell" linter reports leads, not verdicts. Of 14
+  findings, two were worth fixing. A linter that reads a template from disk
+  sees raw Jinja and no stylesheet, so its contrast and button size findings
+  were noise. The suggested `overflow-x: clip` was a mistake here: it hid real
+  overflow (25 to 232 px at 200% text in a 320 px window) instead of fixing it,
+  and was reverted after the check showed the content became unreachable. My
+  first 200% text check also passed for the wrong reason (the app's CSP blocked
+  the injected style), so every check now asserts the size actually applied.
+- Interview question: How would you decide whether an automated design or
+  lint finding is a real defect, and what would you check before changing code
+  to satisfy it?
+
+Verification: 729 tests passed and 2 skipped (optional browser QA not enabled),
+both Ruff checks and git diff --check passed. All 72 axe scans found no
+violations and no horizontal overflow; color-contrast stayed "incomplete" in 56
+scans, as in block 7, with the token contrast tests as the supplement. Large
+text (200%) at 1,280 px and 400% reflow (320 x 200 at 4x density) found no
+violations or overflow in both engines. Accessibility tree probes showed
+correct titles, landmarks, heading order, focus on each view's heading, and
+live regions. Not done: real browser zoom with Cmd and plus, and real
+screen-reader speech. No hosted CI, push, or deployment is claimed.
+
+## 2026-11-03: Fix the large-text overflow at 320 px
+
+- Built: fixed the sideways scroll (25 to 232 px) found at 200% text in a
+  320 px window. Grid children on Start get `min-width: 0`; the Start tape gets
+  the same labelled scroll region Drawer details has; drawer lead rows use
+  `overflow-wrap: anywhere`; the wordmark size is `min(1.25rem, 8vw)`. Merged
+  two identical CSS rules to stay under budget (59,958 bytes).
+- Learned: find the cause with a bisect (hide each element, see when the page
+  fits) instead of guessing. My first guess, an absolutely positioned element,
+  was wrong; the real cause was unbreakable rule codes in a grid cell that
+  could not shrink. Try candidate CSS by injecting it into the live page, and
+  look at the picture too: the first wordmark fix removed the overflow but broke
+  "DrawerCheck" mid-word, so a size cap was used instead.
+- Interview question: A grid or flex child refuses to shrink and pushes the
+  page wider than the screen. What are the usual causes and fixes?
+
+Verification: 729 tests passed and 2 skipped, both Ruff checks and git diff
+--check passed. 72 axe scans (Chrome 156, WebKit 27.2, light/dark, 1,280/320 px)
+and 48 large-text and reflow checks found no violations and no page overflow,
+including 200% text at 320 px. Two captures added. Limit: in that extreme case a
+long word such as "September" breaks across lines in the Drawer title.

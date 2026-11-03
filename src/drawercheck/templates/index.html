@@ -80,14 +80,16 @@
         </div>
 
         <div>
-          <figure class="tape-figure">
-            <div class="tape-paper">
-              {% call tape("example", amounts=example_tape, word="Short", level="Needs review", level_class="status-review") -%}
-                Register R1, September 3, 2026<span class="tape-code">Shift 2026-09-03-R1</span>
-              {%- endcall %}
-            </div>
-            <figcaption>Example from the built-in demo. Ticks mean input records are available, not that the drawer balances.</figcaption>
-          </figure>
+          <div class="tape-region" role="region" aria-label="Example count tape" tabindex="0">
+            <figure class="tape-figure">
+              <div class="tape-paper">
+                {% call tape("example", amounts=example_tape, word="Short", level="Needs review", level_class="status-review") -%}
+                  Register R1, September 3, 2026<span class="tape-code">Shift 2026-09-03-R1</span>
+                {%- endcall %}
+              </div>
+              <figcaption>Example from the built-in demo. Ticks mean input records are available, not that the drawer balances.</figcaption>
+            </figure>
+          </div>
           <details class="help">
             <summary>What do these lines mean?</summary>
             <dl class="definitions">

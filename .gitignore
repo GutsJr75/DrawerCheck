@@ -16,3 +16,4 @@ dist/
 data/private/
 .playwright-mcp/
 .playwright-cli/
+.hallmark/
