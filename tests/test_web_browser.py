@@ -136,3 +136,11 @@ def test_review_a_drawer_signs_off_and_ignores_late_replies(browser: str) -> Non
 def test_a_recount_is_compared_and_never_replaces_the_first_count(browser: str) -> None:
     """Both counts are labelled; edits mark the result stale; Close clears a recount."""
     _run_page_script("recount_drawer.cjs", browser)
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_closing_sheet_downloads_the_checked_snapshot_and_opens_offline(
+    browser: str,
+) -> None:
+    """Downloads keep checked counts and notes, hide after edits, and need no network."""
+    _run_page_script("closing_sheet.cjs", browser)

@@ -1770,3 +1770,29 @@ Verification: 814 tests passed and 8 opt-in browser tests skipped in the
 normal run; both Ruff checks passed. All eight opt-in browser tests passed in
 Chrome and WebKit build 2370. 24 axe scans of the recount states found no
 violations.
+
+## 2026-11-04: M11 block 8, offline closing sheet
+
+- Built: a self-contained HTML download from Review, using the checked
+  Python values, shared escaped report tables, and inline print styles.
+  Both counts, review details, settings, and check coverage stay together in
+  a snapshot that opens offline. A committed sample shows a fictional
+  shortage followed by a balanced recount.
+- Learned: test the file a person actually opens and every printed page.
+  Playwright's internal extensionless download path displayed as plain text
+  in Chrome; saving its suggested `.html` filename fixed the test setup.
+  Print inspection caught split count lines and check descriptions. Naming
+  the report `closing_sheet` also avoids a collision with the package's
+  existing `contextlib.closing` import.
+- Interview question: How do you ensure an exported record belongs to the
+  checked figures, rather than a later unsubmitted edit?
+
+Authorization: the user's "Go for block 8". No push or deployment.
+
+Verification: 833 tests passed with all ten browser tests enabled in Chrome
+and WebKit build 2370; both Ruff checks passed. One intermediate repeat had
+a Chrome launch timeout before the existing review test began; the final
+repeat passed. Forty axe scans found no violations; the eight app result
+scans retained the known drawer-tape contrast incomplete result. All four
+pages of the final A4 sample were visually inspected. See
+[block 8 evidence](M11_BLOCK8.md) for the scope and remaining gaps.

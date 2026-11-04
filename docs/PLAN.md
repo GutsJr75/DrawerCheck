@@ -2,8 +2,8 @@
 
 ## Where things stand
 
-- **Next step, updated 2026-11-04:** M11 block 8, the downloadable closing
-  sheet, after **next**. Follow M11 one block at a time, then consider the separately
+- **Next step, updated 2026-11-04:** M11 block 9, end-to-end verification and
+  handoff, after **next**. Follow M11 one block at a time, then consider the separately
   gated M12 local-records milestone. This order supersedes earlier statements
   that R06 is next; R06 and R07 are deferred.
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
@@ -36,6 +36,10 @@
 - **M11 block 7 complete locally (authorized 2026-11-04):** an optional
   recount is checked while the first count is kept and compared, both from
   Python. See [block 7 evidence](M11_BLOCK7.md).
+- **M11 block 8 complete locally (authorized 2026-11-04):** Review downloads
+  a self-contained HTML closing sheet with both counts, supplied reviewer
+  details, settings, and check coverage. It opens offline and has print
+  styling. See [block 8 evidence](M11_BLOCK8.md). No push or deployment.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -440,6 +444,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 94. **Build Review a drawer (M11 block 6, authorized 2026-11-04).** The user's "next" authorizes this block. Review reuses the drawer tape (one shared fill function now serves Drawer details and Review), shows Python's count lines, leads, and per-rule coverage with the records check's checked and unavailable lists, and adds a sign-off with Check again. The sign-off lives on Review; editing it hides the old result rather than showing leads that no longer match, and a late reply is ignored through the existing stop mechanism. A new check from Close a drawer clears the sign-off, because a sign-off belongs to the figures it was given with; this also avoids sign-off errors appearing for fields on a hidden page. The sign-off limit in the page text comes from the settings, not a typed $20.00. With coverage shown, Start links to Close a drawer. Screenshots caught a full-width note field and a mid-word break of "Quantity" at 320 px from the view's wrapping rule; both were fixed before commit. No saved-review claim is made.
 
 95. **Add the recount comparison (M11 block 7, authorized 2026-11-04).** The user's "next" authorizes this block. The server checks the recount and returns the first count's figures against the same expected cash, with no rules run on the first count, so the page compares two Python results instead of subtracting. The recount sheet starts blank rather than copying the first count, so a recount stays an independent count. The recount lives on Review beside the sign-off and shares its stale handling: any recount edit or removal hides the result until Check again. Removing a recount clears its entries; a new check from Close a drawer clears both recount and sign-off. Recount messages begin "Recount:" so a problem cannot be read as the first count's. `parse_drawer` now returns the recount separately and the shared count-line builder serves both counts.
+
+96. **Export the checked closing snapshot (M11 block 8, authorized 2026-11-04).** The user's "Go for block 8" authorizes the HTML download and print styles. `reports/closing_sheet.py` renders the same formatted Python response that Review displays, with no second calculation or rule pass. Shared escaped tables and inline CSS keep the existing full-run HTML unchanged. The file retains both counts, unavailable checks, supplied unverified reviewer details, generation time, and example settings. Review reuses the existing Blob download helper and hides the action with stale results. The export is a snapshot, not saved history; later edits require checking and downloading again. Offline browser tests, hostile-text tests, and A4 page inspection cover the new output. No CSV format, persistence, dependency, or limit changes.
 
 ## Math and test commitments
 

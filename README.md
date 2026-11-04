@@ -83,7 +83,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit hint | Done |
 | Website | Live at [drawercheck.onrender.com](https://drawercheck.onrender.com), with the redesigned screens |
-| Closing workflow: enter one drawer by hand, then review it | In progress in [M11](docs/M11_PLAN.md): Close a drawer and Review a drawer, with an optional recount, work locally, not yet checked on the public demo; a closing sheet is next |
+| Closing workflow: enter one drawer by hand, then review it | Implemented locally through [M11 block 8](docs/M11_BLOCK8.md): manual entry, review, recount, and an offline closing-sheet download. Final block 9 checks and public verification remain pending |
 | Optional rules R06 and R07 | Deferred until after the closing workflow |
 
 Test, CI, hosting, and accessibility evidence is under
@@ -118,6 +118,11 @@ You need Python 3.12 or newer. All inputs below are fake.
 For an offline example, open the
 [committed sample report](examples/sample_report.html). It covers the same 60
 shifts and 18 review leads, and works offline with no external files or scripts.
+
+The new one-drawer workflow also has an offline
+[sample closing sheet](examples/sample_closing_sheet.html). It keeps the first
+count and recount together, lists which checks ran, and prints through your
+browser's Print command. The sample uses fictional data only.
 
 ## What the checks look for
 

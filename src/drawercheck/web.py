@@ -24,6 +24,7 @@ from drawercheck.reconcile import build_explanation, reconcile
 from drawercheck.reports import (
     DailySummary,
     ReportData,
+    closing_sheet,
     csv_out,
     format_amount,
     html,
@@ -484,7 +485,7 @@ def _drawer_response(check: DrawerCheck, config: Config) -> dict:
     drawer = _display_values(_drawer_values(result, config))
     first = check.first_count
     drawer["count_basis"] = "recount" if first else "first_count"
-    return {
+    payload = {
         "notice": errors.WEB_NOTICE,
         "labels": {**_labels(config), "dates": _label_dates(_shift_dates(result))},
         "drawer": drawer,
@@ -513,6 +514,12 @@ def _drawer_response(check: DrawerCheck, config: Config) -> dict:
         ],
         "closing_summary": None,
     }
+    payload["closing_summary"] = {
+        "filename": f"drawercheck-closing-{result.shift.business_date}.html",
+        "media_type": "text/html",
+        "content": closing_sheet.render(payload, config),
+    }
+    return payload
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:

@@ -81,7 +81,9 @@ def test_case_b_returns_the_shared_drawer_shape(client) -> None:
     assert data["labels"]["dates"] == {"2026-11-02": "Monday, November 2, 2026"}
     assert data["labels"]["statuses"]["balanced"] == "Balanced (within $1.00)"
     assert data["initial_count"] is None
-    assert data["closing_summary"] is None
+    assert data["closing_summary"]["filename"] == "drawercheck-closing-2026-11-02.html"
+    assert data["closing_summary"]["media_type"] == "text/html"
+    assert "Drawer closing sheet" in data["closing_summary"]["content"]
 
 
 def test_coverage_entries_carry_labels_and_states(client) -> None:

@@ -1,0 +1,344 @@
+{
+  "axe": "4.14.0",
+  "scope": "Offline closing sheets; native print and actual screen-reader speech are separate checks.",
+  "scans": [
+    {
+      "engine": "chrome",
+      "state": "short",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "short",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "short",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "short",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "recount",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "recount",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "recount",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "recount",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "missing",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "missing",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "missing",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "missing",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "short",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "short",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "short",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "short",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "recount",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "recount",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "recount",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "recount",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "missing",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "missing",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "missing",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "missing",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    }
+  ],
+  "app_scans": [
+    {
+      "engine": "chrome",
+      "state": "review-download",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "chrome",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "review-download",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "chrome",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "review-download",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "chrome",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "state": "review-download",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "chrome",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "review-download",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "review-download",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "review-download",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "state": "review-download",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    }
+  ]
+}

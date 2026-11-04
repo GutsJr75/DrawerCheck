@@ -673,7 +673,10 @@
   }
 
   function downloadReport(name) {
-    const report = results.reports[name];
+    downloadFile(results.reports[name]);
+  }
+
+  function downloadFile(report) {
     const url = URL.createObjectURL(
       new Blob([report.content], { type: `${report.media_type};charset=utf-8` }),
     );
@@ -1378,6 +1381,10 @@
   for (const button of document.querySelectorAll("[data-report]")) {
     button.addEventListener("click", () => downloadReport(button.dataset.report));
   }
+
+  document.getElementById("download-closing").addEventListener("click", () => {
+    if (checked && !checked.stale) downloadFile(checked.closing_summary);
+  });
 
   document.querySelector('[data-role="clear-filters"]').addEventListener("click", (event) => {
     event.preventDefault();

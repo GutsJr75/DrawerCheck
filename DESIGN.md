@@ -433,6 +433,14 @@ The current token values in the next section belong to the report's inline CSS.
 
 ## Existing M4 report
 
+M11 block 8 uses the same report palette, inline CSS, and escaped table
+renderer for the one-drawer closing sheet. It is a static checked snapshot,
+with both counts labelled, explicit unavailable checks, unverified reviewer
+details, and no external files. Print rules use compact type and keep count
+tables and check descriptions together where they fit on a page. Review's
+secondary download action sits below check coverage and disappears with the
+rest of the result after an edit. No new app colours or assets were added.
+
 The report's job is to help a reader find incomplete dates and review leads,
 then inspect the cash amounts behind them. Use a restrained close-review sheet
 with a dark marine demo strip, clear section tabs, and readable accounting

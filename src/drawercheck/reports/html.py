@@ -11,7 +11,7 @@ from drawercheck.reports import (
     format_amount,
 )
 
-_CSS = """:root { color-scheme: light dark; --page:#edf3f5; --paper:#ffffff; --ink:#162b35;
+REPORT_CSS = """:root { color-scheme: light dark; --page:#edf3f5; --paper:#ffffff; --ink:#162b35;
   --muted:#48636f; --line:#cedce1; --accent:#076f78; --soft:#e8f4f3;
   --warn:#805000; --review:#963a32; --head:#143c4a; }
 * { box-sizing:border-box; }
@@ -80,9 +80,10 @@ def _e(value: object) -> str:
     return escape(str(value), quote=True)
 
 
-def _table(
+def render_table(
     kind: str, caption: str, headers: tuple[str, ...], rows: list[tuple[object, ...]]
 ) -> str:
+    """Render an escaped semantic table inside a named, scrollable region."""
     head = "".join(f'<th scope="col">{_e(label)}</th>' for label in headers)
     body = "".join(
         "<tr>" + "".join(f"<td>{_e(value)}</td>" for value in row) + "</tr>"
@@ -117,7 +118,7 @@ def render(report: ReportData) -> str:
     incomplete_days = sum(
         day.shifts > 0 and day.expected_deposit_cents is None for day in report.days
     )
-    daily = _table(
+    daily = render_table(
         "daily",
         "Completed dates; expected deposits are cash calculations, not bank matches",
         (
@@ -150,7 +151,7 @@ def render(report: ReportData) -> str:
             for day in report.days
         ],
     )
-    cashiers = _table(
+    cashiers = render_table(
         "cashiers",
         "Exact known cash differences by cashier",
         (
@@ -179,7 +180,7 @@ def render(report: ReportData) -> str:
             for cashier in report.cashiers
         ],
     )
-    shifts = _table(
+    shifts = render_table(
         "shifts",
         "Closing amounts retain exact differences; unknown cash is never shown as zero",
         ("Shift", "Cashier", "Status", "Expected", "Counted", "Exact difference"),
@@ -199,7 +200,7 @@ def render(report: ReportData) -> str:
     )
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DrawerCheck cash review: {_e(report.from_date)} to {_e(report.to_date)}</title><style>{_CSS}</style></head>
+<title>DrawerCheck cash review: {_e(report.from_date)} to {_e(report.to_date)}</title><style>{REPORT_CSS}</style></head>
 <body><main><p class="demo">DEMO DATA ONLY / FICTIONAL RECORDS</p>
 <header><div class="eyebrow">DrawerCheck / Demo Store #001</div><h1>Cash drawer review</h1>
 <p class="range">{_e(report.from_date)} through {_e(report.to_date)}</p><p class="muted">{_e(REVIEW_NOTICE)}</p>
