@@ -445,6 +445,131 @@
       <p class="lead" id="missing-code" data-template="No drawer with the code {code} was checked in these results. The address may come from another check."></p>
       <a class="button button-secondary" href="#/results" data-role="back-to-results">Back to results</a>
     </section>
+
+    <section id="view-close" class="view" aria-labelledby="close-heading" data-title="Close a drawer | DrawerCheck" hidden>
+      {{ breadcrumbs("Close a drawer") }}
+      <div class="error-summary" id="close-summary" tabindex="-1" hidden>
+        <div role="alert">
+          <h2>Some entries need fixing</h2>
+          <ul id="close-problems"></ul>
+        </div>
+      </div>
+      <h1 id="close-heading" tabindex="-1">Close a drawer</h1>
+      <p class="lead">Count the cash first, then copy the figures from the shift slip, register report, and safe drop log. DrawerCheck works out the expected cash when you check the drawer.</p>
+      <p class="note">Use made-up figures only. This demo is not for real store records, and nothing you enter is saved.</p>
+
+      <form class="work-layout" id="close-form" novalidate>
+        <ol class="prepare-steps work-main">
+          <li>
+            <h2>Copy the shift slip</h2>
+            <div class="field-grid">
+              <div class="field"><label for="close-date">Business date</label><input type="date" id="close-date" data-field="business_date"></div>
+              <div class="field"><label for="close-register">Register</label><input id="close-register" data-field="register_id" autocomplete="off" spellcheck="false"></div>
+              <div class="field"><label for="close-cashier">Cashier ID</label><input id="close-cashier" data-field="cashier_id" autocomplete="off" spellcheck="false"></div>
+              <div class="field"><label for="close-float">Starting cash</label><input id="close-float" data-field="opening_float" inputmode="decimal" autocomplete="off" aria-describedby="money-hint"></div>
+              <div class="field"><label for="close-opened">Drawer opened</label><input type="datetime-local" id="close-opened" data-field="opened_at"></div>
+              <div class="field"><label for="close-closed">Drawer closed</label><input type="datetime-local" id="close-closed" data-field="closed_at"></div>
+            </div>
+            <label class="choice"><input type="checkbox" id="times-missing"> Times not available</label>
+            <p class="hint" id="money-hint">Write money with two decimal places and no dollar sign or commas, such as 1316.40.</p>
+          </li>
+          <li>
+            <h2>Count the cash</h2>
+            <p>Count every bill and coin in the drawer, including the starting cash. Write 0 on lines with none.</p>
+            <div class="sheet-paper entry-paper">
+              <table class="count-sheet count-entry">
+                <caption>Count sheet</caption>
+                <thead><tr><th scope="col">Bill or coin</th><th scope="col">How many</th></tr></thead>
+                <tbody>
+                  {% for key, name in count_lines %}
+                  <tr><th scope="row"><label for="count-{{ loop.index }}">{{ name }}</label></th><td><input id="count-{{ loop.index }}" data-field="counts.{{ key }}" inputmode="numeric" autocomplete="off" spellcheck="false"></td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <p class="hint">Line totals and the counted cash appear after the check.</p>
+          </li>
+          <li>
+            <h2>Copy the register report</h2>
+            <fieldset class="field" data-field="register_report">
+              <legend>Do you have the register report?</legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="report" value="yes" id="report-yes"> Yes</label>
+                <label class="choice"><input type="radio" name="report" value="no" id="report-no"> Not available</label>
+              </div>
+            </fieldset>
+            <div class="field-grid" id="report-figures" hidden>
+              <div class="field"><label for="close-sales">Cash sales, before refunds</label><input id="close-sales" data-field="register_report.cash_sales" inputmode="decimal" autocomplete="off" aria-describedby="money-hint"></div>
+              <div class="field"><label for="close-refunds">Cash refunds</label><input id="close-refunds" data-field="register_report.cash_refunds" inputmode="decimal" autocomplete="off" aria-describedby="money-hint"></div>
+              <div class="field"><label for="close-paid-in">Paid in</label><input id="close-paid-in" data-field="register_report.paid_ins" inputmode="decimal" autocomplete="off" aria-describedby="money-hint"></div>
+              <div class="field"><label for="close-paid-out">Paid out, not safe drops</label><input id="close-paid-out" data-field="register_report.paid_outs" inputmode="decimal" autocomplete="off" aria-describedby="money-hint"></div>
+            </div>
+          </li>
+          <li>
+            <h2>Copy the safe drop log</h2>
+            <fieldset class="field" data-field="safe_drops">
+              <legend>Were there safe drops this shift?</legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="drops" value="list" id="drops-list"> Yes, list them</label>
+                <label class="choice"><input type="radio" name="drops" value="none" id="drops-none"> No safe drops this shift</label>
+                <label class="choice"><input type="radio" name="drops" value="missing" id="drops-missing"> Drop log not available</label>
+              </div>
+            </fieldset>
+            <div id="drop-list" hidden>
+              <ol class="drop-rows" id="drop-rows" data-amount="Drop {n} amount" data-bag="Drop {n} bag number (optional)" data-remove="Remove drop {n}"></ol>
+              <button type="button" class="button button-secondary" id="add-drop" data-max="{{ max_safe_drops }}">Add a drop</button>
+            </div>
+          </li>
+          <li>
+            <h2>Check the drawer</h2>
+            <div class="actions">
+              <button type="submit" class="button button-primary" id="check-drawer" data-busy-text="Checking the drawer...">Check this drawer</button>
+              <button type="button" class="button button-secondary" id="close-cancel" hidden>Cancel</button>
+            </div>
+            <p class="hint">Your entries stay on this page until you refresh or close it.</p>
+            <p class="waiting-slow" id="close-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
+            <div class="request-error" id="close-error" role="alert" data-retry="Try again"></div>
+          </li>
+        </ol>
+        <aside class="work-help" aria-labelledby="close-help-heading">
+          <h2 id="close-help-heading">Where each figure comes from</h2>
+          <dl class="definitions">
+            <dt>Shift slip</dt>
+            <dd>The business date, register, cashier ID, opening and closing times, and starting cash.</dd>
+            <dt>Cash sales</dt>
+            <dd>The report's cash sales total before refunds. Enter refunds on their own line.</dd>
+            <dt>Paid out</dt>
+            <dd>Cash taken out to pay for something. Safe drops never go here.</dd>
+            <dt>Safe drops</dt>
+            <dd>Cash moved to the safe during the shift. Enter each bag from the drop log.</dd>
+            <dt>Card sales</dt>
+            <dd>Not needed. Cards put no cash in the drawer.</dd>
+          </dl>
+        </aside>
+      </form>
+    </section>
+
+    <section id="view-review" class="view" aria-labelledby="review-heading" data-title="Review a drawer | DrawerCheck" data-announce="The drawer has been checked." hidden>
+      {{ breadcrumbs("Review a drawer") }}
+      <h1 id="review-heading" tabindex="-1">Review a drawer</h1>
+      <div id="review-empty">
+        <p class="lead">There is no checked drawer to review yet.</p>
+        <a class="button button-secondary" href="#/close">Close a drawer</a>
+      </div>
+      <div id="review-body" hidden>
+        <p class="lead" id="review-about" data-template="Register {register}, {date}. Cashier ID {cashier}."></p>
+        <dl class="outcome-strip" id="review-outcome" aria-label="Drawer outcome">
+          <div><dt>Expected cash</dt><dd data-review="expected"></dd></div>
+          <div><dt>Counted cash</dt><dd data-review="counted"></dd></div>
+          <div><dt>Difference</dt><dd data-review="difference"></dd><dd class="outcome-status"><span data-role="word"></span> <span data-role="level" hidden></span></dd></div>
+        </dl>
+        <h2 id="review-leads-heading">What to look at</h2>
+        <ol class="lead-list" id="review-leads" aria-labelledby="review-leads-heading"></ol>
+        <p id="review-no-leads" hidden>This drawer has no leads.</p>
+        <p><a href="#/close">Change the entries</a></p>
+        <p class="hint">Results disappear when you refresh or close this page.</p>
+      </div>
+    </section>
   </main>
   <footer class="site-footer">
     <div class="wrap">

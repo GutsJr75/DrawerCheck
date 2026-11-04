@@ -421,8 +421,11 @@ These patterns make a site look generic or template-made, so do not use them:
 ## Performance budget
 
 - No front-end framework and no third-party requests of any kind.
-- Site CSS and JavaScript together under 60 KB before compression, excluding
-  fonts; fonts under 200 KB in total.
+- All site CSS and JavaScript, in any folder, together under 90,000 bytes
+  before compression, excluding fonts; fonts under 200 KB in total. The user
+  raised this from 60 KB on 2026-11-04 for the M11 closing pages. It is a
+  ceiling, not a target: reuse existing controls first, and track measured
+  loading and interaction times alongside size (see `docs/M11_CONTRACT.md`).
 - Results are usable immediately after the server responds; nothing waits on
   animation.
 

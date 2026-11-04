@@ -9,6 +9,8 @@
     results: document.getElementById("view-results"),
     drawer: document.getElementById("view-drawer"),
     missing: document.getElementById("view-missing"),
+    close: document.getElementById("view-close"),
+    review: document.getElementById("view-review"),
   };
   const announcer = document.getElementById("announcer");
   const notSaved = document.getElementById("not-saved");
@@ -53,6 +55,19 @@
   const limitsText = document.getElementById("limits-text");
   const depositText = document.getElementById("deposit-text");
   const missingCode = document.getElementById("missing-code");
+  const closeForm = document.getElementById("close-form");
+  const closeSummary = document.getElementById("close-summary");
+  const closeProblems = document.getElementById("close-problems");
+  const checkDrawer = document.getElementById("check-drawer");
+  const closeCancel = document.getElementById("close-cancel");
+  const closeSlow = document.getElementById("close-slow");
+  const closeError = document.getElementById("close-error");
+  const timesMissing = document.getElementById("times-missing");
+  const reportFigures = document.getElementById("report-figures");
+  const dropList = document.getElementById("drop-list");
+  const dropRows = document.getElementById("drop-rows");
+  const addDrop = document.getElementById("add-drop");
+  const reviewLeads = document.getElementById("review-leads");
   const severityOrder = ["review", "warn", "info"];
   const severityClass = { review: "status-review", warn: "status-check", info: "status-note" };
   const showSeverity = { all: null, review: "review", check: "warn", note: "info" };
@@ -64,6 +79,7 @@
   let shiftsByCode = new Map();
   let shiftsByDate = new Map();
   let request = null;
+  let checked = null;
   const rows = new Map(
     [...document.querySelectorAll("[data-file]")].map((row) => [row.dataset.file, row]),
   );
@@ -152,8 +168,8 @@
     if (path === "") {
       return { view: "start" };
     }
-    if (path === "prepare") {
-      return { view: "prepare" };
+    if (["prepare", "close", "review"].includes(path)) {
+      return { view: path };
     }
     if (path === "results") {
       return { view: "results", params: new URLSearchParams(query) };
@@ -213,6 +229,8 @@
     }
     if (address.view === "results") {
       applyFilters(address.params);
+    } else if (address.view === "review") {
+      renderReview();
     } else if (address.view === "drawer") {
       const item = shiftsByCode.get(address.code);
       if (!item) {
@@ -325,8 +343,8 @@
     return element("td", /^-?\$/.test(value) ? "number money" : "number", value);
   }
 
-  function levelLabel(severity) {
-    return element("span", `status ${severityClass[severity]}`, results.labels.severities[severity]);
+  function levelLabel(severity, labels = results.labels) {
+    return element("span", `status ${severityClass[severity]}`, labels.severities[severity]);
   }
 
   function worstSeverity(flags) {
@@ -351,11 +369,11 @@
     return groups;
   }
 
-  function leadRow(flag, scope) {
+  function leadRow(flag, scope, labels = results.labels) {
     const row = element("li", scope === "drawer" ? "lead-item" : "group-lead");
     const content = element("div", "lead-body");
     content.append(
-      element("strong", "lead-title", results.labels.rules[flag.rule_code] ?? flag.rule_code),
+      element("strong", "lead-title", labels.rules[flag.rule_code] ?? flag.rule_code),
       element("p", "lead-message", flag.message),
     );
     if (scope === "day") {
@@ -366,7 +384,7 @@
       content.append(element("p", "lead-meta", flag.limit_text),
         element("p", "lead-meta", fill(leadList.dataset.ruleTemplate, { code: flag.rule_code })));
     }
-    row.append(levelLabel(flag.severity), content);
+    row.append(levelLabel(flag.severity, labels), content);
     return row;
   }
 
@@ -836,8 +854,8 @@
     errorList.replaceChildren();
   }
 
-  function showErrorSummary(problems) {
-    errorList.replaceChildren(
+  function showErrorSummary(problems, summary = errorSummary, list = errorList) {
+    list.replaceChildren(
       ...problems.map(({ text, target }) => {
         const item = element("li");
         const anchor = link(text, `#${target.id}`);
@@ -850,8 +868,8 @@
         return item;
       }),
     );
-    errorSummary.hidden = false;
-    errorSummary.focus();
+    summary.hidden = false;
+    summary.focus();
   }
 
   function addFiles(files) {
@@ -972,7 +990,234 @@
     });
   }
 
-  for (const cancel of [startCancel, prepareCancel]) {
+  function field(name) {
+    return closeForm.querySelector(`[data-field="${name}"]`);
+  }
+
+  function choice(name) {
+    return closeForm.elements[name].value;
+  }
+
+  function renumberDrops() {
+    [...dropRows.children].forEach((row, index) => {
+      const n = index + 1;
+      for (const input of row.querySelectorAll("input")) {
+        input.id = `drop-${n}-${input.dataset.part}`;
+        input.dataset.field = `safe_drops.${n}.${input.dataset.part}`;
+        input.previousElementSibling.htmlFor = input.id;
+        input.previousElementSibling.textContent = fill(dropRows.dataset[input.dataset.part === "amount" ? "amount" : "bag"], { n });
+      }
+      row.querySelector("button").textContent = fill(dropRows.dataset.remove, { n });
+    });
+    addDrop.hidden = dropRows.children.length >= Number(addDrop.dataset.max);
+  }
+
+  function newDrop() {
+    const row = element("li", "field-grid");
+    for (const part of ["amount", "bag_number"]) {
+      const box = element("div", "field");
+      const input = element("input");
+      input.dataset.part = part;
+      input.autocomplete = "off";
+      if (part === "amount") {
+        input.inputMode = "decimal";
+        input.setAttribute("aria-describedby", "money-hint");
+      }
+      box.append(element("label"), input);
+      row.append(box);
+    }
+    const remove = element("button", "button button-secondary");
+    remove.type = "button";
+    remove.addEventListener("click", () => {
+      const next = row.nextElementSibling ?? row.previousElementSibling;
+      row.remove();
+      renumberDrops();
+      discardCheck();
+      (next?.querySelector("input") ?? addDrop).focus();
+    });
+    row.append(remove);
+    dropRows.append(row);
+    renumberDrops();
+    return row;
+  }
+
+  function showChoices() {
+    reportFigures.hidden = choice("report") !== "yes";
+    dropList.hidden = choice("drops") !== "list";
+    if (!dropList.hidden && dropRows.children.length === 0) newDrop();
+    for (const input of [field("opened_at"), field("closed_at")]) input.disabled = timesMissing.checked;
+  }
+
+  function discardCheck() {
+    // Any change makes the last check out of date; a late reply is ignored.
+    checked = null;
+    if (request?.view === "close") stopWaiting(request, "changed");
+  }
+
+  function drawerPayload() {
+    const counts = {};
+    for (const input of closeForm.querySelectorAll('[data-field^="counts."]')) {
+      counts[input.dataset.field.slice("counts.".length)] = input.value;
+    }
+    const report = {};
+    for (const input of reportFigures.querySelectorAll("input")) {
+      report[input.dataset.field.slice("register_report.".length)] = input.value;
+    }
+    const drops = choice("drops");
+    return {
+      business_date: field("business_date").value,
+      register_id: field("register_id").value,
+      cashier_id: field("cashier_id").value,
+      opened_at: timesMissing.checked ? null : field("opened_at").value,
+      closed_at: timesMissing.checked ? null : field("closed_at").value,
+      opening_float: field("opening_float").value,
+      counts,
+      recount: null,
+      register_report: choice("report") === "yes" ? report : null,
+      safe_drops: drops === "missing" ? null : drops === "none" ? [] : [...dropRows.children].map((row) => ({
+        amount: row.querySelector('[data-part="amount"]').value,
+        bag_number: row.querySelector('[data-part="bag_number"]').value,
+      })),
+      verifier_id: "",
+      variance_note: "",
+    };
+  }
+
+  function clearFieldProblems() {
+    for (const node of closeForm.querySelectorAll("[aria-invalid]")) {
+      node.removeAttribute("aria-invalid");
+      node.setAttribute("aria-describedby", node.dataset.describedby ?? "");
+      if (!node.dataset.describedby) node.removeAttribute("aria-describedby");
+    }
+    for (const note of closeForm.querySelectorAll(".field-error, .error-row")) note.remove();
+    closeSummary.hidden = true;
+    closeProblems.replaceChildren();
+  }
+
+  function markField(name, text) {
+    const target = field(name);
+    if (!target) return checkDrawer;
+    const note = element("p", "field-error", text);
+    note.id = `problem-${name.replace(/\W/g, "-")}`;
+    if (target.disabled) {
+      // Unavailable times: the note belongs to the choice that disabled them.
+      timesMissing.parentElement.after(note);
+      return timesMissing;
+    }
+    if (target.tagName === "FIELDSET") {
+      target.querySelector("legend").after(note);
+      return target.querySelector("input");
+    }
+    target.dataset.describedby = target.getAttribute("aria-describedby") ?? "";
+    target.setAttribute("aria-describedby", `${note.id} ${target.dataset.describedby}`.trim());
+    target.setAttribute("aria-invalid", "true");
+    if (target.closest(".count-entry")) {
+      // A full-width row under the count line keeps the message readable at 320px.
+      const cell = element("td");
+      cell.colSpan = 2;
+      cell.append(note);
+      const row = element("tr", "error-row");
+      row.append(cell);
+      target.closest("tr").after(row);
+    } else {
+      target.after(note);
+    }
+    return target;
+  }
+
+  function showFieldProblems(problems) {
+    // Unavailable times give the same message twice; list it once.
+    const opened = problems.find((problem) => problem.field === "opened_at");
+    const unique = problems.filter((problem) =>
+      !(problem.field === "closed_at" && problem.message === opened?.message));
+    showErrorSummary(
+      unique.map(({ field: name, message: text }) => ({ text, target: markField(name, text) })),
+      closeSummary,
+      closeProblems,
+    );
+  }
+
+  function choiceProblems() {
+    const problems = [];
+    if (!choice("report")) problems.push({ field: "register_report", message: message("drawer_report") });
+    if (!choice("drops")) problems.push({ field: "safe_drops", message: message("drawer_drops") });
+    if (choice("drops") === "list" && dropRows.children.length === 0) {
+      problems.push({ field: "safe_drops", message: message("drawer_add_drop") });
+    }
+    return problems;
+  }
+
+  async function checkTheDrawer(event) {
+    event?.preventDefault();
+    if (request) {
+      return;
+    }
+    clearFieldProblems();
+    clearRequestError(closeError);
+    const problems = choiceProblems();
+    if (problems.length) {
+      showFieldProblems(problems);
+      return;
+    }
+    const outcome = await run({
+      button: checkDrawer,
+      cancel: closeCancel,
+      slow: closeSlow,
+      view: "close",
+      url: "/api/drawer",
+      requestBody: new Blob([JSON.stringify(drawerPayload())], { type: "application/json" }),
+    });
+    if (handledStop(outcome, checkDrawer, closeError, checkTheDrawer)) {
+      return;
+    }
+    if (outcome.payload) {
+      checked = outcome.payload;
+      announce(views.review.dataset.announce);
+      navigate("#/review");
+    } else if (outcome.status === 400 && outcome.error.fields) {
+      showFieldProblems(outcome.error.fields);
+    } else {
+      showRequestError(closeError, outcome.error.message, checkTheDrawer);
+    }
+  }
+
+  function renderReview() {
+    document.getElementById("review-empty").hidden = Boolean(checked);
+    document.getElementById("review-body").hidden = !checked;
+    if (!checked) return;
+    const { drawer: item, labels } = checked;
+    const about = document.getElementById("review-about");
+    about.textContent = fill(about.dataset.template, {
+      register: item.shift.register_id,
+      date: labels.dates[item.shift.business_date],
+      cashier: item.shift.cashier_id,
+    });
+    const amounts = { expected: item.expected_amount, counted: item.counted_amount, difference: item.variance_amount };
+    for (const number of views.review.querySelectorAll("[data-review]")) {
+      number.textContent = amounts[number.dataset.review];
+      number.className = /^-?\$/.test(number.textContent) ? "money" : "";
+    }
+    const worst = worstSeverity(item.flags);
+    const outcome = document.getElementById("review-outcome");
+    outcome.querySelector('[data-role="word"]').textContent = labels.statuses[item.status];
+    const level = outcome.querySelector('[data-role="level"]');
+    level.hidden = !worst;
+    level.className = worst ? `status ${severityClass[worst]}` : "status";
+    level.textContent = worst ? labels.severities[worst] : "";
+    reviewLeads.replaceChildren(...sortLeads(item.flags).map((flag) => leadRow(flag, "drawer", labels)));
+    reviewLeads.hidden = item.flags.length === 0;
+    document.getElementById("review-no-leads").hidden = item.flags.length > 0;
+  }
+
+  closeForm.addEventListener("submit", checkTheDrawer);
+  closeForm.addEventListener("input", discardCheck);
+  closeForm.addEventListener("change", showChoices);
+  addDrop.addEventListener("click", () => {
+    newDrop().querySelector("input").focus();
+    discardCheck();
+  });
+
+  for (const cancel of [startCancel, prepareCancel, closeCancel]) {
     cancel.addEventListener("click", () => {
       if (request) {
         stopWaiting(request, "cancel");

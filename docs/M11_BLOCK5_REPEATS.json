@@ -1,0 +1,337 @@
+{
+  "why": "The first after-measurement showed DOMContentLoaded +22.7% (30.8 to 37.8 ms), over the 20% investigation trigger, so both versions were measured again in alternating rounds.",
+  "conclusion": "No consistent slowdown: run-to-run spread is larger than the difference between versions.",
+  "conditions": {
+    "browser": "Google Chrome 156.0.8078.80, headless, through Playwright",
+    "machine": "Apple M1, 8 GB memory, macOS 27.2",
+    "network": "local loopback, no throttling",
+    "cache": "fresh browser context per run, so the cache starts empty",
+    "server": "local Werkzeug development servers for both versions, running side by side, each warmed by one example run before timing",
+    "boundaries": {
+      "dom_content_loaded_ms": "navigation start to DOMContentLoaded end",
+      "load_event_ms": "navigation start to load event end",
+      "try_example_ms": "click on Try the example until the Results heading is visible (view shown, heading has size and text), polled each animation frame",
+      "open_drawer_ms": "click on the first drawer link until the Drawer details heading is visible, polled each animation frame"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "code": "b474088 (exported copy)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 39.7,
+        "load_event_ms": 70.3,
+        "try_example_ms": 94.3,
+        "open_drawer_ms": 13.6
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 56.9,
+          "load_event_ms": 87.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 93.1,
+          "open_drawer_ms": 13.6
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 37.3,
+          "load_event_ms": 66.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 94.3,
+          "open_drawer_ms": 14.4
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 39.7,
+          "load_event_ms": 70.3,
+          "css_js_bytes": 59977,
+          "try_example_ms": 88.7,
+          "open_drawer_ms": 9.9
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 45,
+          "load_event_ms": 72.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 104.3,
+          "open_drawer_ms": 14.2
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.4,
+          "load_event_ms": 66.2,
+          "css_js_bytes": 59977,
+          "try_example_ms": 103.7,
+          "open_drawer_ms": 10.9
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 1,
+      "code": "block 5 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 32.2,
+        "load_event_ms": 64,
+        "try_example_ms": 89.9,
+        "open_drawer_ms": 14.4
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 59.2,
+          "load_event_ms": 75.2,
+          "css_js_bytes": 71125,
+          "try_example_ms": 88.8,
+          "open_drawer_ms": 10.8
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 32.2,
+          "load_event_ms": 64,
+          "css_js_bytes": 71125,
+          "try_example_ms": 89.4,
+          "open_drawer_ms": 15.1
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 30.1,
+          "load_event_ms": 63.8,
+          "css_js_bytes": 71125,
+          "try_example_ms": 90.3,
+          "open_drawer_ms": 8.5
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 40,
+          "load_event_ms": 56.5,
+          "css_js_bytes": 71125,
+          "try_example_ms": 89.9,
+          "open_drawer_ms": 15.1
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 31.5,
+          "load_event_ms": 71.2,
+          "css_js_bytes": 71125,
+          "try_example_ms": 120.6,
+          "open_drawer_ms": 14.4
+        }
+      ],
+      "css_js_bytes": 71125
+    },
+    {
+      "round": 2,
+      "code": "b474088 (exported copy)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 30.4,
+        "load_event_ms": 61.9,
+        "try_example_ms": 89.2,
+        "open_drawer_ms": 13.8
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 35.1,
+          "load_event_ms": 61.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 89.5,
+          "open_drawer_ms": 13.6
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 29.3,
+          "load_event_ms": 56.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 89.2,
+          "open_drawer_ms": 14.2
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 46.1,
+          "load_event_ms": 72.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 87.8,
+          "open_drawer_ms": 13.8
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 30.4,
+          "load_event_ms": 63.5,
+          "css_js_bytes": 59977,
+          "try_example_ms": 90.7,
+          "open_drawer_ms": 14
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 28.6,
+          "load_event_ms": 59.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 88.2,
+          "open_drawer_ms": 9.1
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 2,
+      "code": "block 5 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 30.7,
+        "load_event_ms": 64.5,
+        "try_example_ms": 89.2,
+        "open_drawer_ms": 10
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 30.9,
+          "load_event_ms": 59,
+          "css_js_bytes": 71125,
+          "try_example_ms": 89.2,
+          "open_drawer_ms": 13.8
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 33.2,
+          "load_event_ms": 65.5,
+          "css_js_bytes": 71125,
+          "try_example_ms": 87.4,
+          "open_drawer_ms": 10
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 30.7,
+          "load_event_ms": 66.9,
+          "css_js_bytes": 71125,
+          "try_example_ms": 102.2,
+          "open_drawer_ms": 13.5
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 29.8,
+          "load_event_ms": 61.5,
+          "css_js_bytes": 71125,
+          "try_example_ms": 88.2,
+          "open_drawer_ms": 8
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 28.9,
+          "load_event_ms": 64.5,
+          "css_js_bytes": 71125,
+          "try_example_ms": 107.5,
+          "open_drawer_ms": 7.6
+        }
+      ],
+      "css_js_bytes": 71125
+    },
+    {
+      "round": 3,
+      "code": "b474088 (exported copy)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 36.7,
+        "load_event_ms": 66.2,
+        "try_example_ms": 91.5,
+        "open_drawer_ms": 10.1
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 36.7,
+          "load_event_ms": 65.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 88.2,
+          "open_drawer_ms": 10.1
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 74.3,
+          "load_event_ms": 102.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 94.4,
+          "open_drawer_ms": 15.8
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 25.8,
+          "load_event_ms": 52.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 87.4,
+          "open_drawer_ms": 9.8
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 40,
+          "load_event_ms": 66.2,
+          "css_js_bytes": 59977,
+          "try_example_ms": 95.5,
+          "open_drawer_ms": 13.9
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 34.4,
+          "load_event_ms": 67.2,
+          "css_js_bytes": 59977,
+          "try_example_ms": 91.5,
+          "open_drawer_ms": 8.5
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 3,
+      "code": "block 5 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 30.2,
+        "load_event_ms": 63.9,
+        "try_example_ms": 90.9,
+        "open_drawer_ms": 11.1
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 32.9,
+          "load_event_ms": 64.4,
+          "css_js_bytes": 71125,
+          "try_example_ms": 86.8,
+          "open_drawer_ms": 10.9
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 30.1,
+          "load_event_ms": 61.8,
+          "css_js_bytes": 71125,
+          "try_example_ms": 90.9,
+          "open_drawer_ms": 11.1
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 27.6,
+          "load_event_ms": 59.8,
+          "css_js_bytes": 71125,
+          "try_example_ms": 87,
+          "open_drawer_ms": 8.1
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 30.2,
+          "load_event_ms": 63.9,
+          "css_js_bytes": 71125,
+          "try_example_ms": 95.9,
+          "open_drawer_ms": 11.5
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.2,
+          "load_event_ms": 69.2,
+          "css_js_bytes": 71125,
+          "try_example_ms": 109.8,
+          "open_drawer_ms": 12.7
+        }
+      ],
+      "css_js_bytes": 71125
+    }
+  ]
+}

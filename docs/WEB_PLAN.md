@@ -13,7 +13,9 @@
 - **M11 block 3 contract drafted 2026-11-04, awaiting review:**
   [M11_CONTRACT.md](M11_CONTRACT.md) proposes `POST /api/drawer`, its fields,
   coverage, handoff, closing sheet, and a CSS/JS budget decision. Until it is
-  approved, the contracts below are unchanged.
+  approved, the contracts below are unchanged. The user's reviewer confirmed
+  it on 2026-11-04. Block 5 added `#/close` and a minimal `#/review`, not yet
+  linked from Start; see [M11_BLOCK5.md](M11_BLOCK5.md).
 - **M10 block 1 (authorized 2026-10-26):** the shared "Tick and tie" palette,
   local Atkinson fonts, responsive type/spacing, decorative drawer logo,
   header, footer, and breadcrumbs replace the corresponding M8 shell styles.

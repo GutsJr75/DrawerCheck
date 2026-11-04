@@ -63,7 +63,8 @@ below gives examples.
 - **The website saves nothing.** It has no accounts or run history. The
   command line keeps its records in a local database file.
 - **Seven files to start.** Uploaded records must be seven CSV files in a
-  fixed format. Entering a single drawer by hand is planned, not available.
+  fixed format. Entering a single drawer by hand is being built and is not
+  yet linked from the site.
 - **One closing shift per register per day**, and simple bank matching that
   can pick the wrong day when amounts repeat.
 
@@ -81,7 +82,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit hint | Done |
 | Website | Live at [drawercheck.onrender.com](https://drawercheck.onrender.com), with the redesigned screens |
-| Closing workflow: enter one drawer by hand, then review it | Planned in [M11](docs/M11_PLAN.md); only the paper walkthrough is done |
+| Closing workflow: enter one drawer by hand, then review it | In progress in [M11](docs/M11_PLAN.md): the entry page works locally; the full review page is next |
 | Optional rules R06 and R07 | Deferred until after the closing workflow |
 
 Test, CI, hosting, and accessibility evidence is under
@@ -287,7 +288,7 @@ The app is created by `drawercheck.web:create_app()`.
 | `GET /` | Nothing | The website page, with its local styles and fonts |
 | `POST /api/demo` | Nothing | Full results for the built-in example |
 | `POST /api/check` | The seven CSV files | Full results for those files |
-| `POST /api/drawer` | One drawer's entries as JSON | That drawer's result and which checks ran. No page uses it yet; see the [contract](docs/M11_CONTRACT.md). |
+| `POST /api/drawer` | One drawer's entries as JSON | That drawer's result and which checks ran, for the Close a drawer page; see the [contract](docs/M11_CONTRACT.md). |
 | `GET /examples/<file>` | Nothing | One of the seven example CSVs, to download |
 
 Results come back as one JSON response containing summaries, shift

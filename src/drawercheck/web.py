@@ -16,7 +16,7 @@ from drawercheck import errors
 from drawercheck.config import Config
 from drawercheck.csv_contract import CSV_HEADERS, DENOMINATIONS_CENTS
 from drawercheck.demo import generate_demo
-from drawercheck.drawer import DrawerCheck, check_drawer
+from drawercheck.drawer import COUNT_KEYS, MAX_SAFE_DROPS, DrawerCheck, check_drawer
 from drawercheck.importer import import_directory
 from drawercheck.models import Flag, ShiftResult, group_flags_by_date
 from drawercheck.money import format_cents
@@ -180,7 +180,14 @@ CLIENT_MESSAGES = {
     "network": errors.WEB_CLIENT_NETWORK,
     "timeout": errors.WEB_CLIENT_TIMEOUT,
     "unavailable": errors.WEB_UNAVAILABLE,
+    "drawer_report": errors.WEB_CLIENT_DRAWER_REPORT,
+    "drawer_drops": errors.WEB_CLIENT_DRAWER_DROPS,
+    "drawer_add_drop": errors.WEB_CLIENT_DRAWER_ADD_DROP,
 }
+# The Close a drawer count sheet: request key and plain name, largest bill first.
+COUNT_LINES = tuple(
+    (key, errors.drawer_count_name(cents)) for key, cents in COUNT_KEYS.items()
+)
 # The browser adds a waking-server notice after 5 seconds and stops waiting at 90.
 SLOW_NOTICE_MS = 5_000
 GIVE_UP_MS = 90_000
@@ -589,6 +596,8 @@ def create_app() -> Flask:
             tape_lines=TAPE_LINES,
             example_tape=EXAMPLE_TAPE,
             files=FILE_DESCRIPTIONS,
+            count_lines=COUNT_LINES,
+            max_safe_drops=MAX_SAFE_DROPS,
             messages=CLIENT_MESSAGES,
             row_limits=ROW_LIMITS,
             max_field_characters=MAX_FIELD_CHARACTERS,

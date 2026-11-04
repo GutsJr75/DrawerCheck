@@ -1685,3 +1685,27 @@ before plus 80 new). Both Ruff checks passed (80 formatter files). A real
 local Flask server returned case B's $685.65, $665.65, and -$20.00 with
 R01, R02, and R05, a field message for a missing drop log, and a size
 message for a 40 KB body.
+
+## 2026-11-04: M11 block 5, Close a drawer
+
+- Built: the Close a drawer page (shift slip, paper count sheet, register
+  report, safe drops, check) and a minimal Review a drawer, using the block 4
+  endpoint. Field problems appear in a focused summary and beside each field.
+  The CSS/JS budget is now 90,000 bytes; the assets total 71,125.
+- Learned: one measurement can mislead. DOMContentLoaded first looked 22.7%
+  slower, but alternating repeats showed the spread between runs was larger
+  than the change. Screenshots also caught a 320 px count sheet wrapping
+  labels letter by letter, which tests alone did not.
+- Interview question: Why should a form never pre-select "no safe drops", and
+  how do you show a blank entry is different from zero?
+
+Authorization: the user's "go for block 5". No push, deployment, or link from
+Start; Review's coverage and sign-off are block 6.
+
+Verification: see [M11_BLOCK5.md](M11_BLOCK5.md) for the browser flow in
+Chrome and WebKit, 40 axe scans, and the performance files; test and Ruff
+results are below.
+810 tests passed and 2 optional browser tests skipped. Both Ruff checks
+passed (81 formatter files). The opt-in upload regression test passed in
+Chrome; its WebKit case could not launch because the installed Playwright
+expects a WebKit build that is not on this machine.

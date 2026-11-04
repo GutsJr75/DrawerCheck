@@ -13,7 +13,9 @@ from pathlib import Path
 
 import pytest
 
+from drawercheck import errors
 from drawercheck.csv_contract import CSV_HEADERS
+from drawercheck.drawer import COUNT_KEYS, REPORT_KEYS
 
 pytest.importorskip("flask")
 web = importlib.import_module("drawercheck.web")
@@ -106,6 +108,8 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
         "view-results",
         "view-drawer",
         "view-missing",
+        "view-close",
+        "view-review",
     ]
     views = {
         attrs["id"]: attrs
@@ -115,7 +119,14 @@ def test_page_shell_has_landmarks_notice_and_footer(client) -> None:
     assert "hidden" not in views["view-start"]
     assert all(
         "hidden" in views[name]
-        for name in ("view-prepare", "view-results", "view-drawer", "view-missing")
+        for name in (
+            "view-prepare",
+            "view-results",
+            "view-drawer",
+            "view-missing",
+            "view-close",
+            "view-review",
+        )
     )
     # Drawer details builds its human title from the loaded result.
     assert all(
@@ -391,7 +402,7 @@ def test_navigation_waiting_and_download_hooks(client) -> None:
     cancels = [
         attrs for tag, attrs in page.tags if attrs.get("id", "").endswith("-cancel")
     ]
-    assert len(cancels) == 2 and all("hidden" in attrs for attrs in cancels)
+    assert len(cancels) == 3 and all("hidden" in attrs for attrs in cancels)
 
 
 def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:
@@ -499,14 +510,14 @@ def test_stylesheet_fonts_are_local_and_served(client) -> None:
 
 
 def test_static_files_meet_the_performance_budget() -> None:
-    """DESIGN.md: CSS and JavaScript under 60 KB together; fonts under 200 KB."""
+    """DESIGN.md: every CSS and JavaScript file under 90 KB together; fonts under 200 KB."""
     code = sum(
         path.stat().st_size
         for pattern in ("*.css", "*.js")
-        for path in STATIC.glob(pattern)
+        for path in STATIC.rglob(pattern)
     )
     fonts = sum(path.stat().st_size for path in (STATIC / "fonts").glob("*.woff2"))
-    assert 0 < code < 60_000
+    assert 0 < code < 90_000
     assert 0 < fonts < 200_000
 
 
@@ -636,3 +647,50 @@ def test_colour_tokens_meet_wcag_contrast(theme: str) -> None:
     for foreground, background, minimum in CONTRAST_PAIRS:
         ratio = _contrast(tokens[foreground], tokens[background])
         assert ratio >= minimum, (foreground, background, round(ratio, 2))
+
+
+def test_close_a_drawer_fields_match_the_drawer_contract(client) -> None:
+    """Every entry the page sends, or marks, uses a field name the server reports."""
+    page, text = _page(client)
+    fields = [attrs["data-field"] for _, attrs in page.tags if "data-field" in attrs]
+    assert fields == [
+        "business_date",
+        "register_id",
+        "cashier_id",
+        "opening_float",
+        "opened_at",
+        "closed_at",
+        *(f"counts.{key}" for key in COUNT_KEYS),
+        "register_report",
+        *(f"register_report.{key}" for key in REPORT_KEYS),
+        "safe_drops",
+    ]
+    ids = [attrs["id"] for _, attrs in page.tags if "id" in attrs]
+    assert len(ids) == len(set(ids))
+    # Each choice can receive focus from the error summary, and none starts chosen.
+    radios = [attrs for tag, attrs in page.tags if attrs.get("type") == "radio"]
+    assert [attrs["id"] for attrs in radios] == [
+        "report-yes",
+        "report-no",
+        "drops-list",
+        "drops-none",
+        "drops-missing",
+    ]
+    assert not any("checked" in attrs for attrs in radios)
+    # Count lines start blank: a blank line is never sent as 0.
+    counts = [
+        attrs
+        for _, attrs in page.tags
+        if attrs.get("data-field", "").startswith("counts.")
+    ]
+    assert all("value" not in attrs for attrs in counts)
+    for words in (
+        "Use made-up figures only. This demo is not for real store records",
+        "No safe drops this shift",
+        "Drop log not available",
+        "Times not available",
+        errors.WEB_CLIENT_DRAWER_REPORT,
+        errors.WEB_CLIENT_DRAWER_DROPS,
+        errors.WEB_CLIENT_DRAWER_ADD_DROP,
+    ):
+        assert words in text

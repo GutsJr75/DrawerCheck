@@ -167,6 +167,9 @@ WEB_CLIENT_NETWORK = (
     "The demo server could not be reached. Check your connection and try again."
 )
 WEB_CLIENT_TIMEOUT = "The demo server did not answer in time. Try again in a moment."
+WEB_CLIENT_DRAWER_REPORT = "Choose whether you have the register report."
+WEB_CLIENT_DRAWER_DROPS = "Choose whether there were safe drops."
+WEB_CLIENT_DRAWER_ADD_DROP = "Add each safe drop, or choose No safe drops this shift."
 
 # One manually entered drawer (M11). Field messages fill {label} or {what}.
 DRAWER_REQUEST = (

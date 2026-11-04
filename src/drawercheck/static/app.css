@@ -1348,3 +1348,74 @@ html {
 #view-prepare {
   overflow-wrap: anywhere;
 }
+
+/* Close a drawer: one text-input style, matching the select above. */
+.field input:not([type="radio"]),
+.count-entry input {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  max-width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--control);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.field input:disabled {
+  opacity: 0.6;
+}
+
+.field input[aria-invalid="true"],
+.count-entry input[aria-invalid="true"] {
+  border: 2px solid var(--review);
+}
+
+.field-error {
+  margin: var(--space-1) 0 0;
+  color: var(--review);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+/* A count sheet is narrow paper, not a full-width table. */
+.entry-paper {
+  max-width: 22rem;
+  padding-inline: var(--space-4);
+}
+
+.count-entry caption {
+  text-align: left;
+}
+
+.count-entry th {
+  white-space: nowrap;
+}
+
+.count-entry input {
+  width: 5.5rem;
+  text-align: right;
+}
+
+.drop-rows {
+  margin: var(--space-4) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.drop-rows .button {
+  align-self: end;
+}
+
+#view-close,
+#view-review {
+  overflow-wrap: anywhere;
+}
