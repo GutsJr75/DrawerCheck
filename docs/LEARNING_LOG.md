@@ -1641,3 +1641,24 @@ is not approved until the user reviews it, and block 4 waits for that.
 Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
 checks passed (the formatter's 76 files include Markdown). Local M11 link and
 anchor checks, `git diff --check`, and prohibited-punctuation checks passed.
+
+## 2026-11-04: M11 block 3 contract revision after review
+
+- Built: revised `docs/M11_CONTRACT.md` with the user's 90,000-byte CSS/JS
+  budget and its conditions, a shift-slip source for times and starting cash
+  (added to the participant packet), explicit "not available" handling for
+  times and drop logs, first-count difference and status for recounts,
+  input-based R09 checked and unavailable lists, and a per-block delivery
+  table.
+- Learned: a contract can promise something the front end is forbidden to
+  compute. The recount comparison needed Python to return the first count's
+  difference, because the browser must not do cash arithmetic.
+- Interview question: How do you set a performance budget that tracks real
+  responsiveness, not just file size?
+
+Authorization: the user's review and budget choice. Documents only; block 4
+waits for the user's review of the revised contract.
+
+Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
+checks passed (76 formatter files, including Markdown). M11 link and anchor
+checks, `git diff --check`, and prohibited-punctuation checks passed.

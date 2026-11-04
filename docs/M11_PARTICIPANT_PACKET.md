@@ -9,14 +9,15 @@ in [M11_BLOCK1.md](M11_BLOCK1.md); keep that file out of the participant's
 view. Hand over each part when the task script says so.*
 
 **Store:** Demo Store #001. **Business date:** Monday, November 2, 2026.
-Each register started the day with **$200.00** of starting cash.
+Each drawer has a shift slip with its times and starting cash.
 
 ## Your tasks
 
 You will be told which drawer to use for each task.
 
 1. Use the drawer description to fill in a blank count sheet.
-2. Use the register report and safe drop log to fill in the figures form.
+2. Use the shift slip, register report, and safe drop log to fill in the
+   figures form.
 3. Read the result card you are given. Did the drawer balance?
 4. A manager sees a result card for drawer B. What would you do next?
 5. After a recount, fill in the review form for drawer B.
@@ -38,6 +39,16 @@ You will be told which drawer to use for each task.
 - Coin rolls: 2 rolls of quarters (40 quarters each) and 1 roll of pennies
   (50 pennies).
 - Also in the drawer: a paid-out receipt for $15.00.
+
+### Shift slip for R1
+
+```text
+DEMO STORE #001          SHIFT SLIP
+Register: R1             Business date: 2026-11-02
+Cashier ID: cashier_01
+Drawer opened: 08:00     Drawer closed: 20:00
+Starting cash: 200.00
+```
 
 ### Register report for R1
 
@@ -82,6 +93,16 @@ ACTIVITY
 - Coin cups: 32 loose quarters, 35 dimes, 31 nickels, and 10 loose pennies.
 - Also in the drawer: a paid-out receipt for $32.50.
 
+### Shift slip for R2
+
+```text
+DEMO STORE #001          SHIFT SLIP
+Register: R2             Business date: 2026-11-02
+Cashier ID: cashier_02
+Drawer opened: 08:00     Drawer closed: 20:00
+Starting cash: 200.00
+```
+
 ### Register report for R2
 
 ```text
@@ -116,6 +137,16 @@ ACTIVITY
 The register report for R3 did not print before the register was closed.
 Cashier_03 has already counted the drawer.
 
+### Shift slip for R3
+
+```text
+DEMO STORE #001          SHIFT SLIP
+Register: R3             Business date: 2026-11-02
+Cashier ID: cashier_03
+Drawer opened: 08:00     Drawer closed: 20:00
+Starting cash: 200.00
+```
+
 ### Count sheet from cashier_03
 
 | Bill or coin | Quantity | Line total |
@@ -146,7 +177,7 @@ Use one copy of each form per drawer.
 
 ### Count sheet
 
-Register: ________ Cashier ID: ________ Starting cash: ________
+Register: ________ Cashier ID: ________
 
 Write a number on every line. Write 0 if there are none.
 
@@ -172,6 +203,8 @@ Register: ________
 
 | Figure | Amount | Where you found it |
 | --- | ---: | --- |
+| Opened (time) | | |
+| Closed (time) | | |
 | Starting cash | | |
 | Cash sales | | |
 | Paid in | | |

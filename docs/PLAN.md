@@ -2,9 +2,9 @@
 
 ## Where things stand
 
-- **Next step, updated 2026-11-04:** the user reviews the M11 block 3
-  [contract](M11_CONTRACT.md) and chooses a CSS/JS budget option. Block 4,
-  the shared Python one-drawer check, starts only after that review. Follow M11 one block at a time, then consider the separately
+- **Next step, updated 2026-11-04:** the user reviews the revised M11 block 3
+  [contract](M11_CONTRACT.md). Block 4, the shared Python one-drawer check,
+  starts only after that review. The CSS/JS budget choice is made. Follow M11 one block at a time, then consider the separately
   gated M12 local-records milestone. This order supersedes earlier statements
   that R06 is next; R06 and R07 are deferred.
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
@@ -411,6 +411,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 88. **Lead the README with the product (M11 block 2, authorized 2026-11-04).** The user's "next" authorizes the README front page. Order: purpose, Try it, What a result looks like (the September 3 R1 drawer and both existing October 28 screenshots, captioned as predating the November 3 layout fixes), short Limitations, Why, and a five-row status table. The milestone-heavy status text moved, unchanged in substance, to a Verification section near the end that separates hosted evidence for `62650f9`, local-only fixes after it, and unverified checks. The detailed section is renamed "Limitations in detail" so the brief's required items stay. The planned manual entry appears only as planned. No new screenshots, because the site did not change; no evidence or screenshot paths moved.
 
 89. **Draft the one-drawer input and check contract (M11 block 3, authorized 2026-11-04).** The user's "next" authorizes the contract only. Proposed: real opening and closing times from the report rather than a new closed flag, so no placeholder time and no change to `Shift`; explicit R01, R02, R03, R05, and R09 calls with R04 and R08 reported "not run"; only the whole register report may be unknown; every count line needs a number; drops as a list or an explicit none; one optional recount; all JSON values as strings; all field errors returned at once; no server storage at all; card sales, voids, and no-sale counts become `int | None` because manual entry does not collect them. The core's "Missing POS totals" message stays for now. Found while drafting: CSS/JS is 23 bytes under its 60,000-byte budget, so the user must choose a budget option before block 5. Not approved until the user reviews it.
+
+90. **Revise the contract after the user's review (M11 block 3, 2026-11-04).** The user chose one combined 90,000-byte CSS/JS budget, with conditions: every application CSS/JS file counts, the limit is a ceiling, a local Chrome baseline is measured before block 5 changes assets and repeated in block 9 (a slowdown over 20% is investigated; both figures are project choices), and loading is split only if measurements show a benefit. Block 5 updates DESIGN.md and the budget test together. Contract clarifications: times and starting cash come from a shift slip, now in the participant packet for every drawer, and missing times or a missing drop log are sent as `null` and answered with a plain "cannot check" message instead of a guess; the recount response carries the first count's difference and status from Python with a labelled basis; R09 coverage lists checked and unavailable parts from the actual inputs, so "expected cash not negative" is unavailable without a report; and a delivery table states what blocks 4 to 8 each build, with recount and the closing sheet unavailable until blocks 7 and 8. Only money and count values are required to be strings. The contract still awaits the user's review.
 
 ## Math and test commitments
 

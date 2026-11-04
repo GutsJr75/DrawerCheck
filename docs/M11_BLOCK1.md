@@ -82,8 +82,9 @@ the register was closed." The count sheet and drop log are still available.
 
 ### Answer key: completed count sheets (facilitator only)
 
-The count sheet header records the starting cash given at opening: $200.00
-for every register. The cashier writes a quantity on every line, including 0.
+Each drawer's shift slip in the packet records its times and starting cash
+($200.00 for every register). The cashier writes a quantity on every line,
+including 0.
 Drawers A and B are what a correct task 1 produces from the packet's drawer
 descriptions. Drawer C is printed in the packet, because cashier_03 counted it.
 
@@ -119,7 +120,7 @@ Lines that the description never mentions ($100 in A, $2, and 50 cents) are 0.
 
 | Paper figure | DrawerCheck field | Role in the formula |
 | --- | --- | --- |
-| Count sheet header: starting cash | `shifts.csv` `opening_float` | Plus |
+| Shift slip: starting cash | `shifts.csv` `opening_float` | Plus |
 | Register report: Cash sales | `pos_totals.csv` `cash_sales` | Plus. Cash taken for sales, before refunds. |
 | Register report: Paid in | `pos_totals.csv` `paid_ins` | Plus |
 | Register report: Cash refunds | `pos_totals.csv` `cash_refunds` | Minus. Entered separately, never already netted out of cash sales. |
@@ -129,7 +130,7 @@ Lines that the description never mentions ($100 in A, $2, and 50 cents) are 0.
 | Register report: Card sales | `pos_totals.csv` `card_sales` | Stored, not used. Cards put no cash in the drawer. |
 | Register report: Total sales | Not stored | Not used. It mixes card and cash. |
 | Register report: Voids, No sale | `void_count`, `no_sale_count` | Stored, not used by any current rule |
-| Report header: cashier ID, times | `shifts.csv` `cashier_id`, `opened_at`, `closed_at` | Identity and status only |
+| Shift slip: cashier ID, opened, closed (the report header repeats them) | `shifts.csv` `cashier_id`, `opened_at`, `closed_at` | Identity and status only |
 
 ```text
 Expected cash = starting cash + cash sales + paid in
@@ -199,9 +200,10 @@ the steps, not you. Think out loud. You can stop at any time."
 1. Using the drawer description, fill in the count sheet. *Done when:* every
    line has a quantity, including 0, and the total matches $520.61 (A) or
    $665.65 (B).
-2. Using the register report and drop log, write down the figures DrawerCheck
-   needs. *Done when:* all six formula figures are found, card sales and total
-   sales are left out, and safe drops are not added to paid out.
+2. Using the shift slip, register report, and drop log, write down the
+   figures DrawerCheck needs. *Done when:* the times and all six formula
+   figures are found, card sales and total sales are left out, and safe drops
+   are not added to paid out.
 3. Read the result card. Say whether the drawer balanced. *Done when:* for A
    they say "balanced, 25 cents short within the limit"; for B, "short $20".
 
@@ -341,8 +343,8 @@ is complete. The single-drawer path should leave the deposit out entirely.
   counted" choice.
 - **Drops as a list or a total.** The drop log has one row per bag. Decide
   whether the form takes each drop or one total.
-- **Where the starting cash comes from.** Here it is on the count sheet
-  header. Confirm the form asks for it separately from the report figures.
+- **Where the starting cash comes from.** Answered after the block 3 review:
+  a shift slip for every drawer gives the starting cash and the times.
 - **Recount wording.** Decide what a recount records: new quantities, who
   recounted, or both.
 
