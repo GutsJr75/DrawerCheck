@@ -144,3 +144,11 @@ def test_closing_sheet_downloads_the_checked_snapshot_and_opens_offline(
 ) -> None:
     """Downloads keep checked counts and notes, hide after edits, and need no network."""
     _run_page_script("closing_sheet.cjs", browser)
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_one_drawer_end_to_end_keyboard_refresh_cancel_and_failures(
+    browser: str,
+) -> None:
+    """Keyboard use, refresh, Cancel, failures with retry, safe text, and the drop limit."""
+    _run_page_script("drawer_end_to_end.cjs", browser)

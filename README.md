@@ -23,8 +23,9 @@ to install.
 
 To try uploads, select **Upload demo CSVs** and use the seven example files
 provided on that screen. To enter one drawer by hand, select **Close a
-drawer** (new; not yet checked on the public demo). Use fictional data only. Results disappear when you
-refresh or close the page. The free server may take about a minute to wake up
+drawer** (new; not yet checked on the public demo, see
+[Check one drawer by hand](#check-one-drawer-by-hand)). Use fictional data
+only. Results disappear when you refresh or close the page. The free server may take about a minute to wake up
 after inactivity.
 
 ## What a result looks like
@@ -83,11 +84,34 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit hint | Done |
 | Website | Live at [drawercheck.onrender.com](https://drawercheck.onrender.com), with the redesigned screens |
-| Closing workflow: enter one drawer by hand, then review it | Implemented locally through [M11 block 8](docs/M11_BLOCK8.md): manual entry, review, recount, and an offline closing-sheet download. Final block 9 checks and public verification remain pending |
+| Closing workflow: enter one drawer by hand, then review it | Complete locally ([M11 checklist](docs/M11_CHECKLIST.md)): manual entry, review, recount, and an offline closing sheet. Participant testing and the public site remain unverified |
 | Optional rules R06 and R07 | Deferred until after the closing workflow |
 
 Test, CI, hosting, and accessibility evidence is under
 [Verification](#verification).
+
+## Check one drawer by hand
+
+**Close a drawer** checks one fictional drawer without preparing any files.
+
+1. Copy the shift slip: business date, register, cashier ID, starting cash,
+   and the opening and closing times.
+2. Count the cash: write how many of each bill and coin, 0 on lines with
+   none. Totals appear after the check, worked out by Python.
+3. Copy the register report (or mark it "Not available") and the safe drop
+   log (list the drops, "No safe drops this shift", or "Drop log not
+   available").
+4. Select **Check this drawer**. **Review a drawer** shows the calculation,
+   the count sheet, the leads, and which checks ran. One drawer on its own
+   cannot show patterns over time or a whole day's bank deposit, so those
+   checks say "Not run".
+5. Optionally add a recount, which is compared with the first count, and a
+   verifier ID and note. The ID is typed text, not a login or signature.
+6. Select **Download closing sheet** for an offline, printable copy.
+
+Nothing is saved. A worked example with expected answers is in the
+[closing walkthrough](docs/M11_BLOCK1.md), and a finished sheet is in the
+[sample closing sheet](examples/sample_closing_sheet.html).
 
 ## Try the command line in 3 steps
 
@@ -282,6 +306,16 @@ pip install -e ".[dev,web]"
 pytest -q tests/test_web.py tests/test_web_page.py tests/test_web_server.py
 ```
 
+Optional browser checks drive Google Chrome and WebKit through Playwright.
+They are skipped unless you point to a Playwright install, and you can name an
+installed WebKit build if it differs from Playwright's default:
+
+```sh
+DRAWERCHECK_PLAYWRIGHT_MODULE=/absolute/path/to/node_modules/playwright \
+DRAWERCHECK_WEBKIT_EXECUTABLE=/path/to/ms-playwright/webkit-XXXX/pw_run.sh \
+pytest -q tests/test_web_browser.py
+```
+
 To look at the page on your own computer, run
 `flask --app drawercheck.web:create_app run` and open the address it prints.
 
@@ -411,10 +445,17 @@ inferred from a local run.
 - **Not yet verified:** actual 400% browser zoom, a real screen reader, and
   first-time-user testing. No accessibility certification is claimed. The
   [redesign checklist](docs/M10_CHECKLIST.md) separates passes and open checks.
+- **M11 closing workflow, verified locally only:** 836 tests with browser
+  checks enabled, 12 committed Chrome and WebKit browser cases, 128
+  accessibility scans without violations, and 96 text-size and reflow checks.
+  Participant testing, a real screen reader, actual 400% zoom, hosted CI, and
+  the public site are not verified for M11. See the
+  [M11 checklist](docs/M11_CHECKLIST.md).
 
 ## More documentation
 
 - [Closing workflow plan](docs/M11_PLAN.md) and [walkthrough](docs/M11_BLOCK1.md): the planned manual-entry path.
+- [Closing workflow checklist](docs/M11_CHECKLIST.md): what M11 verified and what is still open.
 - [Redesign checklist](docs/M10_CHECKLIST.md): verification and open checks.
 - [How it works](docs/HOW_IT_WORKS.md): formulas, a worked example, and every rule.
 - [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact error messages, with checks and fixes.

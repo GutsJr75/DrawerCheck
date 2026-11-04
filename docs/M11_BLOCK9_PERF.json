@@ -1,0 +1,66 @@
+{
+  "label": "M11 block 9, working tree on 039a135 with block 9 changes",
+  "measured_at": "2026-11-04T22:19:19.442Z",
+  "conditions": {
+    "browser": "Google Chrome 156.0.8078.80, headless, through Playwright",
+    "machine": "Apple M1, 8 GB memory, macOS 27.2",
+    "network": "local loopback, no throttling",
+    "cache": "fresh browser context per run, so the cache starts empty",
+    "server": "local Flask development server, already running, warmed by one example run before timing",
+    "boundaries": {
+      "dom_content_loaded_ms": "navigation start to DOMContentLoaded end",
+      "load_event_ms": "navigation start to load event end",
+      "try_example_ms": "click on Try the example until the Results heading is visible (view shown, heading has size and text), polled each animation frame",
+      "open_drawer_ms": "click on the first drawer link until the Drawer details heading is visible, polled each animation frame"
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "dom_content_loaded_ms": 85.7,
+      "load_event_ms": 105.1,
+      "css_js_bytes": 78617,
+      "try_example_ms": 116.4,
+      "open_drawer_ms": 13.4
+    },
+    {
+      "run": 2,
+      "dom_content_loaded_ms": 47.1,
+      "load_event_ms": 107.5,
+      "css_js_bytes": 78617,
+      "try_example_ms": 154.4,
+      "open_drawer_ms": 10.9
+    },
+    {
+      "run": 3,
+      "dom_content_loaded_ms": 80.5,
+      "load_event_ms": 84.9,
+      "css_js_bytes": 78617,
+      "try_example_ms": 145.9,
+      "open_drawer_ms": 10.6
+    },
+    {
+      "run": 4,
+      "dom_content_loaded_ms": 49.5,
+      "load_event_ms": 106.3,
+      "css_js_bytes": 78617,
+      "try_example_ms": 133.5,
+      "open_drawer_ms": 11.8
+    },
+    {
+      "run": 5,
+      "dom_content_loaded_ms": 33.7,
+      "load_event_ms": 71.9,
+      "css_js_bytes": 78617,
+      "try_example_ms": 129.4,
+      "open_drawer_ms": 8.8
+    }
+  ],
+  "medians_ms": {
+    "dom_content_loaded_ms": 49.5,
+    "load_event_ms": 105.1,
+    "try_example_ms": 133.5,
+    "open_drawer_ms": 10.9
+  },
+  "css_js_bytes": 78617
+}

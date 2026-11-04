@@ -187,6 +187,24 @@ with synthetic CSV uploads, explainable review leads, and downloadable reports.
 
 These are suggested text only; they have not been applied to repository settings.
 
+## Three questions about the closing workflow (M11)
+
+**Why add a one-drawer check when the upload already worked?** Nobody has
+seven CSV files in my format. A cashier has a count, a register report, and a
+drop log, so Close a drawer takes those directly. A walkthrough with expected
+answers came first, and the new path is tested to give the same figures and
+leads as the CSV path.
+
+**How do you avoid overstating a single drawer's result?** Review lists every
+check as ran, ran with a lead, or not run, with the reason. Repeated shortages
+and the bank deposit need history or a whole day, so they say "Not run"
+instead of looking like a pass. Missing figures stay unknown, never zero.
+
+**What did testing catch that you would have missed?** A count sheet that
+looked fine passed an automated overflow check at 200% text on a phone width,
+but its boxes were off-screen in a sideways scroll. Reading the screenshot
+found it. I fixed the layout and made the check fail on that pattern.
+
 ## Things I would not claim
 
 - Real-business adoption, operational reliability, or real financial data.

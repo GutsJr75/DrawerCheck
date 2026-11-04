@@ -1796,3 +1796,24 @@ repeat passed. Forty axe scans found no violations; the eight app result
 scans retained the known drawer-tape contrast incomplete result. All four
 pages of the final A4 sample were visually inspected. See
 [block 8 evidence](M11_BLOCK8.md) for the scope and remaining gaps.
+
+## 2026-11-04: M11 block 9, end-to-end verification and handoff
+
+- Built: readable times on the closing sheet with a sample drift test, a
+  committed end-to-end browser test (keyboard, refresh, Cancel, failures,
+  safe text, drop limit), a stacked count sheet for large text on narrow
+  screens, the M11 checklist, block 9 evidence, and README use notes.
+- Learned: a check can pass while the thing it guards is broken. The reflow
+  matrix allowed sideways scrolling, so off-screen count boxes passed until a
+  screenshot showed them. Performance numbers from different days can also
+  mislead; side-by-side rounds under the same load settled it.
+- Interview question: How do you tell a real performance regression from a
+  busier machine?
+
+Authorization: the user's request to do the block 8 follow-ups, then block 9.
+No push or deployment. M12 is not started.
+
+Verification: 824 tests passed and 12 opt-in browser tests skipped; with
+browser tests enabled, 836 passed in Chrome and WebKit build 2370. Both Ruff
+checks passed. 128 axe scans found no violations; 96 text-size and reflow
+checks found no overflow, clipping, or unnamed sideways scrolling.

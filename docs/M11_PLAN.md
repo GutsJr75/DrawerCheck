@@ -2,11 +2,12 @@
 
 Roadmap updated 2026-11-04. The user authorized this plan update, following
 their choice to support both cashiers and managers on separate pages.
-Blocks 1 to 8 are complete locally: the [walkthrough](M11_BLOCK1.md), the
+All nine blocks are complete locally: the [walkthrough](M11_BLOCK1.md), the
 README, the reviewed [contract](M11_CONTRACT.md), `POST /api/drawer`,
-[Close a drawer](M11_BLOCK5.md), [Review a drawer](M11_BLOCK6.md), and the
-[recount](M11_BLOCK7.md), and the [closing sheet](M11_BLOCK8.md).
-The next step is **block 9**, after **next**.
+[Close a drawer](M11_BLOCK5.md), [Review a drawer](M11_BLOCK6.md), the
+[recount](M11_BLOCK7.md), the [closing sheet](M11_BLOCK8.md), and
+[final verification](M11_BLOCK9.md). Open checks are in the
+[M11 checklist](M11_CHECKLIST.md). M12 needs its own approval.
 This schedule takes priority over the unfinished M9 R06 and R07 rules.
 
 ## Goal and starting assumptions
@@ -45,8 +46,7 @@ Recounts and notes remain temporary; durable review status waits for M12.
 Each row is a separate approval, work, verification, and local-commit block.
 Target 30 to 60 minutes per block; split before expanding an oversized row.
 Stop after every block and wait for **next**. Never start the next row just
-because the preceding row passed. Blocks 1 to 8 are **complete locally**;
-block 9 is **pending**.
+because the preceding row passed. All nine blocks are **complete locally**.
 
 | Block | Work | Done when |
 | --- | --- | --- |

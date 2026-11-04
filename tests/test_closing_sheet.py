@@ -2,6 +2,7 @@
 
 import importlib
 from html.parser import HTMLParser
+from pathlib import Path
 
 import pytest
 from drawer_cases import SIGN_OFF, drawer_payload
@@ -126,6 +127,10 @@ def test_sheet_is_self_contained_printable_and_has_one_generation_time() -> None
     content = render(data, Config(), generated_at="2026-11-04T20:00:00+00:00")
     sheet = Sheet(content)
     assert "Generated 2026-11-04T20:00:00+00:00 (UTC)" in content
+    # Times read like Review, never as raw timestamps.
+    assert "Monday, November 2, 2026, 08:00" in content
+    assert "Monday, November 2, 2026, 20:00" in content
+    assert "T08:00" not in content
     assert "@media print" in content and "@page" in content
     assert "<style>:root" in content
     assert "print" in content and "offline" in content
@@ -143,3 +148,20 @@ def test_a_later_check_cannot_change_an_earlier_download() -> None:
     assert "Not supplied" in first and SIGN_OFF["variance_note"] not in first
     assert SIGN_OFF["variance_note"] in signed
     assert "Missing verifier and variance note" in first
+
+
+SAMPLE = Path(__file__).resolve().parents[1] / "examples/sample_closing_sheet.html"
+SAMPLE_NOTE = "First count was short $20.00. Recount found one more $20 bill; the recount balances."
+
+
+def _sample_sheet() -> str:
+    recount = dict(drawer_payload("B")["counts"], **{"20.00": "13"})
+    data = _check(
+        "B", recount=recount, verifier_id="manager_01", variance_note=SAMPLE_NOTE
+    )
+    return render(data, Config(), generated_at="2026-11-04T20:44:12+00:00")
+
+
+def test_the_committed_sample_matches_the_generator() -> None:
+    """examples/sample_closing_sheet.html is case B recounted and signed off."""
+    assert SAMPLE.read_text(encoding="utf-8") == _sample_sheet() + "\n"

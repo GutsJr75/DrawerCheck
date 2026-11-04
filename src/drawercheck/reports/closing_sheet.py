@@ -85,7 +85,12 @@ def _coverage(entries: list[dict]) -> str:
     return "<ul>" + "".join(parts) + "</ul>"
 
 
-def _identity(shift: dict) -> str:
+def _when(timestamp: str, labels: dict) -> str:
+    # Read like Review: the date in words and a 24-hour clock time.
+    return f"{labels['dates'][timestamp[:10]]}, {timestamp[11:16]}"
+
+
+def _identity(shift: dict, labels: dict) -> str:
     return _table(
         "Shift slip",
         ("Field", "Supplied value"),
@@ -94,8 +99,8 @@ def _identity(shift: dict) -> str:
             ("Register", shift["register_id"]),
             ("Cashier ID", shift["cashier_id"]),
             ("Drawer code", shift["shift_code"]),
-            ("Opened (local time)", shift["opened_at"]),
-            ("Closed (local time)", shift["closed_at"]),
+            ("Opened (local time)", _when(shift["opened_at"], labels)),
+            ("Closed (local time)", _when(shift["closed_at"], labels)),
             ("Starting cash", shift["opening_float_amount"]),
         ],
     )
@@ -234,7 +239,8 @@ def render(data: dict, config: Config, *, generated_at: str | None = None) -> st
     generated_at = generated_at or datetime.now(UTC).isoformat(timespec="seconds")
     sections = (
         _section(
-            "Drawer and outcome", _identity(shift) + _outcomes(drawer, labels, first)
+            "Drawer and outcome",
+            _identity(shift, labels) + _outcomes(drawer, labels, first),
         )
         + _section("Register report and calculation", _register_report(shift))
         + _section("Safe drops", _drop_log(data["safe_drops"]))

@@ -1,0 +1,882 @@
+{
+  "why": "The block 9 measurement against the block 5 baseline showed DOMContentLoaded +60.7%, load +71.2%, and Try the example +44.8%, over the 20% investigation trigger. The unchanged baseline code was then measured side by side in eight alternating rounds.",
+  "conclusion": "No slowdown attributable to M11: pooled medians of 40 runs per version are within a few percent. The first comparison reflected a busier machine, which slowed the old code equally.",
+  "pooled_medians_ms": {
+    "before": {
+      "dom_content_loaded_ms": 40.8,
+      "load_event_ms": 79.3,
+      "try_example_ms": 129.8,
+      "open_drawer_ms": 11.3
+    },
+    "after": {
+      "dom_content_loaded_ms": 39.4,
+      "load_event_ms": 81.0,
+      "try_example_ms": 133.8,
+      "open_drawer_ms": 11.3
+    }
+  },
+  "conditions": {
+    "browser": "Google Chrome 156.0.8078.80, headless, through Playwright",
+    "machine": "Apple M1, 8 GB memory, macOS 27.2",
+    "network": "local loopback, no throttling",
+    "cache": "fresh browser context per run, so the cache starts empty",
+    "server": "local Werkzeug development servers for both versions, running side by side, each warmed by one example run before each measurement",
+    "boundaries": {
+      "dom_content_loaded_ms": "navigation start to DOMContentLoaded end",
+      "load_event_ms": "navigation start to load event end",
+      "try_example_ms": "click on Try the example until the Results heading is visible (view shown, heading has size and text), polled each animation frame",
+      "open_drawer_ms": "click on the first drawer link until the Drawer details heading is visible, polled each animation frame"
+    },
+    "machine_load": "busy: load average about 6 during these runs (other desktop apps), unlike the quieter block 5 baseline"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 41.5,
+        "load_event_ms": 86.9,
+        "try_example_ms": 141,
+        "open_drawer_ms": 11.3
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 49.6,
+          "load_event_ms": 69.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 162.1,
+          "open_drawer_ms": 11.7
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 41.5,
+          "load_event_ms": 86.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 123.9,
+          "open_drawer_ms": 8
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 46.3,
+          "load_event_ms": 91.2,
+          "css_js_bytes": 59977,
+          "try_example_ms": 199.7,
+          "open_drawer_ms": 14.1
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 41.5,
+          "load_event_ms": 88.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 141,
+          "open_drawer_ms": 11.3
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 37,
+          "load_event_ms": 84.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 129.3,
+          "open_drawer_ms": 6.3
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 2,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 34,
+        "load_event_ms": 74.8,
+        "try_example_ms": 143.4,
+        "open_drawer_ms": 11.2
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 33.7,
+          "load_event_ms": 71.6,
+          "css_js_bytes": 59977,
+          "try_example_ms": 120.8,
+          "open_drawer_ms": 7.9
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 67.5,
+          "load_event_ms": 97.3,
+          "css_js_bytes": 59977,
+          "try_example_ms": 143.4,
+          "open_drawer_ms": 8.4
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 34,
+          "load_event_ms": 70.3,
+          "css_js_bytes": 59977,
+          "try_example_ms": 119.3,
+          "open_drawer_ms": 14.2
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 121.8,
+          "load_event_ms": 133.5,
+          "css_js_bytes": 59977,
+          "try_example_ms": 151.3,
+          "open_drawer_ms": 11.2
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.1,
+          "load_event_ms": 74.8,
+          "css_js_bytes": 59977,
+          "try_example_ms": 144.6,
+          "open_drawer_ms": 16.3
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 3,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 43,
+        "load_event_ms": 79.4,
+        "try_example_ms": 130.2,
+        "open_drawer_ms": 10.6
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 36.5,
+          "load_event_ms": 76.6,
+          "css_js_bytes": 59977,
+          "try_example_ms": 131.4,
+          "open_drawer_ms": 10.6
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 61.3,
+          "load_event_ms": 95.6,
+          "css_js_bytes": 59977,
+          "try_example_ms": 121.6,
+          "open_drawer_ms": 9.5
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 43,
+          "load_event_ms": 77.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 130.6,
+          "open_drawer_ms": 12.6
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 39.6,
+          "load_event_ms": 85.3,
+          "css_js_bytes": 59977,
+          "try_example_ms": 130.2,
+          "open_drawer_ms": 12.8
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 44.7,
+          "load_event_ms": 79.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 113.4,
+          "open_drawer_ms": 7.3
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 4,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 40.5,
+        "load_event_ms": 79.3,
+        "try_example_ms": 126.9,
+        "open_drawer_ms": 11.8
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 46.7,
+          "load_event_ms": 96.2,
+          "css_js_bytes": 59977,
+          "try_example_ms": 122.9,
+          "open_drawer_ms": 11.8
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 40.7,
+          "load_event_ms": 92.5,
+          "css_js_bytes": 59977,
+          "try_example_ms": 146.3,
+          "open_drawer_ms": 16.2
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 33.9,
+          "load_event_ms": 76.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 126.9,
+          "open_drawer_ms": 12.7
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 40.5,
+          "load_event_ms": 79.3,
+          "css_js_bytes": 59977,
+          "try_example_ms": 121.7,
+          "open_drawer_ms": 11.3
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.4,
+          "load_event_ms": 71.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 131.5,
+          "open_drawer_ms": 9.1
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 5,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 44.7,
+        "load_event_ms": 85.6,
+        "try_example_ms": 136.7,
+        "open_drawer_ms": 13.9
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 38.6,
+          "load_event_ms": 72.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 102.4,
+          "open_drawer_ms": 6.5
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 44.7,
+          "load_event_ms": 101.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 149.3,
+          "open_drawer_ms": 14.2
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 40,
+          "load_event_ms": 74.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 110.9,
+          "open_drawer_ms": 13.9
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 82.1,
+          "load_event_ms": 85.6,
+          "css_js_bytes": 59977,
+          "try_example_ms": 136.7,
+          "open_drawer_ms": 15.8
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 72.4,
+          "load_event_ms": 119.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 190,
+          "open_drawer_ms": 11.8
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 6,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 40.8,
+        "load_event_ms": 80.6,
+        "try_example_ms": 135.8,
+        "open_drawer_ms": 11.6
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 37.1,
+          "load_event_ms": 80.6,
+          "css_js_bytes": 59977,
+          "try_example_ms": 130.6,
+          "open_drawer_ms": 11.1
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 60.6,
+          "load_event_ms": 92.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 151.4,
+          "open_drawer_ms": 17.8
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 45,
+          "load_event_ms": 72.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 118.8,
+          "open_drawer_ms": 8.6
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 40.8,
+          "load_event_ms": 89.8,
+          "css_js_bytes": 59977,
+          "try_example_ms": 135.8,
+          "open_drawer_ms": 12.3
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 36.3,
+          "load_event_ms": 78.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 135.8,
+          "open_drawer_ms": 11.6
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 7,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 46.4,
+        "load_event_ms": 91.7,
+        "try_example_ms": 128.6,
+        "open_drawer_ms": 9.2
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 35,
+          "load_event_ms": 63.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 116,
+          "open_drawer_ms": 9.2
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 52.6,
+          "load_event_ms": 95.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 132.3,
+          "open_drawer_ms": 9.2
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 40.5,
+          "load_event_ms": 78.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 117.7,
+          "open_drawer_ms": 17.5
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 46.4,
+          "load_event_ms": 91.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 151.1,
+          "open_drawer_ms": 9.5
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 47.3,
+          "load_event_ms": 95,
+          "css_js_bytes": 59977,
+          "try_example_ms": 128.6,
+          "open_drawer_ms": 9.1
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 8,
+      "code": "b474088 (exported copy, block 5 baseline code)",
+      "medians_ms": {
+        "dom_content_loaded_ms": 36.2,
+        "load_event_ms": 71.4,
+        "try_example_ms": 110.8,
+        "open_drawer_ms": 7.5
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 32.3,
+          "load_event_ms": 66.7,
+          "css_js_bytes": 59977,
+          "try_example_ms": 116,
+          "open_drawer_ms": 7.5
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 36.2,
+          "load_event_ms": 74.1,
+          "css_js_bytes": 59977,
+          "try_example_ms": 110.8,
+          "open_drawer_ms": 13.9
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 54,
+          "load_event_ms": 59.2,
+          "css_js_bytes": 59977,
+          "try_example_ms": 100.6,
+          "open_drawer_ms": 13.6
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 38.3,
+          "load_event_ms": 76.9,
+          "css_js_bytes": 59977,
+          "try_example_ms": 127.5,
+          "open_drawer_ms": 7
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.1,
+          "load_event_ms": 71.4,
+          "css_js_bytes": 59977,
+          "try_example_ms": 105.3,
+          "open_drawer_ms": 7.4
+        }
+      ],
+      "css_js_bytes": 59977
+    },
+    {
+      "round": 1,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 40.4,
+        "load_event_ms": 90.6,
+        "try_example_ms": 137.8,
+        "open_drawer_ms": 11.7
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 42.1,
+          "load_event_ms": 78.7,
+          "css_js_bytes": 78617,
+          "try_example_ms": 122.1,
+          "open_drawer_ms": 19.5
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 40.4,
+          "load_event_ms": 95.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 133.2,
+          "open_drawer_ms": 11.7
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 34,
+          "load_event_ms": 165.8,
+          "css_js_bytes": 78617,
+          "try_example_ms": 224,
+          "open_drawer_ms": 11.3
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 41.6,
+          "load_event_ms": 85.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 137.8,
+          "open_drawer_ms": 7.6
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 39.6,
+          "load_event_ms": 90.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 137.8,
+          "open_drawer_ms": 11.9
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 2,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 59.7,
+        "load_event_ms": 80.8,
+        "try_example_ms": 154.5,
+        "open_drawer_ms": 12.9
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 37.5,
+          "load_event_ms": 80.8,
+          "css_js_bytes": 78617,
+          "try_example_ms": 128.5,
+          "open_drawer_ms": 10.6
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 68.5,
+          "load_event_ms": 75,
+          "css_js_bytes": 78617,
+          "try_example_ms": 149.6,
+          "open_drawer_ms": 12.9
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 46.3,
+          "load_event_ms": 67.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 154.5,
+          "open_drawer_ms": 10.2
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 59.7,
+          "load_event_ms": 119.5,
+          "css_js_bytes": 78617,
+          "try_example_ms": 160.6,
+          "open_drawer_ms": 13.7
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 76.5,
+          "load_event_ms": 106.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 185,
+          "open_drawer_ms": 19.5
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 3,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 54.6,
+        "load_event_ms": 78.9,
+        "try_example_ms": 138.1,
+        "open_drawer_ms": 9.8
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 66.2,
+          "load_event_ms": 69.1,
+          "css_js_bytes": 78617,
+          "try_example_ms": 138.1,
+          "open_drawer_ms": 9.8
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 67.7,
+          "load_event_ms": 78.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 151.5,
+          "open_drawer_ms": 13.6
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 34.8,
+          "load_event_ms": 78.3,
+          "css_js_bytes": 78617,
+          "try_example_ms": 134.3,
+          "open_drawer_ms": 7.5
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 54.6,
+          "load_event_ms": 87.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 141.1,
+          "open_drawer_ms": 9
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 36.5,
+          "load_event_ms": 81.3,
+          "css_js_bytes": 78617,
+          "try_example_ms": 137.7,
+          "open_drawer_ms": 9.9
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 4,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 43.3,
+        "load_event_ms": 84.2,
+        "try_example_ms": 132.7,
+        "open_drawer_ms": 7.7
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 47.1,
+          "load_event_ms": 104.5,
+          "css_js_bytes": 78617,
+          "try_example_ms": 183.6,
+          "open_drawer_ms": 10.1
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 36.9,
+          "load_event_ms": 83.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 132.7,
+          "open_drawer_ms": 7.5
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 43.4,
+          "load_event_ms": 84.2,
+          "css_js_bytes": 78617,
+          "try_example_ms": 129.5,
+          "open_drawer_ms": 7.7
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 43.3,
+          "load_event_ms": 99,
+          "css_js_bytes": 78617,
+          "try_example_ms": 145.4,
+          "open_drawer_ms": 13.6
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.3,
+          "load_event_ms": 71.8,
+          "css_js_bytes": 78617,
+          "try_example_ms": 127.2,
+          "open_drawer_ms": 7.4
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 5,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 39.1,
+        "load_event_ms": 77.6,
+        "try_example_ms": 125.2,
+        "open_drawer_ms": 7.7
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 66.9,
+          "load_event_ms": 70.2,
+          "css_js_bytes": 78617,
+          "try_example_ms": 125.2,
+          "open_drawer_ms": 8.7
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 38.4,
+          "load_event_ms": 92.5,
+          "css_js_bytes": 78617,
+          "try_example_ms": 136.4,
+          "open_drawer_ms": 11.7
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 31.7,
+          "load_event_ms": 77.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 121.2,
+          "open_drawer_ms": 7.7
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 39.1,
+          "load_event_ms": 95.7,
+          "css_js_bytes": 78617,
+          "try_example_ms": 142,
+          "open_drawer_ms": 7.4
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 61.8,
+          "load_event_ms": 64.2,
+          "css_js_bytes": 78617,
+          "try_example_ms": 115.1,
+          "open_drawer_ms": 6.5
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 6,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 36.6,
+        "load_event_ms": 73.5,
+        "try_example_ms": 128.4,
+        "open_drawer_ms": 12.5
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 32.3,
+          "load_event_ms": 72.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 101.9,
+          "open_drawer_ms": 12.5
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 67.6,
+          "load_event_ms": 97.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 146.6,
+          "open_drawer_ms": 14.6
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 29.7,
+          "load_event_ms": 73.5,
+          "css_js_bytes": 78617,
+          "try_example_ms": 128.4,
+          "open_drawer_ms": 9.8
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 36.6,
+          "load_event_ms": 91.7,
+          "css_js_bytes": 78617,
+          "try_example_ms": 135.5,
+          "open_drawer_ms": 11.3
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 38.7,
+          "load_event_ms": 71.4,
+          "css_js_bytes": 78617,
+          "try_example_ms": 119.6,
+          "open_drawer_ms": 13.4
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 7,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 32.9,
+        "load_event_ms": 71.6,
+        "try_example_ms": 119,
+        "open_drawer_ms": 13
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 74.8,
+          "load_event_ms": 102.2,
+          "css_js_bytes": 78617,
+          "try_example_ms": 177.6,
+          "open_drawer_ms": 11.7
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 31.1,
+          "load_event_ms": 74.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 119,
+          "open_drawer_ms": 13.3
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 33.9,
+          "load_event_ms": 71.2,
+          "css_js_bytes": 78617,
+          "try_example_ms": 103.8,
+          "open_drawer_ms": 13.5
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 29.5,
+          "load_event_ms": 71.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 124.5,
+          "open_drawer_ms": 13
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 32.9,
+          "load_event_ms": 70.3,
+          "css_js_bytes": 78617,
+          "try_example_ms": 108.1,
+          "open_drawer_ms": 7.3
+        }
+      ],
+      "css_js_bytes": 78617
+    },
+    {
+      "round": 8,
+      "code": "block 9 working tree",
+      "medians_ms": {
+        "dom_content_loaded_ms": 37.7,
+        "load_event_ms": 83.9,
+        "try_example_ms": 114.7,
+        "open_drawer_ms": 11.4
+      },
+      "runs": [
+        {
+          "run": 1,
+          "dom_content_loaded_ms": 37.7,
+          "load_event_ms": 87.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 114.7,
+          "open_drawer_ms": 11.8
+        },
+        {
+          "run": 2,
+          "dom_content_loaded_ms": 36,
+          "load_event_ms": 71.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 103.6,
+          "open_drawer_ms": 11.4
+        },
+        {
+          "run": 3,
+          "dom_content_loaded_ms": 43.5,
+          "load_event_ms": 90.5,
+          "css_js_bytes": 78617,
+          "try_example_ms": 131.7,
+          "open_drawer_ms": 6.9
+        },
+        {
+          "run": 4,
+          "dom_content_loaded_ms": 35.5,
+          "load_event_ms": 70.6,
+          "css_js_bytes": 78617,
+          "try_example_ms": 99.8,
+          "open_drawer_ms": 12.6
+        },
+        {
+          "run": 5,
+          "dom_content_loaded_ms": 42.8,
+          "load_event_ms": 83.9,
+          "css_js_bytes": 78617,
+          "try_example_ms": 148.9,
+          "open_drawer_ms": 10.6
+        }
+      ],
+      "css_js_bytes": 78617
+    }
+  ]
+}

@@ -1392,6 +1392,29 @@ html {
 .entry-paper {
   max-width: 22rem;
   padding-inline: var(--space-4);
+  container-type: inline-size;
+}
+
+/* With enlarged text on a narrow screen, each line stacks its label above its box.
+   The width is in rem, so it grows with the text and normal text keeps two columns. */
+@container (max-width: 12.5rem) {
+  .count-entry,
+  .count-entry :is(caption, tbody, tr, th, td) {
+    display: block;
+  }
+
+  .count-entry thead {
+    display: none;
+  }
+
+  .count-entry td {
+    padding: 0 0 var(--space-2);
+  }
+
+  .count-entry input {
+    width: 100%;
+    max-width: 8rem;
+  }
 }
 
 .count-entry caption {

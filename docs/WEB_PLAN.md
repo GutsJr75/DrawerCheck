@@ -18,7 +18,8 @@
   linked from Start; see [M11_BLOCK5.md](M11_BLOCK5.md). Block 6 completed
   Review a drawer and linked Close a drawer from Start; see
   [M11_BLOCK6.md](M11_BLOCK6.md). Block 7 added the recount comparison; see
-  [M11_BLOCK7.md](M11_BLOCK7.md). Block 8 added the offline, printable closing
+  [M11_BLOCK7.md](M11_BLOCK7.md). Block 8 added the closing sheet and block 9 finished
+  M11's local verification; see [M11_CHECKLIST.md](M11_CHECKLIST.md). Block 8 added the offline, printable closing
   sheet; see [M11_BLOCK8.md](M11_BLOCK8.md). Block 9 and public verification
   remain pending.
 - **M10 block 1 (authorized 2026-10-26):** the shared "Tick and tie" palette,

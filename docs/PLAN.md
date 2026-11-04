@@ -2,10 +2,11 @@
 
 ## Where things stand
 
-- **Next step, updated 2026-11-04:** M11 block 9, end-to-end verification and
-  handoff, after **next**. Follow M11 one block at a time, then consider the separately
-  gated M12 local-records milestone. This order supersedes earlier statements
-  that R06 is next; R06 and R07 are deferred.
+- **Next step, updated 2026-11-04:** M11 is complete locally. Nothing starts
+  without the user's choice. Options: publish the remaining M11 commits and
+  observe hosted CI and the live pages; run the fictional walkthrough with an
+  unfamiliar participant; or plan the separately gated M12 local-records
+  milestone. R06 and R07 stay deferred. See the [M11 checklist](M11_CHECKLIST.md).
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
   closing walkthrough, field mapping, expected answers, task script, and
   observation sheet are in [M11_BLOCK1.md](M11_BLOCK1.md), with the
@@ -40,6 +41,12 @@
   a self-contained HTML closing sheet with both counts, supplied reviewer
   details, settings, and check coverage. It opens offline and has print
   styling. See [block 8 evidence](M11_BLOCK8.md). No push or deployment.
+- **M11 block 9 complete locally (authorized 2026-11-04):** end-to-end,
+  keyboard, refresh, Cancel, failure, safe-text, text-size, reflow, and
+  accessibility checks in Chrome and WebKit; one fix stacks count lines at
+  large text on narrow screens; readable times on the closing sheet. See
+  [block 9 evidence](M11_BLOCK9.md) and the [M11 checklist](M11_CHECKLIST.md).
+  Participant, screen-reader, real zoom, hosted CI, and live checks remain open.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -227,7 +234,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
 | M10: Frontend redesign | All views implemented; local checks and hosted verification complete on 2026-10-28 for runtime 62650f9. Manual gaps remain explicit. M9 R06/R07 remain separately authorized future work. Stop for next. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md), [M10_CHECKLIST.md](M10_CHECKLIST.md), web presentation, tests, and design documents | Accurate counts, filter-aware navigation, preserved results/caps, responsive/accessibility evidence, dated screenshots, and separate hosted/manual status. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK7_HOSTED.md; no automatic continuation. |
-| M11: Fictional closing workflow | Blocks 1 to 7 complete locally; blocks 8 and 9 pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
+| M11: Fictional closing workflow | All nine blocks complete locally; participant, screen-reader, real zoom, hosted CI, and live checks open. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
 | M12: Local saved closing records | Future direction only. Begin with a separately approved storage/access contract; then split local serving, saving, history, review, corrections, recovery, and verification. | Future M12 plan, local web/storage code, relevant tests and documentation | Reopening preserves records, reviews do not change cash outcomes, corrections retain originals, and a verified restore recovers the full history. No public persistence or real-data readiness claim. |
 
 ## Intended structure
@@ -446,6 +453,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 95. **Add the recount comparison (M11 block 7, authorized 2026-11-04).** The user's "next" authorizes this block. The server checks the recount and returns the first count's figures against the same expected cash, with no rules run on the first count, so the page compares two Python results instead of subtracting. The recount sheet starts blank rather than copying the first count, so a recount stays an independent count. The recount lives on Review beside the sign-off and shares its stale handling: any recount edit or removal hides the result until Check again. Removing a recount clears its entries; a new check from Close a drawer clears both recount and sign-off. Recount messages begin "Recount:" so a problem cannot be read as the first count's. `parse_drawer` now returns the recount separately and the shared count-line builder serves both counts.
 
 96. **Export the checked closing snapshot (M11 block 8, authorized 2026-11-04).** The user's "Go for block 8" authorizes the HTML download and print styles. `reports/closing_sheet.py` renders the same formatted Python response that Review displays, with no second calculation or rule pass. Shared escaped tables and inline CSS keep the existing full-run HTML unchanged. The file retains both counts, unavailable checks, supplied unverified reviewer details, generation time, and example settings. Review reuses the existing Blob download helper and hides the action with stale results. The export is a snapshot, not saved history; later edits require checking and downloading again. Offline browser tests, hostile-text tests, and A4 page inspection cover the new output. No CSV format, persistence, dependency, or limit changes.
+
+97. **Finish M11 with end-to-end verification (M11 block 9, authorized 2026-11-04).** After reviewing block 8, the user asked for its two small follow-ups and then block 9. The closing sheet now shows opened and closed as date words plus a 24-hour time, built from Python's date labels; the sample was regenerated and a test now fails if it drifts from the generator. A committed end-to-end browser test covers keyboard use (WebKit reaches links with Option+Tab, as Safari does), refresh, Cancel on both pages, network and server failures with retry, markup-like IDs shown as text, and the 20-drop limit. The first text-size matrix passed while the entry count sheet was in fact 478 px wide in a 240 px space at 200% text in a 320 px window, because the check only treated hidden overflow as a failure. The sheet is now a size container that stacks each line below 12.5rem, a width that grows with text, so normal text keeps two columns; the matrix now also fails on unnamed sideways scrolling. A first performance comparison across days showed +45% to +71%; eight alternating rounds against the block 5 baseline code under the same load showed changes within a few percent, so no M11 slowdown is claimed and both results are kept. Participant, screen-reader, actual zoom, hosted CI, and live checks are recorded as unverified. M12 is not started.
 
 ## Math and test commitments
 
