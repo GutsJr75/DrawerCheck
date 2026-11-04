@@ -1622,3 +1622,22 @@ Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
 checks passed (the formatter's 75 files include Markdown; the linter checks
 Python only). A local link check found every README file link and anchor
 resolves. `git diff --check` and prohibited-punctuation checks passed.
+
+## 2026-11-04: M11 block 3, input and check contract (draft)
+
+- Built: `docs/M11_CONTRACT.md`, defining every manual-entry field with its
+  meaning and rule, the `POST /api/drawer` request and response, field-level
+  errors, per-rule check coverage, the two-page handoff, the closing sheet,
+  and the expected block 4 results. It resolves the ten open block 3 points.
+- Learned: reading the code changed the plan. The register report already
+  prints times, so asking for them avoids a new closed flag; the core cannot
+  represent an unknown drop log; and the CSS/JS budget has 23 bytes left, so
+  two new pages need a budget decision first.
+- Interview question: Why send money as JSON strings instead of numbers?
+
+Authorization: the user's "next" after block 2. Documents only; the contract
+is not approved until the user reviews it, and block 4 waits for that.
+
+Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
+checks passed (the formatter's 76 files include Markdown). Local M11 link and
+anchor checks, `git diff --check`, and prohibited-punctuation checks passed.
