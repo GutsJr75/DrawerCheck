@@ -856,8 +856,9 @@
 
   function showErrorSummary(problems, summary = errorSummary, list = errorList) {
     list.replaceChildren(
-      ...problems.map(({ text, target }) => {
+      ...problems.map(({ text, target, owner }) => {
         const item = element("li");
+        if (owner) item.dataset.for = owner.id;
         const anchor = link(text, `#${target.id}`);
         anchor.addEventListener("click", (event) => {
           // Move focus without changing the address, which belongs to views.
@@ -1030,8 +1031,11 @@
     remove.type = "button";
     remove.addEventListener("click", () => {
       const next = row.nextElementSibling ?? row.previousElementSibling;
+      // Renumbering changes the ids, so drop messages clear and return on the next check.
+      for (const input of dropRows.querySelectorAll('[aria-invalid="true"]')) clearProblem(input);
       row.remove();
       renumberDrops();
+      pruneProblems();
       discardCheck();
       (next?.querySelector("input") ?? addDrop).focus();
     });
@@ -1083,46 +1087,64 @@
     };
   }
 
-  function clearFieldProblems() {
-    for (const node of closeForm.querySelectorAll("[aria-invalid]")) {
-      node.removeAttribute("aria-invalid");
-      node.setAttribute("aria-describedby", node.dataset.describedby ?? "");
-      if (!node.dataset.describedby) node.removeAttribute("aria-describedby");
+  function clearProblem(owner) {
+    owner.removeAttribute("aria-invalid");
+    if (owner.dataset.describedby) owner.setAttribute("aria-describedby", owner.dataset.describedby);
+    else owner.removeAttribute("aria-describedby");
+    for (const note of closeForm.querySelectorAll(`[data-for="${owner.id}"]`)) {
+      (note.closest(".error-row") ?? note).remove();
     }
-    for (const note of closeForm.querySelectorAll(".field-error, .error-row")) note.remove();
+  }
+
+  function clearFieldProblems() {
+    for (const owner of closeForm.querySelectorAll('[aria-invalid="true"]')) clearProblem(owner);
     closeSummary.hidden = true;
     closeProblems.replaceChildren();
   }
 
+  function pruneProblems(changed) {
+    // A choice can hide, disable, or answer a field; its old message no longer applies.
+    for (const owner of closeForm.querySelectorAll('[aria-invalid="true"]')) {
+      if (owner.closest("[hidden]") || owner.disabled || owner === changed?.closest("fieldset") || owner === changed) {
+        clearProblem(owner);
+      }
+    }
+    for (const item of [...closeProblems.children]) {
+      const owner = item.dataset.for && document.getElementById(item.dataset.for);
+      if (item.dataset.for && owner?.getAttribute("aria-invalid") !== "true") item.remove();
+    }
+    if (!closeProblems.children.length) closeSummary.hidden = true;
+  }
+
   function markField(name, text) {
-    const target = field(name);
-    if (!target) return checkDrawer;
+    let focus = field(name);
+    if (!focus) return { target: checkDrawer };
+    let owner = focus;
     const note = element("p", "field-error", text);
     note.id = `problem-${name.replace(/\W/g, "-")}`;
-    if (target.disabled) {
-      // Unavailable times: the note belongs to the choice that disabled them.
+    if (focus.disabled) {
+      // Unavailable times: the message belongs to the choice that disabled them.
+      owner = focus = timesMissing;
       timesMissing.parentElement.after(note);
-      return timesMissing;
-    }
-    if (target.tagName === "FIELDSET") {
-      target.querySelector("legend").after(note);
-      return target.querySelector("input");
-    }
-    target.dataset.describedby = target.getAttribute("aria-describedby") ?? "";
-    target.setAttribute("aria-describedby", `${note.id} ${target.dataset.describedby}`.trim());
-    target.setAttribute("aria-invalid", "true");
-    if (target.closest(".count-entry")) {
+    } else if (focus.tagName === "FIELDSET") {
+      focus.querySelector("legend").after(note);
+      focus = focus.querySelector("input");
+    } else if (focus.closest(".count-entry")) {
       // A full-width row under the count line keeps the message readable at 320px.
       const cell = element("td");
       cell.colSpan = 2;
       cell.append(note);
       const row = element("tr", "error-row");
       row.append(cell);
-      target.closest("tr").after(row);
+      focus.closest("tr").after(row);
     } else {
-      target.after(note);
+      focus.after(note);
     }
-    return target;
+    note.dataset.for = owner.id;
+    owner.dataset.describedby = owner.getAttribute("aria-describedby") ?? "";
+    owner.setAttribute("aria-describedby", `${note.id} ${owner.dataset.describedby}`.trim());
+    owner.setAttribute("aria-invalid", "true");
+    return { target: focus, owner };
   }
 
   function showFieldProblems(problems) {
@@ -1131,7 +1153,7 @@
     const unique = problems.filter((problem) =>
       !(problem.field === "closed_at" && problem.message === opened?.message));
     showErrorSummary(
-      unique.map(({ field: name, message: text }) => ({ text, target: markField(name, text) })),
+      unique.map(({ field: name, message: text }) => ({ text, ...markField(name, text) })),
       closeSummary,
       closeProblems,
     );
@@ -1211,7 +1233,10 @@
 
   closeForm.addEventListener("submit", checkTheDrawer);
   closeForm.addEventListener("input", discardCheck);
-  closeForm.addEventListener("change", showChoices);
+  closeForm.addEventListener("change", (event) => {
+    showChoices();
+    if (event.target.type === "radio" || event.target === timesMissing) pruneProblems(event.target);
+  });
   addDrop.addEventListener("click", () => {
     newDrop().querySelector("input").focus();
     discardCheck();

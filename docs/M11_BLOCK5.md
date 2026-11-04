@@ -89,10 +89,48 @@ Files: [baseline](M11_BLOCK5_BASELINE.json), [after](M11_BLOCK5_AFTER.json).
   and only build 2370 is on this machine. No browser was downloaded.
 - **WebKit console note:** with this Playwright and WebKit pairing, every page
   load logs "Refused to apply a stylesheet because its hash...". The same
-  message appears on the previous commit's Start page, and the site has no
-  inline styles, so it is not caused by this block.
+  message appears on the previous commit's Start page, so it predates this
+  block. Its source is not established; the site itself has no inline styles.
 
 Not checked: real screen readers, actual browser zoom, and a participant.
+
+## Repair after review (2026-11-04)
+
+An outside review, relayed by the user, reproduced two problems in Chrome:
+
+1. **Messages for hidden fields stayed.** After an invalid Paid out, choosing
+   "Not available" hid the field but kept its message and a summary link
+   that could not focus anything useful.
+2. **Choice messages were only visual.** Messages for the two choice groups
+   and for "Times not available" were not tied to those controls.
+
+Fixes: each message now has one owner, the input, the choice group's
+fieldset, or the "Times not available" checkbox. The owner carries
+`aria-invalid` and an `aria-describedby` that names the message. Changing a
+choice clears messages for fields it hid or disabled, and the group's own
+message once it is answered; the summary drops their links and hides when
+empty. Removing a drop clears the drop messages before the rows renumber,
+so no message can land on the wrong row; they return on the next check.
+
+New opt-in regression test: `tests/browser/close_drawer.cjs`, run by
+`test_close_a_drawer_messages_follow_the_choices` in both engines. It fails
+on `cc96418` at its first check and passes after the repair. Both browser
+scripts also accept `DRAWERCHECK_WEBKIT_EXECUTABLE`, naming an installed
+WebKit build when it differs from Playwright's default:
+
+```sh
+DRAWERCHECK_PLAYWRIGHT_MODULE=/absolute/path/to/node_modules/playwright \
+DRAWERCHECK_WEBKIT_EXECUTABLE=$HOME/Library/Caches/ms-playwright/webkit-2370/pw_run.sh \
+pytest -q tests/test_web_browser.py
+```
+
+With that setting, all four browser tests passed in Chrome and WebKit,
+including the upload regression test that could not launch earlier. The
+version pairing is unofficial: Playwright 1.65 normally uses WebKit build
+2386. A rerun of the 40 axe scans found no violations and no incomplete
+results ([repair scans](M11_BLOCK5_REPAIR_AXE.json)). New screenshots of the
+choice messages are in
+[2026-11-04-m11-block5-repair](screenshots/2026-11-04-m11-block5-repair/).
 
 ## Screenshots
 

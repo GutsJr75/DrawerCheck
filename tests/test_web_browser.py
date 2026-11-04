@@ -89,3 +89,34 @@ def test_file_replacement_ignores_the_old_response(
         server.server_close()
         thread.join(timeout=5)
         assert not thread.is_alive(), "The browser test server did not stop"
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_close_a_drawer_messages_follow_the_choices(browser: str) -> None:
+    """Hidden fields lose their messages; choice messages are tied to their controls."""
+    if not os.environ.get("DRAWERCHECK_PLAYWRIGHT_MODULE"):
+        pytest.skip("Set DRAWERCHECK_PLAYWRIGHT_MODULE to opt in to browser checks")
+    node = shutil.which("node")
+    assert node, "The optional browser checks need Node.js"
+    server = make_server("127.0.0.1", 0, web.create_app(), threaded=True)
+    thread = Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        result = subprocess.run(
+            [
+                node,
+                str(ROOT / "tests/browser/close_drawer.cjs"),
+                f"http://127.0.0.1:{server.server_port}",
+                browser,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        print(result.stdout, end="")
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)

@@ -1709,3 +1709,24 @@ results are below.
 passed (81 formatter files). The opt-in upload regression test passed in
 Chrome; its WebKit case could not launch because the installed Playwright
 expects a WebKit build that is not on this machine.
+
+## 2026-11-04: M11 block 5 repair, messages follow the choices
+
+- Built: one owner per form message, with `aria-invalid` and
+  `aria-describedby`; choices clear messages for fields they hide, disable,
+  or answer; drop removal clears drop messages before renumbering. Added
+  `tests/browser/close_drawer.cjs` and a WebKit executable setting for both
+  browser scripts.
+- Learned: a message must follow the state of its field, not just the last
+  check. Automated scans passed before this repair, so they could not have
+  found either problem; a person clicking through did.
+- Interview question: How do you connect an error message to a radio group
+  so a screen reader announces it?
+
+Authorization: the user relayed an outside review recommending a contained
+block 5 repair before block 6. No push or deployment.
+
+Verification: 810 tests passed and 4 opt-in browser tests skipped in the
+normal run; both Ruff checks passed. All four opt-in browser tests passed in Chrome and WebKit with the installed WebKit
+build named, and the new test fails on `cc96418`. 40 axe scans: no
+violations, no incomplete results.

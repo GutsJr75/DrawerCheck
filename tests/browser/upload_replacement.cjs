@@ -153,7 +153,11 @@ async function checkIgnoredFiles(browser, method) {
 }
 
 (async () => {
-  const browser = await (engine === "chrome" ? chromium.launch({ channel: "chrome" }) : webkit.launch());
+  // An installed WebKit build can be named when it differs from Playwright's default.
+  const webkitPath = process.env.DRAWERCHECK_WEBKIT_EXECUTABLE;
+  const browser = await (engine === "chrome"
+    ? chromium.launch({ channel: "chrome" })
+    : webkit.launch(webkitPath ? { executablePath: webkitPath } : {}));
   try {
     for (const method of ["chooser", "drop"]) {
       for (const status of [400, 200]) await checkReplacement(browser, method, status);
