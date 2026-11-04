@@ -8,7 +8,8 @@
   that R06 is next; R06 and R07 are deferred.
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
   closing walkthrough, field mapping, expected answers, task script, and
-  observation sheet are in [M11_BLOCK1.md](M11_BLOCK1.md). Answers were
+  observation sheet are in [M11_BLOCK1.md](M11_BLOCK1.md), with the
+  participant handout in [M11_PARTICIPANT_PACKET.md](M11_PARTICIPANT_PACKET.md). Answers were
   confirmed with the real CLI. Participant testing is pending; the agent's
   walkthrough of the current site is not a user test. No application code.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
@@ -397,6 +398,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 85. **Plan a cashier and manager workflow before more rules (planning authorized 2026-11-04).** The user chose both audiences on separate pages, permitted research-based assumptions, then asked to update the plan so work proceeds one step at a time. Use a fictional small US convenience store with one closing count per register/day as a working assumption, not an observed business requirement. Follow the separately gated blocks in `docs/M11_PLAN.md`: first a fictional walkthrough, then README cleanup, then manual-entry checks and the two temporary views. Keep R04/history and R08/deposits unavailable in isolated checks, disclose partial R09 coverage, and never fabricate supporting records to imply complete checks. M12 saved local records require a separate reviewed contract. Retain all existing evidence paths and screenshots. This documentation update does not authorize coding, participant outreach, deployment, or real-data use. Earlier next-R06 statements describe the old schedule.
 
 86. **Prepare the fictional closing walkthrough (M11 block 1, authorized 2026-11-04).** The user's "go for block 1" authorizes the walkthrough only. Use three registers on one fictional day: R1 balanced within tolerance at -$0.25, R2 short $20.00 without sign-off, and R3 with no register report. The invented register report prints no expected cash, so the count comes first. Confirm every expected answer by writing the packet as the seven CSVs and running import, reconcile, and explain, rather than relying on hand arithmetic. Keep those files and the generator script outside the repository, as in decision 66; the tables in `docs/M11_BLOCK1.md` hold every figure block 4 needs. The agent's walkthrough of the current local site is recorded as agent observations, not user testing. No screenshots were taken because the site's appearance did not change. Participant testing stays pending and carries into block 9; nobody was contacted. Five new block 3 questions are listed in `docs/M11_BLOCK1.md`.
+
+87. **Separate the participant packet from the answer key (block 1 repair, 2026-11-04).** An outside review found that task 1 asked for a count from a drawer description that did not exist, with no blank sheet, and the completed sheets sat beside the tasks. `docs/M11_PARTICIPANT_PACKET.md` now holds everything a participant may see, including a "not available" choice on the figures form; `docs/M11_BLOCK1.md` is the facilitator guide with the answer key and result cards. Drawer C's count is in the packet because another cashier counted it. Result cards follow current lead wording except drawer C, which tests "register report" in place of "POS totals". Expected answers are unchanged.
 
 ## Math and test commitments
 

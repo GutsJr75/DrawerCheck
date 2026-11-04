@@ -1579,7 +1579,26 @@ walkthrough of the local site is not a user test. No screenshots were taken
 because the site's appearance did not change.
 
 Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
-checks passed (74 files; the new count includes `docs/M11_BLOCK1.md`, since
-Ruff 0.17.1 also checks Markdown). `git diff --check`, prohibited-punctuation,
+checks passed. The formatter's count rose to 74 because Ruff 0.17.1's
+formatter accepts Markdown; the linter skips it, so only the formatter checked
+`docs/M11_BLOCK1.md`. `git diff --check`, prohibited-punctuation,
 and local link checks passed. The packet's CSVs gave 4 saved flags before the
 case B review and 3 after, matching every answer in the walkthrough.
+
+## 2026-11-04: M11 block 1 repair, participant materials
+
+- Built: `docs/M11_PARTICIPANT_PACKET.md` with full drawer descriptions for
+  drawers A and B, the three register reports and drop logs, cashier_03's
+  count for drawer C, and blank count, figures, and review forms. M11_BLOCK1.md
+  is now the facilitator guide, with a labelled answer key, the conversion
+  from bundles and rolls to quantities, and four result cards.
+- Learned: a test packet is not ready while answers sit beside the questions.
+  An outside review caught that task 1 had no complete drawer description and
+  no blank sheet. Separate files make it practical to show only the packet.
+- Interview question: How do you keep a usability test from leaking its
+  answers, while still letting the facilitator act as the app?
+
+Authorization: the user brought an outside review of block 1; this repair
+adds the requested participant materials only. The block 1 summary's "not
+pushed" became outdated when the user pushed `716bf3a`; `origin/main` pointed
+there before this repair. Participant testing remains pending.

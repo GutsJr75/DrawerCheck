@@ -10,7 +10,13 @@ yet, and nobody was contacted on the user's behalf. The observations in this
 file come from the agent (Claude), who knows the code, so they are not user
 testing. This gap carries into block 9.
 
-## The packet
+**Two documents.** Participants see only the
+[participant packet](M11_PARTICIPANT_PACKET.md): drawer descriptions, register
+reports, drop logs, a cashier's completed count for drawer C, and blank forms.
+This file is the facilitator guide and answer key. Keep it out of view during
+a session.
+
+## The cases
 
 Everything describes **Demo Store #001**, business date Monday, November 2,
 2026, with three registers. Each register has three papers: a count sheet, a
@@ -74,10 +80,12 @@ the register was closed." The count sheet and drop log are still available.
 | R2 | 17:00 | DEMO-BAG-1102-R2-B | 400.00 |
 | R3 | 16:00 | DEMO-BAG-1102-R3-A | 300.00 |
 
-### Count sheet
+### Answer key: completed count sheets (facilitator only)
 
 The count sheet header records the starting cash given at opening: $200.00
 for every register. The cashier writes a quantity on every line, including 0.
+Drawers A and B are what a correct task 1 produces from the packet's drawer
+descriptions. Drawer C is printed in the packet, because cashier_03 counted it.
 
 | Bill or coin | R1 qty | R1 total | R2 qty | R2 total | R3 qty | R3 total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -95,10 +103,17 @@ for every register. The cashier writes a quantity on every line, including 0.
 | 1 cent | 61 | 0.61 | 60 | 0.60 | 0 | 0.00 |
 | **Counted cash** | | **520.61** | | **665.65** | | **437.80** |
 
-For the paper exercise, each drawer's contents are also given as a mixed
-description, so the participant has to turn stacks and rolls into quantities.
-For example, case A's quarters are "two rolls of 40 quarters" and case B's are
-"one roll of 40 quarters and 32 loose quarters".
+How the packet's drawer descriptions become these quantities:
+
+| Line | Drawer A | Drawer B |
+| --- | --- | --- |
+| $1 | 2 bundles of 25 + 6 loose = 56 | 1 bundle of 25 + 22 loose = 47 |
+| 25 cents | 2 rolls of 40 = 80 | 1 roll of 40 + 32 loose = 72 |
+| 1 cent | 1 roll of 50 + 11 loose = 61 | 1 roll of 50 + 10 loose = 60 |
+| Other lines | Counted directly from the description | Same |
+| Receipt in drawer | Paid-out receipt for $15.00: not cash, not counted | Paid-out receipt for $32.50: not cash, not counted |
+
+Lines that the description never mentions ($100 in A, $2, and 50 cents) are 0.
 
 ## Field and formula mapping
 
@@ -166,10 +181,15 @@ For the planned single-drawer path, the result for every case should also say:
 
 The facilitator reads one task at a time and records observations on the
 sheet below. In the paper version, the facilitator plays the app: after the
-participant finishes the count, the facilitator hands over a printed result
-card with the figures above. The participant does no arithmetic beyond writing
-line totals on the count sheet. No real names are recorded; participants are
-P1, P2, and so on.
+participant finishes tasks 1 and 2 for a drawer, the facilitator hands over
+that drawer's result card from the next section. The participant does no
+arithmetic beyond writing line totals on the count sheet. No real names are
+recorded; participants are P1, P2, and so on.
+
+Give the participant the packet's Part 1 and two blank forms for drawer A,
+then Part 2 for drawer B, then Part 3 for drawer C. Hand out the review form
+at task 5. The packet's figures form offers "not available", so task 6 tests
+whether the participant uses it rather than writing 0.
 
 Say at the start: "Everything here is made up. We are testing the papers and
 the steps, not you. Think out loud. You can stop at any time."
@@ -199,6 +219,65 @@ the steps, not you. Think out loud. You can stop at any time."
    they name the history check and the bank deposit check.
 8. Say what you would keep as a record of this close. *Done when:* they
    mention the counts, report figures, difference, and the note or verifier.
+
+## Result cards (facilitator hands these out)
+
+Cut these out or show them one at a time. Each card stands in for the result
+the planned app would show. Do not hand out a card before its task.
+
+```text
+RESULT CARD: Drawer A, Register R1, Monday, November 2, 2026
+Expected cash      $520.86
+Counted cash       $520.61
+Difference          -$0.25
+Balanced (within $1.00)
+Leads to check: none
+Checks not run: repeated shortages (no earlier shifts);
+  bank deposit (one drawer is not a whole day)
+```
+
+```text
+RESULT CARD: Drawer B, Register R2, Monday, November 2, 2026
+Expected cash      $685.65
+Counted cash       $665.65
+Difference         -$20.00
+Short
+Needs review: Short by $20.00. Recount recommended.
+Needs review: Missing verifier and variance note for a difference of
+  $20.00. Review recommended.
+Note: Variance equals one $20 bill. Check for a miscounted or misplaced bill.
+Checks not run: repeated shortages (no earlier shifts);
+  bank deposit (one drawer is not a whole day)
+```
+
+```text
+RESULT CARD: Drawer B after review, Register R2, Monday, November 2, 2026
+Expected cash      $685.65
+Counted cash       $665.65
+Difference         -$20.00
+Short
+Needs review: Short by $20.00. Recount recommended.
+Note: Variance equals one $20 bill. Check for a miscounted or misplaced bill.
+Verifier ID and note supplied (not checked against any person).
+Checks not run: repeated shortages (no earlier shifts);
+  bank deposit (one drawer is not a whole day)
+```
+
+```text
+RESULT CARD: Drawer C, Register R3, Monday, November 2, 2026
+Expected cash      unknown (register report not available)
+Counted cash       $437.80
+Difference         unknown
+Missing records
+Needs review: Register report figures are missing. Expected cash is unknown.
+Checks not run: cash difference checks (difference unknown);
+  repeated shortages (no earlier shifts);
+  bank deposit (one drawer is not a whole day)
+```
+
+The lead wording on the cards follows the current program, except drawer C,
+which says "Register report figures" instead of "POS totals" to test the
+plainer wording raised in the walkthrough below. Block 3 decides the real text.
 
 ## Observation sheet
 
