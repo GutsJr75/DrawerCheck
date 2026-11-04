@@ -1730,3 +1730,23 @@ Verification: 810 tests passed and 4 opt-in browser tests skipped in the
 normal run; both Ruff checks passed. All four opt-in browser tests passed in Chrome and WebKit with the installed WebKit
 build named, and the new test fails on `cc96418`. 40 axe scans: no
 violations, no incomplete results.
+
+## 2026-11-04: M11 block 6, Review a drawer
+
+- Built: the full Review a drawer page (tape, count lines, leads, which
+  checks ran, and a sign-off with Check again) and the Start link. A
+  committed browser test covers the whole review, including a delayed reply
+  that must be ignored after an edit.
+- Learned: state belongs to what it describes. A sign-off applies to one set
+  of figures, so a new check clears it; editing it hides the old result
+  instead of showing leads that no longer match.
+- Interview question: How do you test that a slow server reply cannot
+  overwrite something the user changed while waiting?
+
+Authorization: the user's "next" after the block 5 repair. No push or
+deployment; the public demo has not been checked with these pages.
+
+Verification: 811 tests passed and 6 opt-in browser tests skipped in the
+normal run; both Ruff checks passed. All six opt-in browser tests passed in
+Chrome and WebKit build 2370. 48 axe scans found no violations; colour
+contrast was incomplete wherever the drawer tape shows, as in M10.

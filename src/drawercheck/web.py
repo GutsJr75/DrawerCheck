@@ -597,6 +597,9 @@ def create_app() -> Flask:
             example_tape=EXAMPLE_TAPE,
             files=FILE_DESCRIPTIONS,
             count_lines=COUNT_LINES,
+            signoff_limit=format_cents(
+                Config().require_verifier_and_note_at_or_above_cents
+            ),
             max_safe_drops=MAX_SAFE_DROPS,
             messages=CLIENT_MESSAGES,
             row_limits=ROW_LIMITS,

@@ -68,6 +68,15 @@
   const dropRows = document.getElementById("drop-rows");
   const addDrop = document.getElementById("add-drop");
   const reviewLeads = document.getElementById("review-leads");
+  const reviewTape = document.querySelector('[data-tape="review"]');
+  const reviewCount = document.getElementById("review-count");
+  const coverageList = document.getElementById("coverage");
+  const signoffForm = document.getElementById("signoff-form");
+  const checkAgain = document.getElementById("check-again");
+  const reviewCancel = document.getElementById("review-cancel");
+  const reviewSlow = document.getElementById("review-slow");
+  const reviewError = document.getElementById("review-error");
+  const coverageClass = { ran_no_lead: "status-ready", ran_lead: "status-note", not_run: "status-waiting" };
   const severityOrder = ["review", "warn", "info"];
   const severityClass = { review: "status-review", warn: "status-check", info: "status-note" };
   const showSeverity = { all: null, review: "review", check: "warn", note: "info" };
@@ -674,10 +683,47 @@
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function clockTime(timestamp, businessDate) {
+  function clockTime(timestamp, businessDate, labels = results.labels) {
     const time = timestamp.slice(11, 16);
     const day = timestamp.slice(0, 10);
-    return day === businessDate ? time : `${formatDate(day)} ${time}`;
+    return day === businessDate ? time : `${labels.dates[day]} ${time}`;
+  }
+
+  function fillTape(tape, item, unknown) {
+    // Drawer details and Review share one tape; Python supplies every amount.
+    const { shift } = item;
+    const pos = shift.pos;
+    const amounts = {
+      opening_float: shift.opening_float_amount,
+      cash_sales: pos ? pos.cash_sales_amount : unknown,
+      paid_ins: pos ? pos.paid_ins_amount : unknown,
+      cash_refunds: pos ? pos.cash_refunds_amount : unknown,
+      paid_outs: pos ? pos.paid_outs_amount : unknown,
+      safe_drops: shift.safe_drops_amount,
+      expected: item.expected_amount,
+      counted: item.counted_amount,
+      difference: item.variance_amount,
+    };
+    for (const [line, value] of Object.entries(amounts)) {
+      const row = tape.querySelector(`[data-line="${line}"]`);
+      row.querySelector("td").textContent = value;
+      row.querySelector(".input-tick")?.toggleAttribute("hidden", value === unknown);
+    }
+    for (const term of tape.querySelectorAll("details")) {
+      term.open = false;
+    }
+    return amounts;
+  }
+
+  function fillStatus(panels, item, labels) {
+    const worst = worstSeverity(item.flags);
+    for (const panel of panels) {
+      panel.querySelector('[data-role="word"]').textContent = labels.statuses[item.status];
+      const level = panel.querySelector('[data-role="level"]');
+      level.hidden = !worst;
+      level.className = worst ? `status ${severityClass[worst]}` : "status";
+      level.textContent = worst ? labels.severities[worst] : "";
+    }
   }
 
   function renderDrawer(item) {
@@ -700,38 +746,13 @@
       : fill(drawerAbout.dataset.stillOpen, { opened });
     drawerAbout.textContent = `${about} ${times}`;
 
-    const amounts = {
-      opening_float: shift.opening_float_amount,
-      cash_sales: pos ? pos.cash_sales_amount : unknown,
-      paid_ins: pos ? pos.paid_ins_amount : unknown,
-      cash_refunds: pos ? pos.cash_refunds_amount : unknown,
-      paid_outs: pos ? pos.paid_outs_amount : unknown,
-      safe_drops: shift.safe_drops_amount,
-      expected: item.expected_amount,
-      counted: item.counted_amount,
-      difference: item.variance_amount,
-    };
-    for (const [line, value] of Object.entries(amounts)) {
-      const row = drawerTape.querySelector(`[data-line="${line}"]`);
-      row.querySelector("td").textContent = value;
-      row.querySelector(".input-tick")?.toggleAttribute("hidden", value === unknown);
-    }
-    for (const term of drawerTape.querySelectorAll("details")) {
-      term.open = false;
-    }
+    const amounts = fillTape(drawerTape, item, unknown);
     for (const number of document.querySelectorAll("[data-outcome]")) {
       const value = amounts[number.dataset.outcome];
       number.textContent = value;
       number.className = /^-?\$/.test(value) ? "money" : "";
     }
-    const worst = worstSeverity(item.flags);
-    for (const panel of [drawerTape, document.getElementById("drawer-outcome")]) {
-      panel.querySelector('[data-role="word"]').textContent = results.labels.statuses[item.status];
-      const level = panel.querySelector('[data-role="level"]');
-      level.hidden = !worst;
-      level.className = worst ? `status ${severityClass[worst]}` : "status";
-      level.textContent = worst ? results.labels.severities[worst] : "";
-    }
+    fillStatus([drawerTape, document.getElementById("drawer-outcome")], item, results.labels);
     const index = reviewOrder.indexOf(shift.shift_code);
     const next = index < 0 ? null : reviewOrder[index + 1];
     nextDrawer.hidden = !next;
@@ -992,7 +1013,7 @@
   }
 
   function field(name) {
-    return closeForm.querySelector(`[data-field="${name}"]`);
+    return document.querySelector(`[data-field="${name}"]`);
   }
 
   function choice(name) {
@@ -1082,8 +1103,8 @@
         amount: row.querySelector('[data-part="amount"]').value,
         bag_number: row.querySelector('[data-part="bag_number"]').value,
       })),
-      verifier_id: "",
-      variance_note: "",
+      verifier_id: field("verifier_id").value,
+      variance_note: field("variance_note").value,
     };
   }
 
@@ -1091,15 +1112,17 @@
     owner.removeAttribute("aria-invalid");
     if (owner.dataset.describedby) owner.setAttribute("aria-describedby", owner.dataset.describedby);
     else owner.removeAttribute("aria-describedby");
-    for (const note of closeForm.querySelectorAll(`[data-for="${owner.id}"]`)) {
+    for (const note of document.querySelectorAll(`[data-for="${owner.id}"]`)) {
       (note.closest(".error-row") ?? note).remove();
     }
   }
 
   function clearFieldProblems() {
-    for (const owner of closeForm.querySelectorAll('[aria-invalid="true"]')) clearProblem(owner);
-    closeSummary.hidden = true;
-    closeProblems.replaceChildren();
+    for (const owner of document.querySelectorAll('[aria-invalid="true"]')) clearProblem(owner);
+    for (const summary of [closeSummary, document.getElementById("review-summary")]) {
+      summary.hidden = true;
+      summary.querySelector("ul").replaceChildren();
+    }
   }
 
   function pruneProblems(changed) {
@@ -1152,10 +1175,13 @@
     const opened = problems.find((problem) => problem.field === "opened_at");
     const unique = problems.filter((problem) =>
       !(problem.field === "closed_at" && problem.message === opened?.message));
+    // Sign-off problems belong to Review, where Check again sent them.
+    const summary = views.review.contains(field(unique[0].field))
+      ? document.getElementById("review-summary") : closeSummary;
     showErrorSummary(
       unique.map(({ field: name, message: text }) => ({ text, ...markField(name, text) })),
-      closeSummary,
-      closeProblems,
+      summary,
+      summary.querySelector("ul"),
     );
   }
 
@@ -1167,6 +1193,32 @@
       problems.push({ field: "safe_drops", message: message("drawer_add_drop") });
     }
     return problems;
+  }
+
+  function finishCheck(outcome, button, box, retry) {
+    if (handledStop(outcome, button, box, retry)) {
+      return;
+    }
+    if (outcome.payload) {
+      checked = outcome.payload;
+      announce(views.review.dataset.announce);
+      navigate("#/review");
+    } else if (outcome.status === 400 && outcome.error.fields) {
+      showFieldProblems(outcome.error.fields);
+    } else {
+      showRequestError(box, outcome.error.message, retry);
+    }
+  }
+
+  function drawerRequest(button, cancel, slow, view) {
+    return run({
+      button,
+      cancel,
+      slow,
+      view,
+      url: "/api/drawer",
+      requestBody: new Blob([JSON.stringify(drawerPayload())], { type: "application/json" }),
+    });
   }
 
   async function checkTheDrawer(event) {
@@ -1181,26 +1233,19 @@
       showFieldProblems(problems);
       return;
     }
-    const outcome = await run({
-      button: checkDrawer,
-      cancel: closeCancel,
-      slow: closeSlow,
-      view: "close",
-      url: "/api/drawer",
-      requestBody: new Blob([JSON.stringify(drawerPayload())], { type: "application/json" }),
-    });
-    if (handledStop(outcome, checkDrawer, closeError, checkTheDrawer)) {
+    // A new check starts a new review: a sign-off applied to the old figures.
+    signoffForm.reset();
+    finishCheck(await drawerRequest(checkDrawer, closeCancel, closeSlow, "close"), checkDrawer, closeError, checkTheDrawer);
+  }
+
+  async function checkSignoff(event) {
+    event?.preventDefault();
+    if (request || !checked) {
       return;
     }
-    if (outcome.payload) {
-      checked = outcome.payload;
-      announce(views.review.dataset.announce);
-      navigate("#/review");
-    } else if (outcome.status === 400 && outcome.error.fields) {
-      showFieldProblems(outcome.error.fields);
-    } else {
-      showRequestError(closeError, outcome.error.message, checkTheDrawer);
-    }
+    clearFieldProblems();
+    clearRequestError(reviewError);
+    finishCheck(await drawerRequest(checkAgain, reviewCancel, reviewSlow, "review"), checkAgain, reviewError, checkSignoff);
   }
 
   function renderReview() {
@@ -1208,30 +1253,66 @@
     document.getElementById("review-body").hidden = !checked;
     if (!checked) return;
     const { drawer: item, labels } = checked;
+    const { shift } = item;
+    document.getElementById("review-stale").hidden = !checked.stale;
+    document.getElementById("review-result").hidden = Boolean(checked.stale);
     const about = document.getElementById("review-about");
     about.textContent = fill(about.dataset.template, {
-      register: item.shift.register_id,
-      date: labels.dates[item.shift.business_date],
-      cashier: item.shift.cashier_id,
+      register: shift.register_id,
+      date: labels.dates[shift.business_date],
+      cashier: shift.cashier_id,
+      opened: clockTime(shift.opened_at, shift.business_date, labels),
+      closed: clockTime(shift.closed_at, shift.business_date, labels),
     });
-    const amounts = { expected: item.expected_amount, counted: item.counted_amount, difference: item.variance_amount };
+    const amounts = fillTape(reviewTape, item, "unknown");
     for (const number of views.review.querySelectorAll("[data-review]")) {
       number.textContent = amounts[number.dataset.review];
       number.className = /^-?\$/.test(number.textContent) ? "money" : "";
     }
-    const worst = worstSeverity(item.flags);
-    const outcome = document.getElementById("review-outcome");
-    outcome.querySelector('[data-role="word"]').textContent = labels.statuses[item.status];
-    const level = outcome.querySelector('[data-role="level"]');
-    level.hidden = !worst;
-    level.className = worst ? `status ${severityClass[worst]}` : "status";
-    level.textContent = worst ? labels.severities[worst] : "";
+    fillStatus([reviewTape, document.getElementById("review-outcome")], item, labels);
+    document.getElementById("review-no-report").hidden = Boolean(shift.pos);
+    reviewCount.tBodies[0].replaceChildren(
+      ...shift.counts.map((count) => {
+        const row = element("tr");
+        const denomination = element("th", "money", count.denomination);
+        denomination.scope = "row";
+        row.append(denomination, element("td", "number", count.quantity.toLocaleString("en-US")),
+          amountCell(count.line_total_amount));
+        return row;
+      }),
+    );
+    document.getElementById("review-count-total").textContent = item.counted_amount;
     reviewLeads.replaceChildren(...sortLeads(item.flags).map((flag) => leadRow(flag, "drawer", labels)));
     reviewLeads.hidden = item.flags.length === 0;
     document.getElementById("review-no-leads").hidden = item.flags.length > 0;
+    coverageList.replaceChildren(
+      ...checked.coverage.map((entry) => {
+        const row = element("li", "lead-item");
+        const content = element("div", "lead-body");
+        content.append(element("strong", "lead-title", entry.label), element("p", "lead-message", entry.detail));
+        if (entry.partial) {
+          for (const key of ["checked", "unavailable"]) {
+            const list = element("ul", "coverage-parts");
+            list.append(...entry[key].map((text) => element("li", "", text)));
+            content.append(element("p", "lead-meta", coverageList.dataset[key]), list);
+          }
+        }
+        row.append(element("span", `status ${coverageClass[entry.state]}`, coverageList.dataset[entry.state]), content);
+        return row;
+      }),
+    );
   }
 
   closeForm.addEventListener("submit", checkTheDrawer);
+  signoffForm.addEventListener("submit", checkSignoff);
+  signoffForm.addEventListener("input", () => {
+    // The result no longer matches the sign-off; a late reply is ignored.
+    if (request?.view === "review") stopWaiting(request, "changed");
+    if (checked && !checked.stale) {
+      checked.stale = true;
+      renderReview();
+    }
+  });
   closeForm.addEventListener("input", discardCheck);
   closeForm.addEventListener("change", (event) => {
     showChoices();
@@ -1242,7 +1323,7 @@
     discardCheck();
   });
 
-  for (const cancel of [startCancel, prepareCancel, closeCancel]) {
+  for (const cancel of [startCancel, prepareCancel, closeCancel, reviewCancel]) {
     cancel.addEventListener("click", () => {
       if (request) {
         stopWaiting(request, "cancel");

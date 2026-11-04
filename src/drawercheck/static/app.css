@@ -1351,6 +1351,7 @@ html {
 
 /* Close a drawer: one text-input style, matching the select above. */
 .field input:not([type="radio"]),
+.field textarea,
 .count-entry input {
   box-sizing: border-box;
   min-height: 2.75rem;
@@ -1368,6 +1369,7 @@ html {
 }
 
 .field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"],
 .count-entry input[aria-invalid="true"] {
   border: 2px solid var(--review);
 }
@@ -1418,4 +1420,30 @@ html {
 #view-close,
 #view-review {
   overflow-wrap: anywhere;
+}
+
+/* Figures and headings in the tape and count sheet scroll instead of splitting. */
+#view-review .tape,
+#view-review .count-sheet {
+  overflow-wrap: normal;
+}
+
+/* Review a drawer: the note and actions use the whole sign-off row. */
+#signoff-form > :not(.field),
+.signoff-note {
+  grid-column: 1 / -1;
+}
+
+#signoff-form {
+  max-width: 40rem;
+}
+
+.signoff-note textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.coverage-parts {
+  margin: var(--space-1) 0 var(--space-2);
+  padding-left: var(--space-5);
 }

@@ -1,0 +1,461 @@
+{
+  "axe": "axe-core 4.14.0",
+  "tags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa",
+    "wcag22aa",
+    "best-practice"
+  ],
+  "scans": [
+    {
+      "browser": "chrome",
+      "state": "start",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "start",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "start",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "start",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-result",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-result",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-result",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-result",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-signed",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-signed",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-signed",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-signed",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-problem",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-problem",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-problem",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-problem",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-no-report",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-no-report",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-no-report",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-no-report",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "start",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "start",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "start",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "start",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-result",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-result",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-result",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-result",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-stale",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-stale",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-signed",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-signed",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-signed",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-signed",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-problem",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-problem",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-problem",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-problem",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-no-report",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-no-report",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-no-report",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-no-report",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    }
+  ]
+}

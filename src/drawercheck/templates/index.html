@@ -72,6 +72,7 @@
           <div class="actions">
             <button type="button" class="button button-primary" id="try-example" data-busy-text="Checking the example...">Try the example</button>
             <a class="button button-secondary" href="#/prepare">Upload demo CSVs</a>
+            <a class="button button-secondary" href="#/close">Close a drawer</a>
             <button type="button" class="button button-secondary" id="start-cancel" hidden>Cancel</button>
           </div>
           <p class="hint">A made-up month from Demo Store #001: 60 drawers on two registers, with a few records set up to need review.</p>
@@ -557,17 +558,72 @@
         <a class="button button-secondary" href="#/close">Close a drawer</a>
       </div>
       <div id="review-body" hidden>
-        <p class="lead" id="review-about" data-template="Register {register}, {date}. Cashier ID {cashier}."></p>
-        <dl class="outcome-strip" id="review-outcome" aria-label="Drawer outcome">
-          <div><dt>Expected cash</dt><dd data-review="expected"></dd></div>
-          <div><dt>Counted cash</dt><dd data-review="counted"></dd></div>
-          <div><dt>Difference</dt><dd data-review="difference"></dd><dd class="outcome-status"><span data-role="word"></span> <span data-role="level" hidden></span></dd></div>
-        </dl>
-        <h2 id="review-leads-heading">What to look at</h2>
-        <ol class="lead-list" id="review-leads" aria-labelledby="review-leads-heading"></ol>
-        <p id="review-no-leads" hidden>This drawer has no leads.</p>
-        <p><a href="#/close">Change the entries</a></p>
-        <p class="hint">Results disappear when you refresh or close this page.</p>
+        <p class="lead" id="review-about" data-template="Register {register}, {date}. Cashier ID {cashier}. Opened {opened}, closed {closed}."></p>
+        <p class="note" id="review-stale" role="status" hidden>The sign-off changed. Check again to see the updated leads.</p>
+        <div id="review-result">
+          <dl class="outcome-strip" id="review-outcome" aria-label="Drawer outcome">
+            <div><dt>Expected cash</dt><dd data-review="expected"></dd></div>
+            <div><dt>Counted cash</dt><dd data-review="counted"></dd></div>
+            <div><dt>Difference</dt><dd data-review="difference"></dd><dd class="outcome-status"><span data-role="word"></span> <span data-role="level" hidden></span></dd></div>
+          </dl>
+
+          <div class="drawer-grid">
+            <div>
+              <h2 id="review-tape-heading">How expected cash is worked out</h2>
+              <div class="tape-region" role="region" aria-labelledby="review-tape-heading" tabindex="0">
+                <div class="tape-paper">
+                  {% call tape("review", explain=true, caption_class="visually-hidden") -%}
+                    Drawer tape. Select a line's name to see what it means.
+                  {%- endcall %}
+                </div>
+              </div>
+              <p class="note" id="review-no-report" hidden>Expected cash is unknown because the register report was not available.</p>
+            </div>
+            <div>
+              <h2 id="review-count-heading">Count sheet</h2>
+              <div class="sheet-paper" role="region" aria-labelledby="review-count-heading" tabindex="0">
+                <table class="count-sheet" id="review-count">
+                  <caption class="visually-hidden">Bills and coins counted at closing</caption>
+                  <thead><tr><th scope="col">Bill or coin</th><th scope="col" class="number">Quantity</th><th scope="col" class="number">Line total</th></tr></thead>
+                  <tbody></tbody>
+                  <tfoot><tr><th scope="row" colspan="2">Counted cash</th><td class="money number" id="review-count-total"></td></tr></tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <h2 id="review-leads-heading">What to look at</h2>
+          <ol class="lead-list" id="review-leads" aria-labelledby="review-leads-heading"></ol>
+          <p id="review-no-leads" hidden>This drawer has no leads from the checks that ran.</p>
+
+          <h2 id="coverage-heading">Which checks ran</h2>
+          <p class="hint">One drawer on its own cannot show patterns over time or a whole day's bank deposit.</p>
+          <ul class="lead-list" id="coverage" aria-labelledby="coverage-heading"
+              data-ran_no_lead="Ran, no lead" data-ran_lead="Ran, lead found" data-not_run="Not run"
+              data-checked="Checked" data-unavailable="Could not be checked"></ul>
+        </div>
+
+        <h2 id="signoff-heading">Sign off</h2>
+        <div class="error-summary" id="review-summary" tabindex="-1" hidden>
+          <div role="alert">
+            <h2>Some entries need fixing</h2>
+            <ul id="review-problems"></ul>
+          </div>
+        </div>
+        <p>A difference of {{ signoff_limit }} or more needs a verifier ID and a note. The ID is typed text: it is not a login or a signature, and nobody is checked against it.</p>
+        <form id="signoff-form" class="field-grid" novalidate>
+          <div class="field"><label for="signoff-verifier">Verifier ID (not checked)</label><input id="signoff-verifier" data-field="verifier_id" autocomplete="off" spellcheck="false"></div>
+          <div class="field signoff-note"><label for="signoff-note">Note</label><textarea id="signoff-note" data-field="variance_note" rows="3" maxlength="256" aria-describedby="note-hint"></textarea><p class="hint" id="note-hint">Say what was checked, in plain facts. Do not blame anyone.</p></div>
+          <div class="actions">
+            <button type="submit" class="button button-primary" id="check-again" data-busy-text="Checking again...">Check again</button>
+            <button type="button" class="button button-secondary" id="review-cancel" hidden>Cancel</button>
+          </div>
+          <p class="waiting-slow" id="review-slow" hidden>The demo server may be waking up. This usually takes about a minute.</p>
+          <div class="request-error" id="review-error" role="alert" data-retry="Try again"></div>
+        </form>
+
+        <p><a href="#/close">Change the entries</a>. A new check from Close a drawer clears the sign-off, because it applied to the old figures.</p>
+        <p class="hint">Nothing here is saved. The result and sign-off disappear when you refresh or close this page.</p>
       </div>
     </section>
   </main>

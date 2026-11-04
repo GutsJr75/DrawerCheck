@@ -392,7 +392,7 @@ def test_navigation_waiting_and_download_hooks(client) -> None:
     ]
     # The skip link is the only in-page link that is not a view address.
     assert [href for href in in_page if not href.startswith("#/")] == ["#main"]
-    assert {"#/", "#/prepare", "#/results"} <= set(in_page)
+    assert {"#/", "#/prepare", "#/results", "#/close"} <= set(in_page)
     for words in (
         "Results are not saved. Run the example again or upload your files.",
         "This drawer is not in the current results",
@@ -402,7 +402,7 @@ def test_navigation_waiting_and_download_hooks(client) -> None:
     cancels = [
         attrs for tag, attrs in page.tags if attrs.get("id", "").endswith("-cancel")
     ]
-    assert len(cancels) == 3 and all("hidden" in attrs for attrs in cancels)
+    assert len(cancels) == 4 and all("hidden" in attrs for attrs in cancels)
 
 
 def test_prepare_view_lists_the_seven_files_and_messages(client) -> None:
@@ -664,6 +664,8 @@ def test_close_a_drawer_fields_match_the_drawer_contract(client) -> None:
         "register_report",
         *(f"register_report.{key}" for key in REPORT_KEYS),
         "safe_drops",
+        "verifier_id",
+        "variance_note",
     ]
     ids = [attrs["id"] for _, attrs in page.tags if "id" in attrs]
     assert len(ids) == len(set(ids))
@@ -694,3 +696,20 @@ def test_close_a_drawer_fields_match_the_drawer_contract(client) -> None:
         errors.WEB_CLIENT_DRAWER_ADD_DROP,
     ):
         assert words in text
+
+
+def test_review_says_what_sign_off_is_and_is_not(client) -> None:
+    """The sign-off is typed text, the limit comes from the settings, and nothing is saved."""
+    page, text = _page(client)
+    assert "A difference of $20.00 or more needs a verifier ID and a note." in text
+    assert "it is not a login or a signature, and nobody is checked against it" in text
+    assert "Nothing here is saved." in text
+    assert "Verifier ID (not checked)" in text
+    coverage = next(attrs for _, attrs in page.tags if attrs.get("id") == "coverage")
+    assert [
+        coverage[key] for key in ("data-ran_no_lead", "data-ran_lead", "data-not_run")
+    ] == [
+        "Ran, no lead",
+        "Ran, lead found",
+        "Not run",
+    ]

@@ -22,7 +22,8 @@ to install.
 3. Download a report to keep a copy.
 
 To try uploads, select **Upload demo CSVs** and use the seven example files
-provided on that screen. Use fictional data only. Results disappear when you
+provided on that screen. To enter one drawer by hand, select **Close a
+drawer** (new; not yet checked on the public demo). Use fictional data only. Results disappear when you
 refresh or close the page. The free server may take about a minute to wake up
 after inactivity.
 
@@ -62,9 +63,9 @@ below gives examples.
 - **Example thresholds.** The settings are examples, not industry standards.
 - **The website saves nothing.** It has no accounts or run history. The
   command line keeps its records in a local database file.
-- **Seven files to start.** Uploaded records must be seven CSV files in a
-  fixed format. Entering a single drawer by hand is being built and is not
-  yet linked from the site.
+- **One drawer by hand, or seven files.** Close a drawer takes one drawer by
+  hand, but on its own it cannot show patterns over time or a day's bank
+  deposit. Checking many drawers needs seven CSV files in a fixed format.
 - **One closing shift per register per day**, and simple bank matching that
   can pick the wrong day when amounts repeat.
 
@@ -82,7 +83,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit hint | Done |
 | Website | Live at [drawercheck.onrender.com](https://drawercheck.onrender.com), with the redesigned screens |
-| Closing workflow: enter one drawer by hand, then review it | In progress in [M11](docs/M11_PLAN.md): the entry page works locally; the full review page is next |
+| Closing workflow: enter one drawer by hand, then review it | In progress in [M11](docs/M11_PLAN.md): Close a drawer and Review a drawer work locally, not yet checked on the public demo; recounts and a closing sheet are next |
 | Optional rules R06 and R07 | Deferred until after the closing workflow |
 
 Test, CI, hosting, and accessibility evidence is under

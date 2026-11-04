@@ -91,9 +91,7 @@ def test_file_replacement_ignores_the_old_response(
         assert not thread.is_alive(), "The browser test server did not stop"
 
 
-@pytest.mark.parametrize("browser", ["chrome", "webkit"])
-def test_close_a_drawer_messages_follow_the_choices(browser: str) -> None:
-    """Hidden fields lose their messages; choice messages are tied to their controls."""
+def _run_page_script(script: str, browser: str) -> None:
     if not os.environ.get("DRAWERCHECK_PLAYWRIGHT_MODULE"):
         pytest.skip("Set DRAWERCHECK_PLAYWRIGHT_MODULE to opt in to browser checks")
     node = shutil.which("node")
@@ -105,7 +103,7 @@ def test_close_a_drawer_messages_follow_the_choices(browser: str) -> None:
         result = subprocess.run(
             [
                 node,
-                str(ROOT / "tests/browser/close_drawer.cjs"),
+                str(ROOT / "tests/browser" / script),
                 f"http://127.0.0.1:{server.server_port}",
                 browser,
             ],
@@ -120,3 +118,15 @@ def test_close_a_drawer_messages_follow_the_choices(browser: str) -> None:
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_close_a_drawer_messages_follow_the_choices(browser: str) -> None:
+    """Hidden fields lose their messages; choice messages are tied to their controls."""
+    _run_page_script("close_drawer.cjs", browser)
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_review_a_drawer_signs_off_and_ignores_late_replies(browser: str) -> None:
+    """Review shows the whole check, a sign-off clears only R05, and stale replies lose."""
+    _run_page_script("review_drawer.cjs", browser)
