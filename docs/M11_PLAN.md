@@ -47,7 +47,7 @@ because the preceding row passed. All rows are currently **pending**.
 | --- | --- | --- |
 | 1. Fictional closing walkthrough | Prepare one fictional register-report layout, count sheet, cashier-to-manager task script, and a place to record observations. Include balanced, short, and missing-input cases. Use the current site to observe comparison/review friction and a paper walkthrough for the proposed manual-entry path. No application code. | The tasks have expected answers and a documented field/formula mapping. Record any actual participant observations separately from assumptions. If nobody is available, mark participant testing pending, carry that gap into block 9, and stop for the normal next-block review. A prepared script is not a passed user test. Do not contact anyone on the user's behalf. |
 | 2. README front page | Put purpose, demo, example outcome, screenshots, and limitations first. Link to detailed status and verification rather than leading with milestone numbers. | Links work, claims describe implemented behavior, and planned pages are not advertised as available. Evidence files and screenshot folders have not been moved, renamed, or deleted. |
-| 3. Input and check contract | Finalize fields, fictional report labels, empty/zero rules, money/count limits, transient state, check coverage, and the request/response shape. Document the two-page handoff and closing-export contents. No application code. | Every field has a meaning and a validation rule. Cash sales are explicitly before separately supplied refunds; drops cannot also be counted as paid-outs. Unknown input remains unknown. No fabricated shift times, extra registers, bank entries, or historical shifts are needed to make the core run. Review the contract before implementation. |
+| 3. Input and check contract | Finalize fields, fictional report labels, empty/zero rules, money/count limits, transient state, check coverage, and the request/response shape. Document the two-page handoff and closing-export contents. No application code. | Every field has a meaning and a validation rule. Cash sales are explicitly before separately supplied refunds; drops cannot also be counted as paid-outs. Unknown input remains unknown. No fabricated shift times, extra registers, bank entries, or historical shifts are needed to make the core run. Review the contract before implementation. The [points to settle in block 3](#points-to-settle-in-block-3) are resolved. |
 | 4. Shared Python one-drawer check | Build the smallest adapter/service around existing money, formula, and applicable rule functions. Add a bounded web request for manual input. Keep rule selection explicit. | Known examples match core results. Missing input, zero count, invalid money/counts, negative expected cash, limits, cleanup, and isolated concurrent requests are covered. An isolated drawer does not generate missing-bank or repeated-shortage conclusions. Existing CLI and full-run behavior still pass. |
 | 5. Close a drawer page | Build count-first entry, register-figure entry, field help, validation recovery, and the handoff using block 4. Follow the existing design system and required frontend skills. | A visitor can supply fictional data without seven CSVs, correct an error, and continue without retyping. Blank quantities cannot silently mean a confirmed empty drawer. Python supplies all cash totals. Capture dated screenshots. |
 | 6. Review a drawer page | Show the shared snapshot, explanation, available leads, check coverage, and temporary fictional verifier/note fields. | Back navigation preserves entries. Edits invalidate old results and require a fresh Python check; late replies cannot overwrite a newer check. A supplied note/verifier can change R05's missing-detail lead without changing the cash difference. No saved-review claim. Capture dated screenshots. |
@@ -62,6 +62,27 @@ screenshots and a screenshot-index row under the existing preservation rule.
 Do not silently raise the 2 MiB request, 10,000,000-byte response, or 60,000-byte
 CSS/JS budgets; review any required budget amendment before implementation.
 No push or deployment is implied by a local block's approval.
+
+### Points to settle in block 3
+
+Added 2026-11-04 after a code check of the plan. Block 3 must resolve each
+point in its contract before block 4 starts.
+
+1. **Closed state without invented times.** `Shift.opened_at` is a required
+   string, `calculate_shift` reports a shift without `closed_at` as open, and
+   the not-counted check in `integrity_flags` runs only on closed shifts.
+   Choose between asking for genuine open and close times and adding an
+   explicit closed input to the model. Never fill in a placeholder timestamp.
+2. **Explicit rule selection.** `evaluate_rules` with an empty history returns
+   no R04 lead, which would read as "ran, no lead". Call the applicable rules
+   individually. Block 4 adds a test that R04 and R08 report "not run".
+3. **Fictional-data notice on entry.** Manual entry makes real figures easier
+   to type than seven prepared CSVs did. Show the fictional-data notice on the
+   Close a drawer page itself, not only on Start.
+4. **Reuse the walkthrough.** Block 1's worked cases and expected answers
+   become block 4's test cases.
+5. **One page name.** This plan uses both "Review a drawer" and "Review
+   drawers". Choose one for navigation and headings.
 
 ## Check coverage for an isolated drawer
 
