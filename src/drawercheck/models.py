@@ -8,15 +8,16 @@ from drawercheck.config import Config
 
 @dataclass(frozen=True)
 class PosTotals:
-    """The imported cash movements and other POS totals for one shift."""
+    """The cash movements and other POS totals for one shift."""
 
     cash_sales_cents: int
-    card_sales_cents: int
+    # Manual entry does not collect these; no calculation or rule reads them.
+    card_sales_cents: int | None
     cash_refunds_cents: int
     paid_outs_cents: int
     paid_ins_cents: int
-    void_count: int
-    no_sale_count: int
+    void_count: int | None
+    no_sale_count: int | None
 
 
 @dataclass(frozen=True)

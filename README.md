@@ -287,6 +287,7 @@ The app is created by `drawercheck.web:create_app()`.
 | `GET /` | Nothing | The website page, with its local styles and fonts |
 | `POST /api/demo` | Nothing | Full results for the built-in example |
 | `POST /api/check` | The seven CSV files | Full results for those files |
+| `POST /api/drawer` | One drawer's entries as JSON | That drawer's result and which checks ran. No page uses it yet; see the [contract](docs/M11_CONTRACT.md). |
 | `GET /examples/<file>` | Nothing | One of the seven example CSVs, to download |
 
 Results come back as one JSON response containing summaries, shift

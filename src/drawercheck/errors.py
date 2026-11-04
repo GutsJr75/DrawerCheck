@@ -168,6 +168,60 @@ WEB_CLIENT_NETWORK = (
 )
 WEB_CLIENT_TIMEOUT = "The demo server did not answer in time. Try again in a moment."
 
+# One manually entered drawer (M11). Field messages fill {label} or {what}.
+DRAWER_REQUEST = (
+    "Send the drawer from the Close a drawer page as JSON, without URL options."
+)
+DRAWER_TOO_LARGE = (
+    "The drawer entries are too large. Shorten long notes or IDs and try again."
+)
+DRAWER_SHAPE = "The drawer form sent unexpected, missing, or repeated fields. Reload the page and enter the drawer again."
+DRAWER_FIX = "Some entries need fixing. Each one is listed below."
+DRAWER_REQUIRED = "Enter {label}."
+DRAWER_TOO_LONG = "{label} can be at most {limit} characters."
+DRAWER_UNSAFE_TEXT = "{label} contains a hidden control character. Retype it."
+DRAWER_IDENTIFIER = (
+    "{label} cannot start or end with a space, or contain tabs or line breaks."
+)
+DRAWER_DATE = "Enter {label} as a real date, like 2026-11-02."
+DRAWER_TIME = "Enter {label} as a date and time, like 2026-11-02T20:00."
+DRAWER_TIMES_UNAVAILABLE = "This version cannot check a drawer without its opening and closing times. Find the shift slip or the register report."
+DRAWER_MONEY = "Enter {label} in dollars and cents, like 1316.40, without $ or commas."
+DRAWER_MONEY_LIMIT = "{label} must be {limit} or less."
+DRAWER_DROP_POSITIVE = (
+    "Each safe drop must be more than 0.00. Remove drops that did not happen."
+)
+DRAWER_COUNT = "Enter how many {what} were counted, as a whole number. Write 0 if none."
+DRAWER_COUNT_LIMIT = "The number of {what} must be {limit:,} or less."
+DRAWER_DROP_LIMIT = "Enter at most {limit} safe drops."
+DRAWER_DROPS_UNAVAILABLE = "This version cannot check a drawer without its safe drop log. Find the log, and choose No safe drops only if none were made."
+DRAWER_RECOUNT_UNAVAILABLE = (
+    "Recounts are not available yet. Check the drawer with its first count."
+)
+DRAWER_LABELS = {
+    "business_date": "the business date",
+    "register_id": "the register",
+    "cashier_id": "the cashier ID",
+    "opened_at": "the opening time",
+    "closed_at": "the closing time",
+    "opening_float": "the starting cash",
+    "cash_sales": "cash sales",
+    "cash_refunds": "cash refunds",
+    "paid_ins": "paid in",
+    "paid_outs": "paid out",
+    "amount": "the safe drop amount",
+    "bag_number": "the bag number",
+    "verifier_id": "the verifier ID",
+    "variance_note": "the note",
+}
+
+
+def drawer_count_name(denomination_cents: int) -> str:
+    """Name one bill or coin value in plain words for count messages."""
+    if denomination_cents >= 100:
+        return f"${denomination_cents // 100} bills"
+    return f"{denomination_cents}-cent coins"
+
 
 class WebInputError(Exception):
     """A web request needs correction before the checks can run."""
@@ -237,6 +291,19 @@ class ImportRowLimitError(DrawerCheckError):
         self.file_name = file_name
         self.limit = limit
         super().__init__(IMPORT_ROW_LIMIT.format(file_name=file_name, limit=limit))
+
+
+class DrawerRequestError(DrawerCheckError):
+    """A manual drawer request has the wrong shape, so no field can be named."""
+
+
+class DrawerInputError(DrawerCheckError):
+    """One or more manually entered drawer fields need correction."""
+
+    def __init__(self, problems: tuple[tuple[str, str], ...]) -> None:
+        """Store every (field, message) pair so the page can list them together."""
+        self.problems = problems
+        super().__init__(DRAWER_FIX)
 
 
 def web_import_message(error: ImportValidationError) -> str:

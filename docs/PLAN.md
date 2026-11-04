@@ -2,9 +2,9 @@
 
 ## Where things stand
 
-- **Next step, updated 2026-11-04:** the user reviews the revised M11 block 3
-  [contract](M11_CONTRACT.md). Block 4, the shared Python one-drawer check,
-  starts only after that review. The CSS/JS budget choice is made. Follow M11 one block at a time, then consider the separately
+- **Next step, updated 2026-11-04:** M11 block 5, the Close a drawer page,
+  after **next**. It starts with the performance baseline and the approved
+  90,000-byte CSS/JS budget. Follow M11 one block at a time, then consider the separately
   gated M12 local-records milestone. This order supersedes earlier statements
   that R06 is next; R06 and R07 are deferred.
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
@@ -18,7 +18,13 @@
   limitations. Milestone status is a short table; dated test, CI, and hosting
   evidence moved to a Verification section. No evidence files were moved.
 - **M11 block 3 drafted (authorized 2026-11-04):** the input and check
-  contract is in [M11_CONTRACT.md](M11_CONTRACT.md). It is not approved yet.
+  contract is in [M11_CONTRACT.md](M11_CONTRACT.md). The user's reviewer
+  confirmed the revised contract ready for block 4 on 2026-11-04.
+- **M11 block 4 complete locally (authorized 2026-11-04):** `POST /api/drawer`
+  checks one entered drawer in memory with the shared calculations and five
+  rules called by name, reports per-rule coverage, and lists every field
+  problem at once. Tests cover the walkthrough cases and CSV-path parity. No
+  page uses it yet.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -206,7 +212,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
 | M10: Frontend redesign | All views implemented; local checks and hosted verification complete on 2026-10-28 for runtime 62650f9. Manual gaps remain explicit. M9 R06/R07 remain separately authorized future work. Stop for next. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md), [M10_CHECKLIST.md](M10_CHECKLIST.md), web presentation, tests, and design documents | Accurate counts, filter-aware navigation, preserved results/caps, responsive/accessibility evidence, dated screenshots, and separate hosted/manual status. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK7_HOSTED.md; no automatic continuation. |
-| M11: Fictional closing workflow | Blocks 1 and 2 complete locally; block 3 contract awaiting review; blocks 4 to 9 pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
+| M11: Fictional closing workflow | Blocks 1 to 4 complete locally; blocks 5 to 9 pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
 | M12: Local saved closing records | Future direction only. Begin with a separately approved storage/access contract; then split local serving, saving, history, review, corrections, recovery, and verification. | Future M12 plan, local web/storage code, relevant tests and documentation | Reopening preserves records, reviews do not change cash outcomes, corrections retain originals, and a verified restore recovers the full history. No public persistence or real-data readiness claim. |
 
 ## Intended structure
@@ -413,6 +419,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 89. **Draft the one-drawer input and check contract (M11 block 3, authorized 2026-11-04).** The user's "next" authorizes the contract only. Proposed: real opening and closing times from the report rather than a new closed flag, so no placeholder time and no change to `Shift`; explicit R01, R02, R03, R05, and R09 calls with R04 and R08 reported "not run"; only the whole register report may be unknown; every count line needs a number; drops as a list or an explicit none; one optional recount; all JSON values as strings; all field errors returned at once; no server storage at all; card sales, voids, and no-sale counts become `int | None` because manual entry does not collect them. The core's "Missing POS totals" message stays for now. Found while drafting: CSS/JS is 23 bytes under its 60,000-byte budget, so the user must choose a budget option before block 5. Not approved until the user reviews it.
 
 90. **Revise the contract after the user's review (M11 block 3, 2026-11-04).** The user chose one combined 90,000-byte CSS/JS budget, with conditions: every application CSS/JS file counts, the limit is a ceiling, a local Chrome baseline is measured before block 5 changes assets and repeated in block 9 (a slowdown over 20% is investigated; both figures are project choices), and loading is split only if measurements show a benefit. Block 5 updates DESIGN.md and the budget test together. Contract clarifications: times and starting cash come from a shift slip, now in the participant packet for every drawer, and missing times or a missing drop log are sent as `null` and answered with a plain "cannot check" message instead of a guess; the recount response carries the first count's difference and status from Python with a labelled basis; R09 coverage lists checked and unavailable parts from the actual inputs, so "expected cash not negative" is unavailable without a report; and a delivery table states what blocks 4 to 8 each build, with recount and the closing sheet unavailable until blocks 7 and 8. Only money and count values are required to be strings. The contract still awaits the user's review.
+
+91. **Build the shared one-drawer check (M11 block 4, authorized 2026-11-04).** The reviewer's confirmation that the contract was ready, relayed by the user, authorized block 4 only. `drawercheck/drawer.py` validates the entries, builds a `Shift` in memory, and calls R01, R02, R03, R05, and R09 by name in the CSV path's order, so both paths list leads identically. `reconcile.shift_outcome` was split out of `calculate_shift` so the outcome can be calculated without running every rule; `calculate_shift` behaves as before. `PosTotals` card sales, voids, and no-sale counts are now `int | None`. Validation reuses `parse_dollars`, `has_unsafe_controls`, and the importer's ID rules, with new limits for this path only (each amount $999,999.99, each quantity 99,999, 20 drops). Every message is in `errors.py`. A test caught `str.capitalize()` turning "ID" into "id"; a small helper capitalizes only the first letter. The endpoint uses no workspace, database, or log of values; tests make any workspace use fail. `recount` must be `null` and `initial_count` and `closing_summary` are `null` until blocks 7 and 8. The README request table lists the endpoint as unused by any page.
 
 ## Math and test commitments
 

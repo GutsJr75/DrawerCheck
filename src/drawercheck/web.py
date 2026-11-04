@@ -16,6 +16,7 @@ from drawercheck import errors
 from drawercheck.config import Config
 from drawercheck.csv_contract import CSV_HEADERS, DENOMINATIONS_CENTS
 from drawercheck.demo import generate_demo
+from drawercheck.drawer import DrawerCheck, check_drawer
 from drawercheck.importer import import_directory
 from drawercheck.models import Flag, ShiftResult, group_flags_by_date
 from drawercheck.money import format_cents
@@ -35,6 +36,7 @@ MAX_SHIFTS = 1000
 MAX_FIELD_CHARACTERS = 256
 MAX_RELATED_SHIFT_CODES = 1000
 MAX_RESPONSE_BYTES = 10_000_000
+MAX_DRAWER_BYTES = 32 * 1024
 ROW_LIMITS = {
     "registers.csv": 5,
     "cashiers.csv": 100,
@@ -266,15 +268,8 @@ def _lead_data(flag: Flag, config: Config) -> dict:
     return values
 
 
-def _shift_data(
-    result: ShiftResult,
-    config: Config,
-    day: DailySummary,
-    daily_flags: tuple[Flag, ...],
-) -> dict:
-    explanation = build_explanation(
-        result, config, day.expected_deposit_cents, daily_flags
-    )
+def _drawer_values(result: ShiftResult, config: Config) -> dict:
+    # Shared by full runs and one entered drawer, so both screens read one shape.
     values = asdict(result)
     values["flags"] = [_lead_data(flag, config) for flag in result.flags]
     values["shift"]["counts"] = [
@@ -286,16 +281,31 @@ def _shift_data(
         for denomination, quantity in result.shift.counts
     ]
     values.update(
-        deposit_contribution_cents=explanation.deposit_contribution_cents,
-        daily_deposit_cents=explanation.daily_deposit_cents,
-        daily_flags=[_lead_data(flag, config) for flag in explanation.daily_flags],
-        retained_float_cents=config.retained_float_per_register_cents,
         within_tolerance_cents=config.within_tolerance_cents,
         review_threshold_cents=config.review_threshold(
             result.shift.pos.cash_sales_cents
         )
         if result.shift.pos
         else None,
+    )
+    return values
+
+
+def _shift_data(
+    result: ShiftResult,
+    config: Config,
+    day: DailySummary,
+    daily_flags: tuple[Flag, ...],
+) -> dict:
+    explanation = build_explanation(
+        result, config, day.expected_deposit_cents, daily_flags
+    )
+    values = _drawer_values(result, config)
+    values.update(
+        deposit_contribution_cents=explanation.deposit_contribution_cents,
+        daily_deposit_cents=explanation.daily_deposit_cents,
+        daily_flags=[_lead_data(flag, config) for flag in explanation.daily_flags],
+        retained_float_cents=config.retained_float_per_register_cents,
     )
     return _display_values(values)
 
@@ -348,16 +358,25 @@ def _summary(report: ReportData) -> dict:
     }
 
 
-def _date_labels(report: ReportData) -> dict[str, str]:
+def _shift_dates(result: ShiftResult) -> set[str]:
     # Include clock dates too: a shift can close after its business date.
+    shift = result.shift
+    dates = {shift.business_date, shift.opened_at[:10]}
+    if shift.closed_at:
+        dates.add(shift.closed_at[:10])
+    return dates
+
+
+def _date_labels(report: ReportData) -> dict[str, str]:
     dates = {report.from_date, report.to_date}
     dates.update(day.business_date for day in report.days)
     dates.update(flag.business_date for flag in report.flags)
     for result in report.shifts:
-        shift = result.shift
-        dates.update((shift.business_date, shift.opened_at[:10]))
-        if shift.closed_at:
-            dates.add(shift.closed_at[:10])
+        dates.update(_shift_dates(result))
+    return _label_dates(dates)
+
+
+def _label_dates(dates: set[str]) -> dict[str, str]:
     weekdays = (
         "Monday",
         "Tuesday",
@@ -447,6 +466,65 @@ def _response_data(report: ReportData) -> dict:
             },
         },
     }
+
+
+def _drawer_response(check: DrawerCheck, config: Config) -> dict:
+    result = check.result
+    drawer = _display_values(_drawer_values(result, config))
+    drawer["count_basis"] = "first_count"
+    return {
+        "notice": errors.WEB_NOTICE,
+        "labels": {**_labels(config), "dates": _label_dates(_shift_dates(result))},
+        "drawer": drawer,
+        # Recounts arrive in M11 block 7 and the closing sheet in block 8.
+        "initial_count": None,
+        "safe_drops": {
+            "drops": [
+                {
+                    "amount": format_cents(drop.amount_cents),
+                    "bag_number": drop.bag_number,
+                }
+                for drop in check.safe_drops
+            ],
+            "total_amount": format_cents(result.shift.safe_drops_cents),
+        },
+        "coverage": [
+            {**asdict(entry), "label": RULE_LABELS[entry.rule_code]}
+            for entry in check.coverage
+        ],
+        "closing_summary": None,
+    }
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
+    if len({key for key, _ in pairs}) != len(pairs):
+        raise errors.DrawerRequestError(errors.DRAWER_SHAPE)
+    return dict(pairs)
+
+
+def _reject_number(value: str) -> None:
+    # Money and counts arrive as strings, so a JSON number never becomes a float.
+    raise errors.DrawerRequestError(errors.DRAWER_SHAPE)
+
+
+def _drawer_payload() -> object:
+    if request.args or request.mimetype != "application/json":
+        raise errors.WebInputError(errors.DRAWER_REQUEST)
+    if (request.content_length or 0) > MAX_DRAWER_BYTES:
+        raise errors.WebInputError(errors.DRAWER_TOO_LARGE)
+    body = request.stream.read(MAX_DRAWER_BYTES + 1)
+    if len(body) > MAX_DRAWER_BYTES:
+        raise errors.WebInputError(errors.DRAWER_TOO_LARGE)
+    try:
+        return json.loads(
+            body.decode("utf-8"),
+            object_pairs_hook=_reject_duplicate_keys,
+            parse_int=_reject_number,
+            parse_float=_reject_number,
+            parse_constant=_reject_number,
+        )
+    except (UnicodeDecodeError, ValueError, RecursionError):
+        raise errors.WebInputError(errors.DRAWER_REQUEST) from None
 
 
 def _save_uploads(directory: Path) -> None:
@@ -541,6 +619,14 @@ def create_app() -> Flask:
     def check() -> Response:
         return _run_request(demo=False)
 
+    @app.post("/api/drawer")
+    def drawer() -> Response:
+        # Checked in memory: no workspace, database, or saved entries.
+        config = Config()
+        return _json_response(
+            _drawer_response(check_drawer(_drawer_payload(), config), config)
+        )
+
     @app.after_request
     def private_response(response: Response) -> Response:
         if (
@@ -584,6 +670,22 @@ def create_app() -> Flask:
                 "message": message,
                 "file_name": error.file_name,
                 "limit": error.limit,
+            }
+        ), 400
+
+    @app.errorhandler(errors.DrawerRequestError)
+    def drawer_shape(error: errors.DrawerRequestError) -> tuple[Response, int]:
+        return jsonify(error={"message": str(error)}), 400
+
+    @app.errorhandler(errors.DrawerInputError)
+    def drawer_fields(error: errors.DrawerInputError) -> tuple[Response, int]:
+        return jsonify(
+            error={
+                "message": str(error),
+                "fields": [
+                    {"field": field, "message": message}
+                    for field, message in error.problems
+                ],
             }
         ), 400
 

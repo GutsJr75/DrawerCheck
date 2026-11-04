@@ -2,9 +2,9 @@
 
 Roadmap updated 2026-11-04. The user authorized this plan update, following
 their choice to support both cashiers and managers on separate pages.
-Blocks 1 ([evidence](M11_BLOCK1.md)) and 2 are complete locally. Block 3's
-[contract](M11_CONTRACT.md) is drafted and **awaits the user's review**,
-including a CSS/JS budget decision. Block 4 starts only after that review.
+Blocks 1 to 4 are complete locally: the [walkthrough](M11_BLOCK1.md), the
+README, the reviewed [contract](M11_CONTRACT.md), and `POST /api/drawer`.
+The next step is **block 5**, after **next**.
 This schedule takes priority over the unfinished M9 R06 and R07 rules.
 
 ## Goal and starting assumptions
@@ -43,7 +43,7 @@ Recounts and notes remain temporary; durable review status waits for M12.
 Each row is a separate approval, work, verification, and local-commit block.
 Target 30 to 60 minutes per block; split before expanding an oversized row.
 Stop after every block and wait for **next**. Never start the next row just
-because the preceding row passed. Blocks 1 and 2 are **complete locally**; block 3 is **drafted, awaiting review**; blocks 4 to 9 are **pending**.
+because the preceding row passed. Blocks 1 to 4 are **complete locally**; blocks 5 to 9 are **pending**.
 
 | Block | Work | Done when |
 | --- | --- | --- |

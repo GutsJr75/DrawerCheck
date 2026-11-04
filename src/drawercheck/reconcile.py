@@ -43,12 +43,11 @@ def counted_cash(shift: Shift) -> int | None:
     return sum(denomination * quantity for denomination, quantity in shift.counts)
 
 
-def calculate_shift(
+def shift_outcome(
     shift: Shift,
     config: Config,
     overlapping_codes: tuple[str, ...] = (),
     other_closing_codes: tuple[str, ...] = (),
-    history: tuple[ShiftResult, ...] = (),
 ) -> ShiftResult:
     """Preserve exact variance separately from the within-tolerance status."""
     expected, counted = expected_cash(shift), counted_cash(shift)
@@ -63,7 +62,7 @@ def calculate_shift(
         status = "balanced"
     else:
         status = "short" if variance < 0 else "over"
-    result = ShiftResult(
+    return ShiftResult(
         shift,
         expected,
         counted,
@@ -72,6 +71,17 @@ def calculate_shift(
         overlapping_codes,
         other_closing_codes,
     )
+
+
+def calculate_shift(
+    shift: Shift,
+    config: Config,
+    overlapping_codes: tuple[str, ...] = (),
+    other_closing_codes: tuple[str, ...] = (),
+    history: tuple[ShiftResult, ...] = (),
+) -> ShiftResult:
+    """Calculate one shift's outcome, then apply every rule with its history."""
+    result = shift_outcome(shift, config, overlapping_codes, other_closing_codes)
     return replace(result, flags=evaluate_rules(result, config, history))
 
 

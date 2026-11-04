@@ -1662,3 +1662,26 @@ waits for the user's review of the revised contract.
 Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
 checks passed (76 formatter files, including Markdown). M11 link and anchor
 checks, `git diff --check`, and prohibited-punctuation checks passed.
+
+## 2026-11-04: M11 block 4, shared one-drawer check
+
+- Built: `drawercheck/drawer.py` and `POST /api/drawer`. One entered drawer is
+  validated, built as an in-memory `Shift`, and checked with the same outcome
+  code and five rules called by name. The reply has the CSV path's drawer
+  shape plus per-rule coverage, and a 400 lists every field problem at once.
+  80 new tests cover the walkthrough cases, CSV parity, limits, and shapes.
+- Learned: parity tests are the strongest proof that two paths share one
+  core. A small test also caught `str.capitalize()` lowercasing "ID", and a
+  write step had turned a `\u200b` escape into an invisible character.
+- Interview question: How do you prove a new input path cannot drift from
+  the original calculations?
+
+Authorization: the reviewer's confirmation that the contract was ready,
+relayed by the user. Server and tests only; no page, recount, closing sheet,
+push, or deployment.
+
+Verification: 809 tests passed and 2 optional browser tests skipped (729
+before plus 80 new). Both Ruff checks passed (80 formatter files). A real
+local Flask server returned case B's $685.65, $665.65, and -$20.00 with
+R01, R02, and R05, a field message for a missing drop log, and a size
+message for a 40 KB body.

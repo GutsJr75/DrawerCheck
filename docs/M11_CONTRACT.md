@@ -4,6 +4,8 @@ Drafted 2026-11-04 under the user's "next" after block 2. This is a contract
 for blocks 4 to 8. It adds no application code. **It needs the user's review
 before block 4 starts.** Revised the same day after the user's review: the
 budget is decided (see the end of this file), and four points were clarified.
+The user's reviewer confirmed it ready for block 4 the same day; block 4
+implements the parts listed in its row below.
 The cases in [M11_BLOCK1.md](M11_BLOCK1.md) are the worked examples.
 
 ## Summary of decisions
@@ -296,7 +298,15 @@ than an outside standard, with these conditions:
   from a click to visible results for **Try the example** and opening a
   drawer, as the median of five runs. Block 9 repeats the same measurements.
   A slowdown of more than 20% is investigated before release; the 20% figure
-  is also a project choice.
+  is also a project choice. It is a trigger to look closer, not an automatic
+  failure: repeat the measurements before calling it a regression.
+- **Record the conditions with the numbers.** Each measurement records the
+  Chrome version, the machine, network settings (throttling or none), cache
+  state, whether the server was already running and warmed up, the exact
+  start and end of each timing (for example, click until the results heading
+  is visibly rendered), and all five timings plus the median in milliseconds.
+  Block 9 uses the same conditions and reports milliseconds alongside the
+  percentage change.
 - **Split loading only if measured.** Separate files are not assumed to be
   faster. Splitting the loading is considered later only if the measurements
   show a benefit.
