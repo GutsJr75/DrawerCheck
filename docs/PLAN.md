@@ -2,12 +2,15 @@
 
 ## Where things stand
 
-- **Next step, updated 2026-11-04:** prepare the fictional cashier/manager
-  closing walkthrough in [M11 block 1](M11_PLAN.md#blocks-in-order). The user
-  authorized this roadmap update only. No M11 implementation has started.
-  Follow M11 one block at a time, then consider the separately gated M12
-  local-records milestone. This order supersedes earlier statements that R06
-  is next; R06 and R07 are deferred. Stop for **next** before block 1.
+- **Next step, updated 2026-11-04:** M11 block 2, the README front page,
+  after **next**. Follow M11 one block at a time, then consider the separately
+  gated M12 local-records milestone. This order supersedes earlier statements
+  that R06 is next; R06 and R07 are deferred.
+- **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
+  closing walkthrough, field mapping, expected answers, task script, and
+  observation sheet are in [M11_BLOCK1.md](M11_BLOCK1.md). Answers were
+  confirmed with the real CLI. Participant testing is pending; the agent's
+  walkthrough of the current site is not a user test. No application code.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -195,7 +198,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
 | M10: Frontend redesign | All views implemented; local checks and hosted verification complete on 2026-10-28 for runtime 62650f9. Manual gaps remain explicit. M9 R06/R07 remain separately authorized future work. Stop for next. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md), [M10_CHECKLIST.md](M10_CHECKLIST.md), web presentation, tests, and design documents | Accurate counts, filter-aware navigation, preserved results/caps, responsive/accessibility evidence, dated screenshots, and separate hosted/manual status. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK7_HOSTED.md; no automatic continuation. |
-| M11: Fictional closing workflow | Pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
+| M11: Fictional closing workflow | Block 1 complete locally; blocks 2 to 9 pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
 | M12: Local saved closing records | Future direction only. Begin with a separately approved storage/access contract; then split local serving, saving, history, review, corrections, recovery, and verification. | Future M12 plan, local web/storage code, relevant tests and documentation | Reopening preserves records, reviews do not change cash outcomes, corrections retain originals, and a verified restore recovers the full history. No public persistence or real-data readiness claim. |
 
 ## Intended structure
@@ -392,6 +395,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 84. **Give Results' outcome column one width (authorized 2026-11-03).** The user pointed out that "Difference" started at a different horizontal position in each review row. Each row is its own flex line and the outcome block took the width of its own text, so "Balanced (within $1.00)" pushed its left edge further left than "Missing records". `.group-outcome` now has `flex: 0 1 12rem`, so every row shares one left edge. 12rem was chosen by measuring: the widest outcome in the demo is about 176 px, and 13rem or more would stack the rows at the 960 px layout where they sit side by side today. The shrink value keeps the block inside the screen at 200% text in a 320 px window (a first version with no shrink overflowed there and was fixed before release). Longer wording would wrap inside the block. CSS/JS totals 59,977 bytes. No core, server, or calculation changes.
 
 85. **Plan a cashier and manager workflow before more rules (planning authorized 2026-11-04).** The user chose both audiences on separate pages, permitted research-based assumptions, then asked to update the plan so work proceeds one step at a time. Use a fictional small US convenience store with one closing count per register/day as a working assumption, not an observed business requirement. Follow the separately gated blocks in `docs/M11_PLAN.md`: first a fictional walkthrough, then README cleanup, then manual-entry checks and the two temporary views. Keep R04/history and R08/deposits unavailable in isolated checks, disclose partial R09 coverage, and never fabricate supporting records to imply complete checks. M12 saved local records require a separate reviewed contract. Retain all existing evidence paths and screenshots. This documentation update does not authorize coding, participant outreach, deployment, or real-data use. Earlier next-R06 statements describe the old schedule.
+
+86. **Prepare the fictional closing walkthrough (M11 block 1, authorized 2026-11-04).** The user's "go for block 1" authorizes the walkthrough only. Use three registers on one fictional day: R1 balanced within tolerance at -$0.25, R2 short $20.00 without sign-off, and R3 with no register report. The invented register report prints no expected cash, so the count comes first. Confirm every expected answer by writing the packet as the seven CSVs and running import, reconcile, and explain, rather than relying on hand arithmetic. Keep those files and the generator script outside the repository, as in decision 66; the tables in `docs/M11_BLOCK1.md` hold every figure block 4 needs. The agent's walkthrough of the current local site is recorded as agent observations, not user testing. No screenshots were taken because the site's appearance did not change. Participant testing stays pending and carries into block 9; nobody was contacted. Five new block 3 questions are listed in `docs/M11_BLOCK1.md`.
 
 ## Math and test commitments
 

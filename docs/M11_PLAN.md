@@ -2,7 +2,7 @@
 
 Roadmap updated 2026-11-04. The user authorized this plan update, following
 their choice to support both cashiers and managers on separate pages.
-No work block below has started. The next step is **block 1**, after **next**.
+Block 1 is complete locally ([evidence](M11_BLOCK1.md)). The next step is **block 2**, after **next**.
 This schedule takes priority over the unfinished M9 R06 and R07 rules.
 
 ## Goal and starting assumptions
@@ -41,7 +41,7 @@ Recounts and notes remain temporary; durable review status waits for M12.
 Each row is a separate approval, work, verification, and local-commit block.
 Target 30 to 60 minutes per block; split before expanding an oversized row.
 Stop after every block and wait for **next**. Never start the next row just
-because the preceding row passed. All rows are currently **pending**.
+because the preceding row passed. Block 1 is **complete locally**; blocks 2 to 9 are **pending**.
 
 | Block | Work | Done when |
 | --- | --- | --- |

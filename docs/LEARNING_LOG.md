@@ -1559,3 +1559,27 @@ full-suite rerun with local-socket permission passed. Both Ruff checks passed
 (73 files already formatted), as did local Markdown target checks, the new
 block-link anchor check, prohibited-punctuation checks, and git diff --check.
 No application tests were added, and no new hosted CI or live result is claimed.
+
+## 2026-11-04: M11 block 1, fictional closing walkthrough
+
+- Built: `docs/M11_BLOCK1.md`, a paper closing exercise for three fictional
+  registers (balanced, short, missing report) with a register report layout,
+  count sheet, drop log, field and formula mapping, expected answers, an
+  eight-task cashier and manager script, and an observation sheet.
+- Learned: expected answers are safer when the real program produces them.
+  Writing the packet as CSVs and running the CLI confirmed every figure, and
+  showed that adding a verifier and note clears R05 without changing the
+  -$20.00 difference. The upload path needed seven files for three drawers.
+- Interview question: Why should a single missing line on a register report
+  make expected cash unknown instead of being treated as zero?
+
+Authorization: the user's "go for block 1". No application code, participant
+outreach, push, or deployment. Participant testing is pending; the agent's
+walkthrough of the local site is not a user test. No screenshots were taken
+because the site's appearance did not change.
+
+Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
+checks passed (74 files; the new count includes `docs/M11_BLOCK1.md`, since
+Ruff 0.17.1 also checks Markdown). `git diff --check`, prohibited-punctuation,
+and local link checks passed. The packet's CSVs gave 4 saved flags before the
+case B review and 3 after, matching every answer in the walkthrough.
