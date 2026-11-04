@@ -1530,3 +1530,32 @@ Verification: 729 tests passed and 2 skipped, both Ruff checks and git diff
 px in Chrome and WebKit; they stack below 960 px as before. 72 axe scans and 48
 large-text and reflow checks found no violations and no overflow. CSS/JS totals
 59,977 bytes.
+
+## 2026-11-04: Plan the cashier and manager closing workflow
+
+- Built: updated PLAN.md and WEB_PLAN.md and added M11_PLAN.md with separate
+  approval gates for a fictional walkthrough, README cleanup, manual-entry
+  contract, shared Python checking, cashier/manager pages, recounts, closing
+  export, and verification. Deferred R06/R07 and outlined M12 local records
+  as a separately reviewed future milestone. This block changes documents only.
+- Learned: separate task pages can share one temporary record without logins
+  or saved history. An isolated drawer cannot support history/deposit checks,
+  and a supplied reviewer ID does not authenticate a person. Official Shopify
+  and Square guidance informs assumptions, not validated customer requirements.
+- Interview question: How would you make a single-drawer result useful without
+  implying that history, whole-day completeness, or bank checks were performed?
+
+Authorization: the user requested a plan update so future work proceeds one
+step at a time. No application implementation, participant outreach, push, or
+deployment is authorized by this planning block. Next is M11 block 1 after next.
+Existing evidence and screenshot paths are preserved; the original brief is
+unchanged. No new participant observations or app screenshots are claimed.
+
+Verification: 729 tests passed and 2 optional browser tests skipped in 21.02
+seconds on the final full-suite run. The first sandboxed run passed 728 tests,
+skipped 2, and failed the existing hosting recovery test because Unix-socket
+creation was blocked. A direct bind probe confirmed PermissionError; the
+full-suite rerun with local-socket permission passed. Both Ruff checks passed
+(73 files already formatted), as did local Markdown target checks, the new
+block-link anchor check, prohibited-punctuation checks, and git diff --check.
+No application tests were added, and no new hosted CI or live result is claimed.

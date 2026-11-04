@@ -2,6 +2,12 @@
 
 ## Where things stand
 
+- **Next step, updated 2026-11-04:** prepare the fictional cashier/manager
+  closing walkthrough in [M11 block 1](M11_PLAN.md#blocks-in-order). The user
+  authorized this roadmap update only. No M11 implementation has started.
+  Follow M11 one block at a time, then consider the separately gated M12
+  local-records milestone. This order supersedes earlier statements that R06
+  is next; R06 and R07 are deferred. Stop for **next** before block 1.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -93,7 +99,8 @@
   reports, refresh, and eight focused repair scans. See
   [hosted evidence](M10_BLOCK7_HOSTED.md). This follow-up changes documentation
   only; the agent did not push or deploy. Manual validation gaps remain open.
-  M9 R06 is next, then R07, each requiring separate authorization.
+  At that follow-up, M9 R06 was next, then R07. The 2026-11-04 roadmap above
+  now takes priority; neither rule has been implemented.
 
 - **M10 upload repair complete locally (authorized 2026-10-29):** the
   whole-M10 review found
@@ -120,6 +127,11 @@ How the scope grew:
   for beginners, with focused views and optional explanations. The audience,
   wording, and usability decisions are in `docs/WEB_PLAN.md` and `DESIGN.md`.
   That update was design only; each later milestone was authorized separately.
+- 2026-11-04: the user chose both cashier and manager tasks, on separate
+  pages, and authorized updating the plan. [M11_PLAN.md](M11_PLAN.md) records
+  the research-based assumptions, walkthrough, README cleanup, temporary
+  one-drawer workflow, and a later local saved-records milestone. Planning
+  approval does not authorize those work blocks or real-data operation.
 
 ## Purpose and boundaries
 
@@ -136,6 +148,26 @@ On 2026-10-22 the user chose both a polished recruiter demo and an interface for
 Use Flask to connect browser requests to the existing Python functions, with HTML, CSS, and minimal JavaScript for interaction. The browser must not recalculate money or rules. Each run uses an isolated temporary database; there is no shared visitor ledger, login system, or saved run history. Public uploads are for synthetic demo data only. Keep the command-line installation independent of web packages, and keep the downloadable HTML report self-contained and free of JavaScript.
 
 The original 10 to 20 hour estimate covered the core scope. The additional web milestones expand that scope; do not promise the original estimate still covers the whole project. Continue splitting work into blocks intended to fit within one hour. No web implementation starts during M2 through M6.
+
+### Workflow roadmap amendment (planning authorized 2026-11-04)
+
+Plan separate **Close a drawer** and **Review a drawer** pages that share one
+temporary drawer record. Start with fictional task walkthroughs and README
+cleanup before writing application code. M11 adds manual entry without the
+seven-file preparation requirement; it does not replace the existing CSV or
+example paths. Python continues to own all cash calculations and rule results.
+
+M11 has no saved history, logins, access restrictions between the two pages,
+or cross-device handoff. It must disclose which checks ran and which lack the
+necessary history or whole-day context. Public runs remain fictional and
+temporary. Existing report protections, resource caps, screenshot preservation,
+and historical evidence remain in force.
+
+M12 is a later planning direction for a local web interface with saved closing
+records, review status, traceable corrections, and tested backup/restore. It
+requires its own storage and access design review and implementation approval.
+It does not authorize public persistence or the use of real business records.
+The exact blocks, completion checks, and gates are in [M11_PLAN.md](M11_PLAN.md).
 
 ## Working agreement
 
@@ -163,6 +195,8 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
 | M10: Frontend redesign | All views implemented; local checks and hosted verification complete on 2026-10-28 for runtime 62650f9. Manual gaps remain explicit. M9 R06/R07 remain separately authorized future work. Stop for next. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md), [M10_CHECKLIST.md](M10_CHECKLIST.md), web presentation, tests, and design documents | Accurate counts, filter-aware navigation, preserved results/caps, responsive/accessibility evidence, dated screenshots, and separate hosted/manual status. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK7_HOSTED.md; no automatic continuation. |
+| M11: Fictional closing workflow | Pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
+| M12: Local saved closing records | Future direction only. Begin with a separately approved storage/access contract; then split local serving, saving, history, review, corrections, recovery, and verification. | Future M12 plan, local web/storage code, relevant tests and documentation | Reopening preserves records, reviews do not change cash outcomes, corrections retain originals, and a verified restore recovers the full history. No public persistence or real-data readiness claim. |
 
 ## Intended structure
 
@@ -356,6 +390,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 83. **Fix the large-text overflow at 320 px at its causes (authorized 2026-11-03).** The user approved fixing the sideways scroll found at 200% text in a 320 px window. Three causes, three small changes. Start's grid column grew to fit the example tape, whose amounts cannot wrap, so the heading and buttons were pushed off screen: grid children get `min-width: 0` and the Start tape gets the same labelled, focusable scroll region as Drawer details (`aria-label="Example count tape"`). Rule codes with underscores under a drawer lead could not break: `overflow-wrap: anywhere` on `.lead-item`. The header wordmark was 25 px too wide: its size is now `min(1.25rem, 8vw)`, unchanged at normal text and slightly smaller only when text is enlarged on a very narrow screen; letting the word break across lines was tried and rejected as ugly. The `.tape` and `.count-sheet` rules had identical bodies and were merged to stay under 60,000 bytes (now 59,958). Start gains one keyboard stop for the tape region, as Drawer details already has. Open limit: at 200% text in a 320 px window a long word such as "September" in the Drawer title breaks across lines. No core, server, or calculation changes.
 
 84. **Give Results' outcome column one width (authorized 2026-11-03).** The user pointed out that "Difference" started at a different horizontal position in each review row. Each row is its own flex line and the outcome block took the width of its own text, so "Balanced (within $1.00)" pushed its left edge further left than "Missing records". `.group-outcome` now has `flex: 0 1 12rem`, so every row shares one left edge. 12rem was chosen by measuring: the widest outcome in the demo is about 176 px, and 13rem or more would stack the rows at the 960 px layout where they sit side by side today. The shrink value keeps the block inside the screen at 200% text in a 320 px window (a first version with no shrink overflowed there and was fixed before release). Longer wording would wrap inside the block. CSS/JS totals 59,977 bytes. No core, server, or calculation changes.
+
+85. **Plan a cashier and manager workflow before more rules (planning authorized 2026-11-04).** The user chose both audiences on separate pages, permitted research-based assumptions, then asked to update the plan so work proceeds one step at a time. Use a fictional small US convenience store with one closing count per register/day as a working assumption, not an observed business requirement. Follow the separately gated blocks in `docs/M11_PLAN.md`: first a fictional walkthrough, then README cleanup, then manual-entry checks and the two temporary views. Keep R04/history and R08/deposits unavailable in isolated checks, disclose partial R09 coverage, and never fabricate supporting records to imply complete checks. M12 saved local records require a separate reviewed contract. Retain all existing evidence paths and screenshots. This documentation update does not authorize coding, participant outreach, deployment, or real-data use. Earlier next-R06 statements describe the old schedule.
 
 ## Math and test commitments
 

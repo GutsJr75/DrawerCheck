@@ -2,6 +2,14 @@
 
 ## Where things stand
 
+- **Workflow roadmap, planning authorized 2026-11-04:**
+  [M11_PLAN.md](M11_PLAN.md) adds a separately gated fictional closing
+  walkthrough, README cleanup, then planned **Close a drawer** and **Review a
+  drawer** pages sharing temporary inputs. M11 coding has not started. Later
+  M12 local saved records need a separate design and approval. The existing
+  demo/upload flow and the historical M7/M8 contracts below remain in effect
+  until their specific amendments are implemented. R06/R07 are deferred;
+  [PLAN.md](PLAN.md) records the current next step and approval boundary.
 - **M10 block 1 (authorized 2026-10-26):** the shared "Tick and tie" palette,
   local Atkinson fonts, responsive type/spacing, decorative drawer logo,
   header, footer, and breadcrumbs replace the corresponding M8 shell styles.
