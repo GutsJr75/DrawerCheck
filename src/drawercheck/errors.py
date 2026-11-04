@@ -198,9 +198,10 @@ DRAWER_COUNT = "Enter how many {what} were counted, as a whole number. Write 0 i
 DRAWER_COUNT_LIMIT = "The number of {what} must be {limit:,} or less."
 DRAWER_DROP_LIMIT = "Enter at most {limit} safe drops."
 DRAWER_DROPS_UNAVAILABLE = "This version cannot check a drawer without its safe drop log. Find the log, and choose No safe drops only if none were made."
-DRAWER_RECOUNT_UNAVAILABLE = (
-    "Recounts are not available yet. Check the drawer with its first count."
+DRAWER_RECOUNT_COUNT = (
+    "Recount: enter how many {what} were counted, as a whole number. Write 0 if none."
 )
+DRAWER_RECOUNT_LIMIT = "Recount: the number of {what} must be {limit:,} or less."
 DRAWER_LABELS = {
     "business_date": "the business date",
     "register_id": "the register",

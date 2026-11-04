@@ -275,18 +275,22 @@ def _lead_data(flag: Flag, config: Config) -> dict:
     return values
 
 
-def _drawer_values(result: ShiftResult, config: Config) -> dict:
-    # Shared by full runs and one entered drawer, so both screens read one shape.
-    values = asdict(result)
-    values["flags"] = [_lead_data(flag, config) for flag in result.flags]
-    values["shift"]["counts"] = [
+def _count_lines(counts: tuple[tuple[int, int], ...]) -> list[dict]:
+    return [
         {
             "denomination": format_cents(denomination),
             "quantity": quantity,
             "line_total_amount": format_cents(denomination * quantity),
         }
-        for denomination, quantity in result.shift.counts
+        for denomination, quantity in counts
     ]
+
+
+def _drawer_values(result: ShiftResult, config: Config) -> dict:
+    # Shared by full runs and one entered drawer, so both screens read one shape.
+    values = asdict(result)
+    values["flags"] = [_lead_data(flag, config) for flag in result.flags]
+    values["shift"]["counts"] = _count_lines(result.shift.counts)
     values.update(
         within_tolerance_cents=config.within_tolerance_cents,
         review_threshold_cents=config.review_threshold(
@@ -478,13 +482,21 @@ def _response_data(report: ReportData) -> dict:
 def _drawer_response(check: DrawerCheck, config: Config) -> dict:
     result = check.result
     drawer = _display_values(_drawer_values(result, config))
-    drawer["count_basis"] = "first_count"
+    first = check.first_count
+    drawer["count_basis"] = "recount" if first else "first_count"
     return {
         "notice": errors.WEB_NOTICE,
         "labels": {**_labels(config), "dates": _label_dates(_shift_dates(result))},
         "drawer": drawer,
-        # Recounts arrive in M11 block 7 and the closing sheet in block 8.
-        "initial_count": None,
+        "initial_count": None
+        if first is None
+        else {
+            "basis": "first_count, compared with the same expected cash",
+            "counted_amount": format_amount(first.counted_cents),
+            "variance_amount": format_amount(first.variance_cents),
+            "status": first.status,
+            "counts": _count_lines(first.shift.counts),
+        },
         "safe_drops": {
             "drops": [
                 {

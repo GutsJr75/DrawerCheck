@@ -17,7 +17,8 @@
   it on 2026-11-04. Block 5 added `#/close` and a minimal `#/review`, not yet
   linked from Start; see [M11_BLOCK5.md](M11_BLOCK5.md). Block 6 completed
   Review a drawer and linked Close a drawer from Start; see
-  [M11_BLOCK6.md](M11_BLOCK6.md).
+  [M11_BLOCK6.md](M11_BLOCK6.md). Block 7 added the recount comparison; see
+  [M11_BLOCK7.md](M11_BLOCK7.md).
 - **M10 block 1 (authorized 2026-10-26):** the shared "Tick and tie" palette,
   local Atkinson fonts, responsive type/spacing, decorative drawer logo,
   header, footer, and breadcrumbs replace the corresponding M8 shell styles.

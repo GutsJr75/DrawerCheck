@@ -76,6 +76,8 @@
   const reviewCancel = document.getElementById("review-cancel");
   const reviewSlow = document.getElementById("review-slow");
   const reviewError = document.getElementById("review-error");
+  const recountToggle = document.getElementById("recount-toggle");
+  const recountSheet = document.getElementById("recount-sheet");
   const coverageClass = { ran_no_lead: "status-ready", ran_lead: "status-note", not_run: "status-waiting" };
   const severityOrder = ["review", "warn", "info"];
   const severityClass = { review: "status-review", warn: "status-check", info: "status-note" };
@@ -1079,11 +1081,16 @@
     if (request?.view === "close") stopWaiting(request, "changed");
   }
 
-  function drawerPayload() {
+  function lines(name) {
     const counts = {};
-    for (const input of closeForm.querySelectorAll('[data-field^="counts."]')) {
-      counts[input.dataset.field.slice("counts.".length)] = input.value;
+    for (const input of document.querySelectorAll(`[data-field^="${name}."]`)) {
+      counts[input.dataset.field.slice(name.length + 1)] = input.value;
     }
+    return counts;
+  }
+
+  function drawerPayload() {
+    const counts = lines("counts");
     const report = {};
     for (const input of reportFigures.querySelectorAll("input")) {
       report[input.dataset.field.slice("register_report.".length)] = input.value;
@@ -1097,7 +1104,7 @@
       closed_at: timesMissing.checked ? null : field("closed_at").value,
       opening_float: field("opening_float").value,
       counts,
-      recount: null,
+      recount: recountSheet.hidden ? null : lines("recount"),
       register_report: choice("report") === "yes" ? report : null,
       safe_drops: drops === "missing" ? null : drops === "none" ? [] : [...dropRows.children].map((row) => ({
         amount: row.querySelector('[data-part="amount"]').value,
@@ -1127,16 +1134,39 @@
 
   function pruneProblems(changed) {
     // A choice can hide, disable, or answer a field; its old message no longer applies.
-    for (const owner of closeForm.querySelectorAll('[aria-invalid="true"]')) {
+    for (const owner of document.querySelectorAll('[aria-invalid="true"]')) {
       if (owner.closest("[hidden]") || owner.disabled || owner === changed?.closest("fieldset") || owner === changed) {
         clearProblem(owner);
       }
     }
-    for (const item of [...closeProblems.children]) {
-      const owner = item.dataset.for && document.getElementById(item.dataset.for);
-      if (item.dataset.for && owner?.getAttribute("aria-invalid") !== "true") item.remove();
+    for (const summary of [closeSummary, document.getElementById("review-summary")]) {
+      const list = summary.querySelector("ul");
+      for (const item of [...list.children]) {
+        const owner = item.dataset.for && document.getElementById(item.dataset.for);
+        if (item.dataset.for && owner?.getAttribute("aria-invalid") !== "true") item.remove();
+      }
+      if (!list.children.length) summary.hidden = true;
     }
-    if (!closeProblems.children.length) closeSummary.hidden = true;
+  }
+
+  function showRecount(open) {
+    recountSheet.hidden = !open;
+    recountToggle.ariaExpanded = String(open);
+    recountToggle.textContent = open ? recountToggle.dataset.remove : recountToggle.dataset.add;
+    if (!open) {
+      // Removing the recount drops its entries; the first count is untouched.
+      for (const input of recountSheet.querySelectorAll("input")) input.value = "";
+      pruneProblems();
+    }
+  }
+
+  function markStale() {
+    // The result no longer matches the recount or sign-off; a late reply is ignored.
+    if (request?.view === "review") stopWaiting(request, "changed");
+    if (checked && !checked.stale) {
+      checked.stale = true;
+      renderReview();
+    }
   }
 
   function markField(name, text) {
@@ -1233,8 +1263,9 @@
       showFieldProblems(problems);
       return;
     }
-    // A new check starts a new review: a sign-off applied to the old figures.
+    // A new check starts a new review: a recount and sign-off applied to the old figures.
     signoffForm.reset();
+    showRecount(false);
     finishCheck(await drawerRequest(checkDrawer, closeCancel, closeSlow, "close"), checkDrawer, closeError, checkTheDrawer);
   }
 
@@ -1246,6 +1277,15 @@
     clearFieldProblems();
     clearRequestError(reviewError);
     finishCheck(await drawerRequest(checkAgain, reviewCancel, reviewSlow, "review"), checkAgain, reviewError, checkSignoff);
+  }
+
+  function countRow(count) {
+    const row = element("tr");
+    const denomination = element("th", "money", count.denomination);
+    denomination.scope = "row";
+    row.append(denomination, element("td", "number", count.quantity.toLocaleString("en-US")),
+      amountCell(count.line_total_amount));
+    return row;
   }
 
   function renderReview() {
@@ -1271,17 +1311,22 @@
     }
     fillStatus([reviewTape, document.getElementById("review-outcome")], item, labels);
     document.getElementById("review-no-report").hidden = Boolean(shift.pos);
-    reviewCount.tBodies[0].replaceChildren(
-      ...shift.counts.map((count) => {
-        const row = element("tr");
-        const denomination = element("th", "money", count.denomination);
-        denomination.scope = "row";
-        row.append(denomination, element("td", "number", count.quantity.toLocaleString("en-US")),
-          amountCell(count.line_total_amount));
-        return row;
-      }),
-    );
+    reviewCount.tBodies[0].replaceChildren(...shift.counts.map(countRow));
     document.getElementById("review-count-total").textContent = item.counted_amount;
+    const first = checked.initial_count;
+    const countHeading = document.getElementById("review-count-heading");
+    countHeading.textContent = first ? countHeading.dataset.recount : countHeading.dataset.first;
+    document.getElementById("recount-compare").hidden = !first;
+    document.getElementById("first-count-details").hidden = !first;
+    if (first) {
+      const figures = {
+        "first-counted": first.counted_amount, "first-difference": first.variance_amount,
+        "first-status": labels.statuses[first.status], "recount-counted": item.counted_amount,
+        "recount-difference": item.variance_amount, "recount-status": labels.statuses[item.status],
+      };
+      for (const cell of views.review.querySelectorAll("[data-compare]")) cell.textContent = figures[cell.dataset.compare];
+      document.getElementById("first-count").tBodies[0].replaceChildren(...first.counts.map(countRow));
+    }
     reviewLeads.replaceChildren(...sortLeads(item.flags).map((flag) => leadRow(flag, "drawer", labels)));
     reviewLeads.hidden = item.flags.length === 0;
     document.getElementById("review-no-leads").hidden = item.flags.length > 0;
@@ -1305,13 +1350,12 @@
 
   closeForm.addEventListener("submit", checkTheDrawer);
   signoffForm.addEventListener("submit", checkSignoff);
-  signoffForm.addEventListener("input", () => {
-    // The result no longer matches the sign-off; a late reply is ignored.
-    if (request?.view === "review") stopWaiting(request, "changed");
-    if (checked && !checked.stale) {
-      checked.stale = true;
-      renderReview();
-    }
+  signoffForm.addEventListener("input", markStale);
+  recountToggle.addEventListener("click", () => {
+    const open = recountSheet.hidden;
+    showRecount(open);
+    markStale();
+    if (open) recountSheet.querySelector("input").focus();
   });
   closeForm.addEventListener("input", discardCheck);
   closeForm.addEventListener("change", (event) => {

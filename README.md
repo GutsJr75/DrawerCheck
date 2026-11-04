@@ -83,7 +83,7 @@ in a job interview.
 | Command-line tool: imports, checks, explanations, and reports | Done |
 | Seven review rules, including the R03 swapped-digit hint | Done |
 | Website | Live at [drawercheck.onrender.com](https://drawercheck.onrender.com), with the redesigned screens |
-| Closing workflow: enter one drawer by hand, then review it | In progress in [M11](docs/M11_PLAN.md): Close a drawer and Review a drawer work locally, not yet checked on the public demo; recounts and a closing sheet are next |
+| Closing workflow: enter one drawer by hand, then review it | In progress in [M11](docs/M11_PLAN.md): Close a drawer and Review a drawer, with an optional recount, work locally, not yet checked on the public demo; a closing sheet is next |
 | Optional rules R06 and R07 | Deferred until after the closing workflow |
 
 Test, CI, hosting, and accessibility evidence is under

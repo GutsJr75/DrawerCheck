@@ -1,0 +1,221 @@
+{
+  "axe": "axe-core 4.14.0",
+  "tags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa",
+    "wcag22aa",
+    "best-practice"
+  ],
+  "scans": [
+    {
+      "browser": "chrome",
+      "state": "review-recount-open",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-open",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-open",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-open",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-problem",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-problem",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-problem",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recount-problem",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recounted",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recounted",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recounted",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "chrome",
+      "state": "review-recounted",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-open",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-open",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-open",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-open",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-problem",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-problem",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-problem",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recount-problem",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recounted",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recounted",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recounted",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    },
+    {
+      "browser": "webkit",
+      "state": "review-recounted",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        "color-contrast"
+      ]
+    }
+  ]
+}

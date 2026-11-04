@@ -664,6 +664,7 @@ def test_close_a_drawer_fields_match_the_drawer_contract(client) -> None:
         "register_report",
         *(f"register_report.{key}" for key in REPORT_KEYS),
         "safe_drops",
+        *(f"recount.{key}" for key in COUNT_KEYS),
         "verifier_id",
         "variance_note",
     ]
@@ -683,9 +684,12 @@ def test_close_a_drawer_fields_match_the_drawer_contract(client) -> None:
     counts = [
         attrs
         for _, attrs in page.tags
-        if attrs.get("data-field", "").startswith("counts.")
+        if attrs.get("data-field", "").startswith(("counts.", "recount."))
     ]
-    assert all("value" not in attrs for attrs in counts)
+    assert len(counts) == 24 and all("value" not in attrs for attrs in counts)
+    # The recount starts closed and blank: it is an independent second count.
+    sheet = next(attrs for _, attrs in page.tags if attrs.get("id") == "recount-sheet")
+    assert "hidden" in sheet
     for words in (
         "Use made-up figures only. This demo is not for real store records",
         "No safe drops this shift",

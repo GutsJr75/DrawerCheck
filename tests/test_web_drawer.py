@@ -205,13 +205,31 @@ def test_url_options_and_oversized_bodies_are_refused(client) -> None:
     assert response.get_json()["error"]["message"] == errors.DRAWER_TOO_LARGE
 
 
-def test_a_recount_is_refused_until_block_7(client) -> None:
-    """The request shape is final, but recounts are not available yet."""
-    payload = drawer_payload("A", recount=drawer_payload("A")["counts"])
-    error = _post(client, payload).get_json()["error"]
-    assert error["fields"] == [
-        {"field": "recount", "message": errors.DRAWER_RECOUNT_UNAVAILABLE}
-    ]
+def test_a_recount_returns_both_counts_from_python(client) -> None:
+    """The checked drawer uses the recount; the first count keeps its own figures."""
+    recount = dict(drawer_payload("B")["counts"], **{"20.00": "13"})
+    data = _post(client, drawer_payload("B", recount=recount)).get_json()
+    drawer, first = data["drawer"], data["initial_count"]
+    assert drawer["count_basis"] == "recount"
+    assert (drawer["counted_amount"], drawer["variance_amount"], drawer["status"]) == (
+        "$685.65",
+        "$0.00",
+        "balanced",
+    )
+    assert drawer["shift"]["counts"][2]["line_total_amount"] == "$260.00"
+    assert first == {
+        "basis": "first_count, compared with the same expected cash",
+        "counted_amount": "$665.65",
+        "variance_amount": "-$20.00",
+        "status": "short",
+        "counts": first["counts"],
+    }
+    assert first["counts"][2] == {
+        "denomination": "$20.00",
+        "quantity": 12,
+        "line_total_amount": "$240.00",
+    }
+    assert drawer["flags"] == []
 
 
 def test_only_post_is_accepted(client) -> None:

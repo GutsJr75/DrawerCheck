@@ -130,3 +130,9 @@ def test_close_a_drawer_messages_follow_the_choices(browser: str) -> None:
 def test_review_a_drawer_signs_off_and_ignores_late_replies(browser: str) -> None:
     """Review shows the whole check, a sign-off clears only R05, and stale replies lose."""
     _run_page_script("review_drawer.cjs", browser)
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_a_recount_is_compared_and_never_replaces_the_first_count(browser: str) -> None:
+    """Both counts are labelled; edits mark the result stale; Close clears a recount."""
+    _run_page_script("recount_drawer.cjs", browser)

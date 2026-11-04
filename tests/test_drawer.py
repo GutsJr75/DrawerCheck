@@ -217,7 +217,7 @@ def test_the_largest_allowed_amount_and_quantity_are_accepted() -> None:
     """The limits are inclusive."""
     payload = drawer_payload("A", opening_float="999999.99")
     payload["counts"]["0.01"] = "99999"
-    shift, _ = parse_drawer(payload)
+    shift, _, _ = parse_drawer(payload)
     assert shift.opening_float_cents == 99_999_999
     assert dict(shift.counts)[1] == 99_999
 
@@ -236,7 +236,7 @@ def test_leading_zeros_in_a_quantity_are_accepted() -> None:
     """The importer accepts leading zeros too."""
     payload = drawer_payload("A")
     payload["counts"]["0.10"] = "0030"
-    shift, _ = parse_drawer(payload)
+    shift, _, _ = parse_drawer(payload)
     assert dict(shift.counts)[10] == 30
 
 
@@ -266,7 +266,7 @@ def test_times_must_be_a_local_date_and_minute(value: str) -> None:
 
 def test_times_keep_minutes_and_may_cross_midnight() -> None:
     """A real closing time after midnight is accepted without changes."""
-    shift, _ = parse_drawer(drawer_payload("A", closed_at="2026-11-03T00:30"))
+    shift, _, _ = parse_drawer(drawer_payload("A", closed_at="2026-11-03T00:30"))
     assert shift.opened_at == "2026-11-02T08:00:00"
     assert shift.closed_at == "2026-11-03T00:30:00"
 
@@ -289,7 +289,7 @@ def test_negative_expected_cash_is_flagged() -> None:
 
 def test_no_safe_drops_and_an_unavailable_drop_log_stay_distinct() -> None:
     """An empty list is a confirmed none; null cannot be checked in this version."""
-    shift, drops = parse_drawer(drawer_payload("A", safe_drops=[]))
+    shift, drops, _ = parse_drawer(drawer_payload("A", safe_drops=[]))
     assert shift.safe_drops_cents == 0 and drops == ()
     problems = _problems(drawer_payload("A", safe_drops=None))
     assert problems == {"safe_drops": errors.DRAWER_DROPS_UNAVAILABLE}
@@ -297,7 +297,7 @@ def test_no_safe_drops_and_an_unavailable_drop_log_stay_distinct() -> None:
 
 def test_drops_are_added_by_python_and_limited() -> None:
     """Python totals the listed drops; more than 20 is refused."""
-    shift, drops = parse_drawer(drawer_payload("B"))
+    shift, drops, _ = parse_drawer(drawer_payload("B"))
     assert shift.safe_drops_cents == 80000
     assert [drop.bag_number for drop in drops] == [
         "DEMO-BAG-1102-R2-A",
@@ -318,17 +318,65 @@ def test_a_partly_entered_report_is_not_accepted() -> None:
 
 def test_unused_report_figures_are_stored_as_unknown_not_zero() -> None:
     """Manual entry does not collect card sales, voids, or no-sale counts."""
-    shift, _ = parse_drawer(drawer_payload("A"))
+    shift, _, _ = parse_drawer(drawer_payload("A"))
     assert shift.pos.card_sales_cents is None
     assert shift.pos.void_count is None
     assert shift.pos.no_sale_count is None
     assert shift.pos.cash_sales_cents == 84235
 
 
-def test_a_recount_is_not_available_in_this_block() -> None:
-    """Recounts arrive in block 7."""
-    payload = drawer_payload("A", recount=drawer_payload("A")["counts"])
-    assert _problems(payload) == {"recount": errors.DRAWER_RECOUNT_UNAVAILABLE}
+def _recount(case: str, **changes: str) -> dict:
+    counts = dict(drawer_payload(case)["counts"])
+    counts.update(changes)
+    return counts
+
+
+def test_a_recount_is_checked_and_the_first_count_is_kept() -> None:
+    """Case B recounted with the missing $20 found: checks use the recount."""
+    check = _check("B", recount=_recount("B", **{"20.00": "13"}))
+    result, first = check.result, check.first_count
+    assert (result.counted_cents, result.variance_cents, result.status) == (
+        68565,
+        0,
+        "balanced",
+    )
+    assert result.flags == ()
+    assert dict(result.shift.counts)[2000] == 13
+    # The first count is unchanged and compared with the same expected cash.
+    assert (first.counted_cents, first.variance_cents, first.status) == (
+        66565,
+        -2000,
+        "short",
+    )
+    assert first.expected_cents == result.expected_cents == 68565
+    assert dict(first.shift.counts)[2000] == 12
+    assert first.flags == ()
+    assert _states(check)["R01_VARIANCE"] == "ran_no_lead"
+
+
+def test_without_a_recount_there_is_no_first_count_result() -> None:
+    """The first count is the checked count."""
+    assert _check("B").first_count is None
+
+
+def test_a_recount_line_problem_names_the_recount() -> None:
+    """Recount messages say which count they belong to."""
+    payload = drawer_payload("B", recount=_recount("B", **{"20.00": ""}))
+    assert _problems(payload) == {
+        "recount.20.00": "Recount: enter how many $20 bills were counted, as a whole number. Write 0 if none."
+    }
+    payload = drawer_payload("B", recount=_recount("B", **{"0.01": "100000"}))
+    assert _problems(payload) == {
+        "recount.0.01": "Recount: the number of 1-cent coins must be 99,999 or less."
+    }
+
+
+def test_a_recount_must_have_every_line() -> None:
+    """A partial recount is a wrongly shaped request."""
+    counts = _recount("B")
+    counts.pop("0.01")
+    with pytest.raises(errors.DrawerRequestError):
+        parse_drawer(drawer_payload("B", recount=counts))
 
 
 @pytest.mark.parametrize(
@@ -389,7 +437,7 @@ def test_text_fields_follow_the_importer_rules(
 
 def test_optional_sign_off_text_is_kept_or_treated_as_not_supplied() -> None:
     """A multiline note is kept; whitespace-only values mean not supplied."""
-    shift, _ = parse_drawer(
+    shift, _, _ = parse_drawer(
         drawer_payload("B", verifier_id="  ", variance_note="Line one.\nLine two.")
     )
     assert shift.verifier_id is None

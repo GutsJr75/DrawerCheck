@@ -559,13 +559,28 @@
       </div>
       <div id="review-body" hidden>
         <p class="lead" id="review-about" data-template="Register {register}, {date}. Cashier ID {cashier}. Opened {opened}, closed {closed}."></p>
-        <p class="note" id="review-stale" role="status" hidden>The sign-off changed. Check again to see the updated leads.</p>
+        <p class="note" id="review-stale" role="status" hidden>The recount or sign-off changed. Check again to see the updated result.</p>
         <div id="review-result">
           <dl class="outcome-strip" id="review-outcome" aria-label="Drawer outcome">
             <div><dt>Expected cash</dt><dd data-review="expected"></dd></div>
             <div><dt>Counted cash</dt><dd data-review="counted"></dd></div>
             <div><dt>Difference</dt><dd data-review="difference"></dd><dd class="outcome-status"><span data-role="word"></span> <span data-role="level" hidden></span></dd></div>
           </dl>
+
+          <div id="recount-compare" hidden>
+            <h2 id="compare-heading">First count and recount</h2>
+            <div class="table-scroll" role="region" aria-labelledby="compare-heading" tabindex="0">
+              <table class="data-table">
+                <caption>Both counts against the same expected cash, from this check. The checks use the recount.</caption>
+                <thead><tr><td></td><th scope="col">First count</th><th scope="col">Recount, used for the checks</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Counted cash</th><td class="money" data-compare="first-counted"></td><td class="money" data-compare="recount-counted"></td></tr>
+                  <tr><th scope="row">Difference</th><td class="money" data-compare="first-difference"></td><td class="money" data-compare="recount-difference"></td></tr>
+                  <tr><th scope="row">Status</th><td data-compare="first-status"></td><td data-compare="recount-status"></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <div class="drawer-grid">
             <div>
@@ -580,7 +595,7 @@
               <p class="note" id="review-no-report" hidden>Expected cash is unknown because the register report was not available.</p>
             </div>
             <div>
-              <h2 id="review-count-heading">Count sheet</h2>
+              <h2 id="review-count-heading" data-first="Count sheet" data-recount="Count sheet: recount">Count sheet</h2>
               <div class="sheet-paper" role="region" aria-labelledby="review-count-heading" tabindex="0">
                 <table class="count-sheet" id="review-count">
                   <caption class="visually-hidden">Bills and coins counted at closing</caption>
@@ -589,6 +604,14 @@
                   <tfoot><tr><th scope="row" colspan="2">Counted cash</th><td class="money number" id="review-count-total"></td></tr></tfoot>
                 </table>
               </div>
+              <details class="help" id="first-count-details" hidden>
+                <summary>First count lines</summary>
+                <table class="count-sheet" id="first-count">
+                  <caption class="visually-hidden">Bills and coins in the first count</caption>
+                  <thead><tr><th scope="col">Bill or coin</th><th scope="col" class="number">Quantity</th><th scope="col" class="number">Line total</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </details>
             </div>
           </div>
 
@@ -603,15 +626,32 @@
               data-checked="Checked" data-unavailable="Could not be checked"></ul>
         </div>
 
-        <h2 id="signoff-heading">Sign off</h2>
+        <h2 id="signoff-heading">Recount and sign off</h2>
         <div class="error-summary" id="review-summary" tabindex="-1" hidden>
           <div role="alert">
             <h2>Some entries need fixing</h2>
             <ul id="review-problems"></ul>
           </div>
         </div>
-        <p>A difference of {{ signoff_limit }} or more needs a verifier ID and a note. The ID is typed text: it is not a login or a signature, and nobody is checked against it.</p>
         <form id="signoff-form" class="field-grid" novalidate>
+          <h3>Recount</h3>
+          <p>If the difference needs a second look, count the drawer again from the start. The first count is kept, and the checks use the recount.</p>
+          <div>
+            <button type="button" class="button button-secondary" id="recount-toggle" aria-expanded="false" aria-controls="recount-sheet" data-add="Add a recount" data-remove="Remove the recount">Add a recount</button>
+          </div>
+          <div class="sheet-paper entry-paper" id="recount-sheet" hidden>
+            <table class="count-sheet count-entry">
+              <caption>Recount</caption>
+              <thead><tr><th scope="col">Bill or coin</th><th scope="col">How many</th></tr></thead>
+              <tbody>
+                {% for key, name in count_lines %}
+                <tr><th scope="row"><label for="recount-{{ loop.index }}">{{ name }}</label></th><td><input id="recount-{{ loop.index }}" data-field="recount.{{ key }}" inputmode="numeric" autocomplete="off" spellcheck="false"></td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <h3>Sign off</h3>
+          <p>A difference of {{ signoff_limit }} or more needs a verifier ID and a note. The ID is typed text: it is not a login or a signature, and nobody is checked against it.</p>
           <div class="field"><label for="signoff-verifier">Verifier ID (not checked)</label><input id="signoff-verifier" data-field="verifier_id" autocomplete="off" spellcheck="false"></div>
           <div class="field signoff-note"><label for="signoff-note">Note</label><textarea id="signoff-note" data-field="variance_note" rows="3" maxlength="256" aria-describedby="note-hint"></textarea><p class="hint" id="note-hint">Say what was checked, in plain facts. Do not blame anyone.</p></div>
           <div class="actions">
@@ -622,8 +662,8 @@
           <div class="request-error" id="review-error" role="alert" data-retry="Try again"></div>
         </form>
 
-        <p><a href="#/close">Change the entries</a>. A new check from Close a drawer clears the sign-off, because it applied to the old figures.</p>
-        <p class="hint">Nothing here is saved. The result and sign-off disappear when you refresh or close this page.</p>
+        <p><a href="#/close">Change the entries</a>. A new check from Close a drawer clears the recount and sign-off, because they applied to the old figures.</p>
+        <p class="hint">Nothing here is saved. The result, recount, and sign-off disappear when you refresh or close this page.</p>
       </div>
     </section>
   </main>

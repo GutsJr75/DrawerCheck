@@ -2,8 +2,8 @@
 
 ## Where things stand
 
-- **Next step, updated 2026-11-04:** M11 block 7, an optional recount kept
-  beside the first count, after **next**. Follow M11 one block at a time, then consider the separately
+- **Next step, updated 2026-11-04:** M11 block 8, the downloadable closing
+  sheet, after **next**. Follow M11 one block at a time, then consider the separately
   gated M12 local-records milestone. This order supersedes earlier statements
   that R06 is next; R06 and R07 are deferred.
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
@@ -33,6 +33,9 @@
   shows the tape, count lines, leads, which checks ran, and a sign-off with
   Check again; Start now links to Close a drawer. See
   [block 6 evidence](M11_BLOCK6.md).
+- **M11 block 7 complete locally (authorized 2026-11-04):** an optional
+  recount is checked while the first count is kept and compared, both from
+  Python. See [block 7 evidence](M11_BLOCK7.md).
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -220,7 +223,7 @@ Paths below are relative to the repository root. Each milestone includes relevan
 | M8: Frontend and public demo | Responsive upload/demo screen; results, shift details, and report downloads; browser verification; deployment configuration and public smoke check. Split screen work, browser checks, and deployment into separate blocks. | `src/drawercheck/templates/`, `src/drawercheck/static/`, package-data configuration, `render.yaml`, `README.md`, `docs/{WEB_PLAN,INTERVIEW_NOTES,LEARNING_LOG}.md`, actual demo screenshots | Visitors can run the built-in demo or upload the seven synthetic CSVs, inspect results, and download all report formats. A real public URL and working flow must be observed before claiming deployment complete. Refresh career material after verification. |
 | M9: Optional rules | Authorized 2026-10-26, split into R03, R06, and R07 blocks. Start with R03 and stop for review after each block. | Relevant rule, demo, test, and documentation files | Each rule has boundary and pipeline tests, neutral wording, updated demo expectations, and core/web parity. |
 | M10: Frontend redesign | All views implemented; local checks and hosted verification complete on 2026-10-28 for runtime 62650f9. Manual gaps remain explicit. M9 R06/R07 remain separately authorized future work. Stop for next. | [REDESIGN_PLAN.md](REDESIGN_PLAN.md), [M10_CHECKLIST.md](M10_CHECKLIST.md), web presentation, tests, and design documents | Accurate counts, filter-aware navigation, preserved results/caps, responsive/accessibility evidence, dated screenshots, and separate hosted/manual status. Evidence in docs/M10_BLOCK1.md through docs/M10_BLOCK7_HOSTED.md; no automatic continuation. |
-| M11: Fictional closing workflow | Blocks 1 to 6 complete locally; blocks 7 to 9 pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
+| M11: Fictional closing workflow | Blocks 1 to 7 complete locally; blocks 8 and 9 pending. Walkthrough, README cleanup, input contract, shared Python check, cashier page, manager page, closing export, and final verification. Approve and finish one block at a time. Takes priority over R06/R07. | [M11_PLAN.md](M11_PLAN.md), README, web/core adapters, templates/static files, relevant tests and evidence | A participant can count, compare, review, and export a fictional drawer without seven CSVs; unavailable checks and temporary state are explicit. Participant testing remains unverified until observed. |
 | M12: Local saved closing records | Future direction only. Begin with a separately approved storage/access contract; then split local serving, saving, history, review, corrections, recovery, and verification. | Future M12 plan, local web/storage code, relevant tests and documentation | Reopening preserves records, reviews do not change cash outcomes, corrections retain originals, and a verified restore recovers the full history. No public persistence or real-data readiness claim. |
 
 ## Intended structure
@@ -435,6 +438,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 93. **Repair Close a drawer messages (M11 block 5 repair, 2026-11-04).** An outside review, relayed by the user, reproduced two problems: messages for fields hidden by a choice stayed, with summary links that could not focus a useful control; and messages for the choice groups and "Times not available" were only visual. Each message now has one owner (input, fieldset, or checkbox) carrying `aria-invalid` and `aria-describedby`. A choice clears messages for fields it hides or disables and for the group it answers. Removing a drop clears drop messages before renumbering, rather than moving messages between rows, because the server's numbering no longer matches. A committed opt-in browser test covers all three and fails on `cc96418`. Both browser scripts accept `DRAWERCHECK_WEBKIT_EXECUTABLE` so an installed WebKit build can be named; this closed the earlier WebKit gap locally, with the unofficial version pairing recorded. The WebKit stylesheet notice is described as predating block 5 with its source not established.
 
 94. **Build Review a drawer (M11 block 6, authorized 2026-11-04).** The user's "next" authorizes this block. Review reuses the drawer tape (one shared fill function now serves Drawer details and Review), shows Python's count lines, leads, and per-rule coverage with the records check's checked and unavailable lists, and adds a sign-off with Check again. The sign-off lives on Review; editing it hides the old result rather than showing leads that no longer match, and a late reply is ignored through the existing stop mechanism. A new check from Close a drawer clears the sign-off, because a sign-off belongs to the figures it was given with; this also avoids sign-off errors appearing for fields on a hidden page. The sign-off limit in the page text comes from the settings, not a typed $20.00. With coverage shown, Start links to Close a drawer. Screenshots caught a full-width note field and a mid-word break of "Quantity" at 320 px from the view's wrapping rule; both were fixed before commit. No saved-review claim is made.
+
+95. **Add the recount comparison (M11 block 7, authorized 2026-11-04).** The user's "next" authorizes this block. The server checks the recount and returns the first count's figures against the same expected cash, with no rules run on the first count, so the page compares two Python results instead of subtracting. The recount sheet starts blank rather than copying the first count, so a recount stays an independent count. The recount lives on Review beside the sign-off and shares its stale handling: any recount edit or removal hides the result until Check again. Removing a recount clears its entries; a new check from Close a drawer clears both recount and sign-off. Recount messages begin "Recount:" so a problem cannot be read as the first count's. `parse_drawer` now returns the recount separately and the shared count-line builder serves both counts.
 
 ## Math and test commitments
 

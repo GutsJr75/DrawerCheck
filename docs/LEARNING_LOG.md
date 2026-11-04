@@ -1750,3 +1750,23 @@ Verification: 811 tests passed and 6 opt-in browser tests skipped in the
 normal run; both Ruff checks passed. All six opt-in browser tests passed in
 Chrome and WebKit build 2370. 48 axe scans found no violations; colour
 contrast was incomplete wherever the drawer tape shows, as in M10.
+
+## 2026-11-04: M11 block 7, recount comparison
+
+- Built: an optional recount on Review. Python checks the recount and also
+  returns the first count's difference and status against the same expected
+  cash; the page shows both in one labelled table. The first count is never
+  changed, and a committed browser test covers the whole recount flow.
+- Learned: a comparison is only trustworthy if both sides come from the same
+  check. Any recount edit hides the old figures, so the screen never mixes a
+  new recount with an old result. A blank recount sheet keeps the second
+  count independent of the first.
+- Interview question: Why should a recount form start blank instead of
+  copying the first count?
+
+Authorization: the user's "next" after block 6. No push or deployment.
+
+Verification: 814 tests passed and 8 opt-in browser tests skipped in the
+normal run; both Ruff checks passed. All eight opt-in browser tests passed in
+Chrome and WebKit build 2370. 24 axe scans of the recount states found no
+violations.

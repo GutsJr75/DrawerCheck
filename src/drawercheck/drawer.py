@@ -103,11 +103,13 @@ class Coverage:
 
 @dataclass(frozen=True)
 class DrawerCheck:
-    """The outcome, entered drops, and check coverage for one drawer."""
+    """The outcome, entered drops, and coverage; with a recount, the first count too."""
 
     result: ShiftResult
     safe_drops: tuple[SafeDrop, ...]
     coverage: tuple[Coverage, ...]
+    # The first count's outcome against the same expected cash; no rules run on it.
+    first_count: ShiftResult | None = None
 
 
 def _sentence(label: str) -> str:
@@ -217,17 +219,29 @@ class _Fields:
             return self.fail(field, errors.DRAWER_DROP_POSITIVE)
         return cents
 
-    def quantity(self, field: str, denomination: int, value: object) -> int | None:
-        value = _string(value)
-        what = errors.drawer_count_name(denomination)
-        if re.fullmatch(r"[0-9]+", value) is None:
-            return self.fail(field, errors.DRAWER_COUNT.format(what=what))
-        digits = value.lstrip("0") or "0"
-        if len(digits) > len(str(MAX_QUANTITY)) or int(digits) > MAX_QUANTITY:
-            return self.fail(
-                field, errors.DRAWER_COUNT_LIMIT.format(what=what, limit=MAX_QUANTITY)
-            )
-        return int(digits)
+    def counts(self, name: str, value: object) -> tuple[tuple[int, int | None], ...]:
+        """Read all 12 lines of one count, naming the recount in its messages."""
+        lines = _shape(value, tuple(COUNT_KEYS))
+        wording, limit = (
+            (errors.DRAWER_RECOUNT_COUNT, errors.DRAWER_RECOUNT_LIMIT)
+            if name == "recount"
+            else (errors.DRAWER_COUNT, errors.DRAWER_COUNT_LIMIT)
+        )
+        counts = []
+        for key, cents in COUNT_KEYS.items():
+            value = _string(lines[key])
+            what = errors.drawer_count_name(cents)
+            digits = value.lstrip("0") or "0"
+            if re.fullmatch(r"[0-9]+", value) is None:
+                counts.append(
+                    (cents, self.fail(f"{name}.{key}", wording.format(what=what)))
+                )
+            elif len(digits) > len(str(MAX_QUANTITY)) or int(digits) > MAX_QUANTITY:
+                message = limit.format(what=what, limit=MAX_QUANTITY)
+                counts.append((cents, self.fail(f"{name}.{key}", message)))
+            else:
+                counts.append((cents, int(digits)))
+        return tuple(counts)
 
 
 def _pos_totals(fields: _Fields, value: object) -> PosTotals | None:
@@ -279,8 +293,10 @@ def _safe_drops(fields: _Fields, value: object) -> tuple[SafeDrop, ...]:
     return tuple(drops)
 
 
-def parse_drawer(payload: object) -> tuple[Shift, tuple[SafeDrop, ...]]:
-    """Validate manual entries and build an in-memory shift, rejecting any guesswork."""
+def parse_drawer(
+    payload: object,
+) -> tuple[Shift, tuple[SafeDrop, ...], tuple[tuple[int, int], ...] | None]:
+    """Validate entries into a shift with the first count, plus any separate recount."""
     data = _shape(payload, DRAWER_KEYS)
     fields = _Fields()
     business_date = fields.business_date(data["business_date"])
@@ -299,13 +315,10 @@ def parse_drawer(payload: object) -> tuple[Shift, tuple[SafeDrop, ...]]:
     opening_float = fields.money(
         "opening_float", "opening_float", data["opening_float"]
     )
-    count_values = _shape(data["counts"], tuple(COUNT_KEYS))
-    counts = tuple(
-        (cents, fields.quantity(f"counts.{key}", cents, count_values[key]))
-        for key, cents in COUNT_KEYS.items()
+    counts = fields.counts("counts", data["counts"])
+    recount = (
+        None if data["recount"] is None else fields.counts("recount", data["recount"])
     )
-    if data["recount"] is not None:
-        fields.fail("recount", errors.DRAWER_RECOUNT_UNAVAILABLE)
     pos = _pos_totals(fields, data["register_report"])
     drops = _safe_drops(fields, data["safe_drops"])
     verifier_id = fields.text(
@@ -339,7 +352,7 @@ def parse_drawer(payload: object) -> tuple[Shift, tuple[SafeDrop, ...]]:
         counts=counts,
         safe_drops_cents=sum(drop.amount_cents for drop in drops),
     )
-    return shift, drops
+    return shift, drops, recount
 
 
 def check_coverage(result: ShiftResult) -> tuple[Coverage, ...]:
@@ -376,8 +389,13 @@ def check_coverage(result: ShiftResult) -> tuple[Coverage, ...]:
 
 def check_drawer(payload: object, config: Config) -> DrawerCheck:
     """Check one entered drawer with the applicable rules, called one by one."""
-    shift, drops = parse_drawer(payload)
+    shift, drops, recount = parse_drawer(payload)
+    first_count = None
+    if recount is not None:
+        # The first count stays as entered; the checks use the recount.
+        first_count = shift_outcome(shift, config)
+        shift = replace(shift, counts=recount)
     outcome = shift_outcome(shift, config)
     flags = tuple(flag for rule in DRAWER_RULES for flag in rule(outcome, config))
     result = replace(outcome, flags=flags)
-    return DrawerCheck(result, drops, check_coverage(result))
+    return DrawerCheck(result, drops, check_coverage(result), first_count)
