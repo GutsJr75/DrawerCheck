@@ -1602,3 +1602,23 @@ Authorization: the user brought an outside review of block 1; this repair
 adds the requested participant materials only. The block 1 summary's "not
 pushed" became outdated when the user pushed `716bf3a`; `origin/main` pointed
 there before this repair. Participant testing remains pending.
+
+## 2026-11-04: M11 block 2, README front page
+
+- Built: reordered the README so a visitor first sees what DrawerCheck does,
+  how to try the demo, one example drawer with its leads and screenshots, and
+  five short limitations. A Verification section now holds the dated hosted,
+  CI, local-only, and unverified evidence that used to open the page.
+- Learned: moving claims is a chance to recheck them. No hosted check exists
+  after October 28, so the upload repair and November 3 fixes are labelled
+  local only, and the October 28 screenshots are captioned as older.
+- Interview question: How do you make a README welcoming to a visitor while
+  keeping every status claim precise and dated?
+
+Authorization: the user's "next" after block 1. README and progress documents
+only; no application code, screenshots, push, or deployment.
+
+Verification: 729 tests passed and 2 optional browser tests skipped. Both Ruff
+checks passed (the formatter's 75 files include Markdown; the linter checks
+Python only). A local link check found every README file link and anchor
+resolves. `git diff --check` and prohibited-punctuation checks passed.

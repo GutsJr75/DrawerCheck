@@ -2,29 +2,70 @@
 
 [![Core checks](https://github.com/GutsJr75/DrawerCheck/actions/workflows/ci.yml/badge.svg)](https://github.com/GutsJr75/DrawerCheck/actions/workflows/ci.yml)
 
-DrawerCheck checks end-of-shift cash drawers. It compares the cash a register
-should hold, based on its sales records, with the cash that was actually
-counted. Differences become review leads for a person to look at, and the
-results can be saved as a text, web page (HTML), or spreadsheet (CSV) report.
+DrawerCheck checks end-of-shift cash drawers. It works out how much cash a
+register should hold from its sales records, compares that with the cash that
+was actually counted, and lists any differences as leads for a person to
+review. Results can be saved as a text, web page (HTML), or spreadsheet (CSV)
+report.
 
 It is a personal learning project. Every store, person, and amount comes from
 the fictional **Demo Store #001**.
 
-**[Try the public demo](https://drawercheck.onrender.com)** without installing
-anything. Select **Try the example**, open a drawer from the results, and
-download a report. The example checks 60 drawers.
+## Try it
+
+**[Open the public demo](https://drawercheck.onrender.com)**. There is nothing
+to install.
+
+1. Select **Try the example**. It checks a made-up month: 60 drawers on two
+   registers.
+2. Open a drawer from the results to see how its expected cash was worked out.
+3. Download a report to keep a copy.
+
 To try uploads, select **Upload demo CSVs** and use the seven example files
-provided on that screen. Use fictional data only.
+provided on that screen. Use fictional data only. Results disappear when you
+refresh or close the page. The free server may take about a minute to wake up
+after inactivity.
 
-Results disappear when you refresh or close the page. Download a report to keep
-a copy. The free server may take about a minute to wake up after inactivity.
+## What a result looks like
 
-**The redesigned screens are implemented:** grouped drawer review, exact cash
-outcomes, and two-step file preparation. On 2026-10-28 the public assets
-matched block 7 commit `62650f9`, including its two QA fixes. Chrome and WebKit
-each passed the public example, fake upload, reports, and refresh checks.
-See the [redesign checklist](docs/M10_CHECKLIST.md) for remaining manual checks.
-R06 and R07 remain later M9 blocks.
+One drawer from the example, register R1 on September 3, 2026:
+
+| | Amount |
+| --- | ---: |
+| Expected cash | $518.75 |
+| Counted cash | $498.75 |
+| Difference | -$20.00 (short) |
+
+DrawerCheck lists two leads for this drawer: a $20.00 difference that needs
+review, and a note that the difference equals one $20 bill. There is no
+sign-off lead, because a verifier and a note were recorded. Leads are things
+worth checking, not findings about a person.
+
+![Drawer outcome, calculation tape, and count sheet showing a twenty-dollar shortage](docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-fixed-chrome-light-1280.png)
+
+The Results page groups the example's 18 leads by drawer and date:
+
+![Results grouping 18 leads into nine drawers and two whole-day dates](docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-fixed-chrome-light-1280.png)
+
+Both pictures were captured locally in Chrome on 2026-10-28 in light mode,
+before the small layout fixes of November 3. The downloadable HTML report
+has its own layout. The [screenshot timeline](docs/screenshots/README.md)
+shows Start, upload guidance, narrow screens, dark mode, and later fixes.
+
+## Limitations
+
+The main limits, in short. [Limitations in detail](#limitations-in-detail)
+below gives examples.
+
+- **Learning project with fictional data.** Not for real cash control, and not
+  accounting or legal advice.
+- **Example thresholds.** The settings are examples, not industry standards.
+- **The website saves nothing.** It has no accounts or run history. The
+  command line keeps its records in a local database file.
+- **Seven files to start.** Uploaded records must be seven CSV files in a
+  fixed format. Entering a single drawer by hand is planned, not available.
+- **One closing shift per register per day**, and simple bank matching that
+  can pick the wrong day when amounts repeat.
 
 ## Why I am building it
 
@@ -38,24 +79,13 @@ in a job interview.
 | Part | Status |
 | --- | --- |
 | Command-line tool: imports, checks, explanations, and reports | Done |
-| Seven review rules, including the R03 swapped-digit heuristic | Done; R03 verified locally, on GitHub, and live |
-| Web request layer, website screens, public hosting, and documentation | Delivered through M8 block 7; live at [drawercheck.onrender.com](https://drawercheck.onrender.com) |
-| M10 Tick and tie redesign | All views implemented; local and hosted checks recorded, with manual validation gaps listed below |
-| Remaining optional rules (R06, R07) | Later M9 blocks; stop for review after each block |
+| Seven review rules, including the R03 swapped-digit hint | Done |
+| Website | Live at [drawercheck.onrender.com](https://drawercheck.onrender.com), with the redesigned screens |
+| Closing workflow: enter one drawer by hand, then review it | Planned in [M11](docs/M11_PLAN.md); only the paper walkthrough is done |
+| Optional rules R06 and R07 | Deferred until after the closing workflow |
 
-**Automated checks:** [GitHub Actions run 40706484429](https://github.com/GutsJr75/DrawerCheck/actions/runs/40706484429)
-for block 7 commit `62650f9` passed on Python 3.12, 3.13, and 3.14, including
-both Ruff checks and optional web/server tests, observed on 2026-10-28.
-It includes both block 7 fixes. That block's local checks passed 729 tests and 216
-Chrome/WebKit accessibility scans with no detected violations. Actual 400%
-browser zoom, a real screen reader, and first-time-user usability remain
-unverified. No full accessibility certification is claimed; the
-[M10 checklist](docs/M10_CHECKLIST.md) separates passes and open checks.
-
-The [October 29 upload repair](docs/M10_UPLOAD_REPAIR.md) stops an old check
-from updating replaced files. It adds opt-in, repeatable browser regression
-checks and is verified locally only; the hosted result above predates it.
-The full local suite with optional browser checks enabled passes 731 tests.
+Test, CI, hosting, and accessibility evidence is under
+[Verification](#verification).
 
 ## Try the command line in 3 steps
 
@@ -86,21 +116,6 @@ You need Python 3.12 or newer. All inputs below are fake.
 For an offline example, open the
 [committed sample report](examples/sample_report.html). It covers the same 60
 shifts and 18 review leads, and works offline with no external files or scripts.
-
-## Screenshots
-
-M10 local Results, captured in Chrome on 2026-10-28 in light mode:
-
-![Results grouping 18 leads into nine drawers and two whole-day dates](docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-results-results-fixed-chrome-light-1280.png)
-
-M10 local Drawer details, captured on the same date in light mode.
-The worked drawer expected $518.75 and counted $498.75:
-
-![Drawer outcome, calculation tape, and count sheet showing a twenty-dollar shortage](docs/screenshots/2026-10-28-m10-block7/2026-10-28-m10-block7-drawer-drawer-fixed-chrome-light-1280.png)
-
-These are pictures of the interactive app. The downloadable HTML report has
-its own layout. See the [screenshot timeline](docs/screenshots/README.md) for
-Start, upload guidance, narrow screens, and earlier versions.
 
 ## What the checks look for
 
@@ -343,7 +358,7 @@ Libraries and tools, in plain language:
 | pytest and Ruff | Run automated checks and check Python code style and formatting. |
 | setuptools | Package the Python code and website assets for installation. |
 
-## Limitations
+## Limitations in detail
 
 - **Learning project with fake data.** This is not a tool for real cash
   control, and it is not accounting or legal advice. The project claims no
@@ -368,10 +383,31 @@ Libraries and tools, in plain language:
   real POS or bank connections. A missing-deposit lead describes the imported
   files, not a real overdue payment.
 
+## Verification
+
+These are the checks actually observed, with their dates. Nothing here is
+inferred from a local run.
+
+- **Hosted release:** on 2026-10-28 the public assets matched block 7 commit
+  `62650f9`. Chrome and WebKit each passed the public example, fake upload,
+  reports, and refresh checks. See the [hosted evidence](docs/M10_BLOCK7_HOSTED.md).
+- **Automated checks:** [GitHub Actions run 40706484429](https://github.com/GutsJr75/DrawerCheck/actions/runs/40706484429)
+  for `62650f9` passed on Python 3.12, 3.13, and 3.14, including both Ruff
+  checks and optional web/server tests, observed on 2026-10-28. That block's
+  local checks passed 729 tests and 216 Chrome/WebKit accessibility scans with
+  no detected violations.
+- **Verified locally only:** the [October 29 upload repair](docs/M10_UPLOAD_REPAIR.md),
+  which stops an old check from updating replaced files and adds opt-in
+  browser regression checks (731 tests pass with them enabled), and the
+  November 3 layout fixes. No hosted check has been recorded for them.
+- **Not yet verified:** actual 400% browser zoom, a real screen reader, and
+  first-time-user testing. No accessibility certification is claimed. The
+  [redesign checklist](docs/M10_CHECKLIST.md) separates passes and open checks.
+
 ## More documentation
 
-- [Current redesign verification and open checks](docs/M10_CHECKLIST.md)
-
+- [Closing workflow plan](docs/M11_PLAN.md) and [walkthrough](docs/M11_BLOCK1.md): the planned manual-entry path.
+- [Redesign checklist](docs/M10_CHECKLIST.md): verification and open checks.
 - [How it works](docs/HOW_IT_WORKS.md): formulas, a worked example, and every rule.
 - [Troubleshooting](docs/TROUBLESHOOTING.md): ten exact error messages, with checks and fixes.
 - [Demo scenarios](docs/DEMO_SCENARIOS.md): the planted problems and their expected leads.
