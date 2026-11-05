@@ -1,0 +1,62 @@
+{
+  "axe": "4.14.0",
+  "scope": "Shared site header only",
+  "scans": [
+    {
+      "engine": "chrome",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "chrome",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    }
+  ]
+}

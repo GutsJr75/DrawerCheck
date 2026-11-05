@@ -634,7 +634,7 @@ CONTRAST_PAIRS = [
     ("review", "surface", 4.5),
     ("review", "page", 4.5),
     ("ready", "ready-bg", 4.5),
-    ("ready", "surface", 3),  # Decorative logo tick, kept legible anyway.
+    ("ready", "surface", 3),  # Decorative DC mark, kept legible anyway.
     ("check", "surface", 4.5),
     ("note", "surface", 4.5),
 ]

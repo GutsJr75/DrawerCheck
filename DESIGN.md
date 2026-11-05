@@ -204,7 +204,9 @@ local asset serving, font licences, package contents, and resource budgets.
 | Help | Native `details` and `summary` elements ("What does this mean?"), so they work with keyboard and touch. |
 | Filters | A native `select` and native radio buttons with `accent-color`, each with a visible label; no custom dropdown widget. The select drops its native look and draws its own arrow in the `text` colour, because WebKit ignores the 44 px height on native-looking selects. |
 | Demo notice placement | Inside the `header` landmark, above the wordmark row, so every piece of content belongs to a landmark. |
-| Favicon | `static/favicon.svg`: a drawer outline and green tick on pale paper, matching the decorative header mark. |
+| Brand | A custom geometric DC monogram beside the DrawerCheck name, replacing the drawer-and-tick pictogram on 2026-11-04 at the user's request. Two filled letterforms share an edge, with pine ink for D and green for C. The wordmark uses the existing Atkinson face at weight 700 with slightly tighter tracking. |
+| Logo assets | Transparent `static/logo.svg` and `static/logo-dark.svg`, selected with a native `picture` source. Their embedded fill attributes mirror `text` and `ready` in each theme. No inline styles, remote assets, or new palette. The image is decorative beside the visible product name. Size and gap follow the wordmark's text size, so the header still fits narrow screens at 200% text. |
+| Favicon | `static/favicon.svg`: the same DC geometry on pale paper, with enough padding for a square browser-tab icon. |
 | Downloads | Three secondary buttons in the Results side column: "Web page (.html)", "Spreadsheet (.csv)", and "Text (.txt)". Below 960 px they follow the review list. |
 | Waiting | The busy button's own words, a Cancel button beside it, and after 5 seconds a sentence with a `control` left rule. Failures show in `review` text with a "Try again" button. |
 | Tables | Real `table` elements with captions and header cells; numbers right-aligned. |

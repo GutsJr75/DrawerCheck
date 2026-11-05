@@ -2,6 +2,13 @@
 
 ## Where things stand
 
+- **Brand refresh complete locally (authorized 2026-11-04):** the user
+  requested a professional replacement for the drawer-and-tick icon. The
+  shared header now uses an original DC monogram and a stronger wordmark,
+  with matching favicon and light/dark vector assets. See
+  [brand evidence](BRAND_REFRESH.md). This visual block does not advance M12
+  or repair the separately diagnosed Python 3.14 CI test.
+
 - **Next step, updated 2026-11-04:** M11 is complete locally. Nothing starts
   without the user's choice. Options: publish the remaining M11 commits and
   observe hosted CI and the live pages; run the fictional walkthrough with an
@@ -461,6 +468,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 97. **Finish M11 with end-to-end verification (M11 block 9, authorized 2026-11-04).** After reviewing block 8, the user asked for its two small follow-ups and then block 9. The closing sheet now shows opened and closed as date words plus a 24-hour time, built from Python's date labels; the sample was regenerated and a test now fails if it drifts from the generator. A committed end-to-end browser test covers keyboard use (WebKit reaches links with Option+Tab, as Safari does), refresh, Cancel on both pages, network and server failures with retry, markup-like IDs shown as text, and the 20-drop limit. The first text-size matrix passed while the entry count sheet was in fact 478 px wide in a 240 px space at 200% text in a 320 px window, because the check only treated hidden overflow as a failure. The sheet is now a size container that stacks each line below 12.5rem, a width that grows with text, so normal text keeps two columns; the matrix now also fails on unnamed sideways scrolling. A first performance comparison across days showed +45% to +71%; eight alternating rounds against the block 5 baseline code under the same load showed changes within a few percent, so no M11 slowdown is claimed and both results are kept. Participant, screen-reader, actual zoom, hosted CI, and live checks are recorded as unverified. M12 is not started.
 
 98. **Repair block 9's verification gaps (2026-11-04).** An outside review, relayed by the user, found that CI never ran the M11 web tests (the full suite ran before Flask was installed, then only three older files), that the large-text layout check lived only in a scratch script, and that the closing sheet's 200% text rows tested nothing because the sheet used the M4 report's fixed pixel sizes. CI's web step now runs the whole suite. `tests/browser/large_text.cjs` covers both count sheets and the sheet, failing on `039a135` and `19c27ff` respectively. The sheet sets on-screen text sizes in rem, equal to the old sizes at default settings, leaving print sizes and the full-run report unchanged; once text could grow, long rule codes were cut off by the report frame's hidden overflow, so the sheet's paragraphs and list items now wrap long words. The test opens the sheet on its own page because the site's style policy blocks its inline CSS on the site's page. Evidence corrections: all of M11 was already on GitHub, and performance was measured on the 78,617-byte build. Block 9 files are corrected in place with notes, and new evidence and screenshots sit beside them.
+
+99. **Give DrawerCheck a distinct brand mark (authorized 2026-11-04).** The user asked to create and place a business-style logo. Use an original geometric DC monogram with filled, joined letterforms instead of a generic drawer-and-tick pictogram. Keep the established pine/green palette and local Atkinson wordmark, with light/dark SVG exports selected by `picture` and a padded favicon variant. Fixed fill attributes avoid inline SVG styles under the existing security policy. Header size/gap follow its text size, and the adjacent visible name supplies the link's accessible label. No external asset license, dependency, calculation, or navigation change. Preserve the user's existing uncommitted WEB_PLAN.md edit.
 
 ## Math and test commitments
 

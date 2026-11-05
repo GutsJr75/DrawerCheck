@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "engine": "chrome",
+      "theme": "light",
+      "width": 320,
+      "source": "logo.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "chrome",
+      "theme": "light",
+      "width": 1280,
+      "source": "logo.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "chrome",
+      "theme": "dark",
+      "width": 320,
+      "source": "logo-dark.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "chrome",
+      "theme": "dark",
+      "width": 1280,
+      "source": "logo-dark.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "source": "logo.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 1280,
+      "source": "logo.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "source": "logo-dark.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 1280,
+      "source": "logo-dark.svg",
+      "imageLoaded": true,
+      "headerFits": true,
+      "keyboardHome": true
+    }
+  ],
+  "existingDemoAndDrawerBothEngines": true
+}

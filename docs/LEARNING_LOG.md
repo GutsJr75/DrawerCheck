@@ -1836,3 +1836,24 @@ deployment; the CI change needs a real run before it is claimed.
 Verification: 824 passed and 14 opt-in browser tests skipped; with browser
 tests enabled, 838 passed in Chrome and WebKit build 2370. Both Ruff checks
 passed. The rerun reflow matrix (96 checks) and 16 sheet scans were clean.
+
+## 2026-11-04: DrawerCheck brand refresh
+
+- Built: an original filled DC monogram, stronger DrawerCheck wordmark,
+  light/dark SVG assets, and matching browser-tab favicon in the shared
+  header. Frontend design skills guided the choice within the existing
+  palette and typography.
+- Learned: a logo has to work beside its name, in a tiny browser tab, and
+  with enlarged text. A native picture source and SVG fill attributes keep
+  theme selection simple under the existing security policy.
+- Interview question: How would you check that a new brand mark stays
+  legible and accessible across themes and small screens?
+
+Authorization: the user asked to make and place a professional replacement
+for the current logo. No push or deployment. Existing WEB_PLAN.md edits were
+preserved; the pending Python 3.14 test repair and M12 were not started.
+
+Verification: 824 tests passed and 14 opt-in browser cases skipped; both
+Ruff checks passed. Custom Chrome/WebKit header checks, existing example and
+Drawer flows, and eight header accessibility scans passed. Sixteen dated
+captures are indexed. See [brand evidence](BRAND_REFRESH.md).

@@ -49,11 +49,10 @@
     </div>
     <div class="wrap">
       <a class="wordmark" href="#/">
-        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-          <rect x="3" y="11" width="26" height="18" rx="3"/>
-          <path d="M12 20h8"/>
-          <path class="brand-tick" d="m9 7 5 5L25 3"/>
-        </svg>
+        <picture class="brand-mark">
+          <source media="(prefers-color-scheme: dark)" srcset="{{ url_for('static', filename='logo-dark.svg') }}">
+          <img src="{{ url_for('static', filename='logo.svg') }}" width="60" height="40" alt="">
+        </picture>
         DrawerCheck
       </a>
     </div>
