@@ -8,9 +8,21 @@ from drawercheck.money import format_cents
 from drawercheck.reports.html import REPORT_CSS, render_table
 
 _CSS = """
+/* On screen, text sizes are in rem so the reader's text-size setting enlarges
+   the sheet. They equal the shared report's pixel sizes at default settings. */
+@media screen {
+  body { font-size:0.9375rem; }
+  h1 { font-size:clamp(1.875rem, 4vw, 2.75rem); }
+  h2 { font-size:1.375rem; }
+  .demo, .generated, caption, footer { font-size:0.75rem; }
+  table, .help { font-size:0.8125rem; }
+  .closing-table th { font-size:0.75rem; }
+}
+/* Long rule codes and IDs wrap instead of being cut off by the report frame. */
+section p, section li, header p { overflow-wrap:anywhere; }
 .closing-table { table-layout:fixed; }
 .closing-table th, .closing-table td { overflow-wrap:anywhere; }
-.closing-table th { text-transform:none; font-size:12px; }
+.closing-table th { text-transform:none; }
 .closing-table td { white-space:pre-wrap; }
 .count-lines td:nth-child(n+2) { text-align:right; }
 .count-lines th:nth-child(n+2) { text-align:right; }

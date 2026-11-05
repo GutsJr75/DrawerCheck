@@ -40,7 +40,7 @@ The pre-fix capture is kept in the screenshot folder, labelled "unstacked".
 | Ruff | Both checks pass |
 | Committed browser tests, Chrome 156 and WebKit build 2370 | All 12 cases pass: uploads, Close messages, Review and sign-off, recount, closing sheet, and the new end-to-end test. WebKit is named with `DRAWERCHECK_WEBKIT_EXECUTABLE`, an unofficial pairing with Playwright 1.65 |
 | End-to-end (new `tests/browser/drawer_end_to_end.cjs`) | Keyboard: Space picks a choice, Enter submits from a field, summary links followed with Enter (Option+Tab in WebKit, as in Safari). Refresh clears the result and every entry. Cancel on Close and on Review keeps entries or the sign-off and ignores the late reply. A network failure and a server error each offer Try again without losing entries. IDs that look like markup stay text on Review and in the closing sheet. Add a drop stops at 20 |
-| Text size and reflow | 96 checks: six states (Close empty and with problems, Review result and recounted, both closing sheets), both engines, both themes, at normal text 320 px, 200% root text at 1,280 x 900, 320 x 200 reflow, and 200% text at 320 px. No page overflow, no clipped content, no unnamed sideways scrolling ([results](M11_BLOCK9_REFLOW.json)) |
+| Text size and reflow | (Corrected in the repair below: the closing-sheet rows at 200% text did not enlarge the sheet.) 96 checks: six states (Close empty and with problems, Review result and recounted, both closing sheets), both engines, both themes, at normal text 320 px, 200% root text at 1,280 x 900, 320 x 200 reflow, and 200% text at 320 px. No page overflow, no clipped content, no unnamed sideways scrolling ([results](M11_BLOCK9_REFLOW.json)) |
 | Accessibility | 128 axe-core 4.14.0 scans of every M11 page state and both closing sheets, both engines, both themes, 320 and 1,280 px: no violations. Colour contrast was incomplete only where the drawer tape shows, as in M10 ([results](M11_BLOCK9_AXE.json)) |
 | Limits and safe rendering | Server limits (32 KiB body, amounts, quantities, 20 drops, 256 characters, JSON shape) are covered by the block 4 tests, which pass. Escaping is covered by Python tests for the sheet and the new browser test for Review |
 | Existing full-run report | Byte-identical to `babde22` for the same demo data and timestamp (checked during the block 8 review) |
@@ -48,7 +48,9 @@ The pre-fix capture is kept in the screenshot folder, labelled "unstacked".
 
 ## Performance
 
-Measured with the block 5 script and conditions (Chrome 156 headless through
+Measured on the 78,617-byte build, before the final 500-byte stacking CSS that
+brought the total to 79,117 bytes; that change was not measured separately.
+Used the block 5 script and conditions (Chrome 156 headless through
 Playwright 1.65, Apple M1 8 GB, macOS 27.2, loopback without throttling, a
 fresh browser context per run, the server already running and warmed).
 
@@ -88,9 +90,9 @@ days can mislead.
   Accessibility-tree and axe checks do not prove what is spoken.
 - **Actual browser zoom at 400%:** not done; root text at 200% and narrow
   reflow are related but different checks.
-- **Hosted CI and the public site:** the user pushed M11 up to `56a99b8`
-  (blocks 1 to 5 and the block 5 repair); blocks 6 to 9 are local. No CI run
-  or live check has been observed for any M11 commit, so none is claimed.
+- **Hosted CI and the public site:** (corrected in the repair below) the user
+  has pushed all of M11, including block 9 (`19c27ff`). No CI run or live
+  check has been observed for any M11 commit, so none is claimed.
 - **WebKit pairing:** WebKit build 2370 with Playwright 1.65 is unofficial.
   Installing the matching build (`npx playwright install webkit`) would make
   the default WebKit launch work.
@@ -102,3 +104,46 @@ with readable times (light and dark at 1,280 px, light at 320 px, missing
 report), the count sheet at 200% text in a 320 px window before and after
 stacking, the recount sheet stacked, Review at 200% text at 1,280 px, and
 Review recounted in a 320 x 200 window in dark mode.
+
+## Repair after review (2026-11-04)
+
+An outside review, relayed by the user, confirmed the stacking fix in both
+engines and found three verification gaps and two evidence errors.
+
+1. **CI skipped the new web tests.** The workflow ran the whole suite before
+   installing Flask, then only three older web test files, so the one-drawer
+   endpoint, page, and closing-sheet tests (including the sample drift test)
+   never ran in CI. The web step now runs the whole suite. README's developer
+   command matches. This needs a real CI run after the next push before it is
+   claimed.
+2. **The layout check was not committed.** `tests/browser/large_text.cjs`, run
+   by `test_count_sheets_and_closing_sheet_follow_enlarged_text`, checks both
+   count sheets at 320 px: two columns at normal text; at 200% text all 12
+   boxes inside the sheet, no sideways scrolling, and stacked lines. It fails
+   on `039a135` (12 boxes outside, 238 px of sideways scroll).
+3. **The closing sheet ignored text size.** Its styles came from the M4
+   report's fixed pixel sizes, so 200% root text left it at 15 px; the block 9
+   matrix rows for the sheet did not test enlarged text. On screen, the sheet
+   now sets its text sizes in rem, equal to the old sizes at default settings;
+   print sizes and the full-run report are unchanged. Once the text could
+   grow, long rule codes were cut off by the report frame's hidden overflow,
+   so paragraphs and list items on the sheet now wrap long words. The new test
+   opens the sheet on its own page (on the site's page, the style policy
+   blocks its inline CSS, which first produced a misleading failure), checks
+   that its own 15 px base applies, that it doubles to 30 px, and that nothing
+   overflows, scrolls sideways outside a named region, or is cut off. It fails
+   on `19c27ff` (15 px instead of 30 px).
+
+Evidence corrections: all of M11 is on GitHub, not just blocks 1 to 5; and the
+performance runs used the 78,617-byte build, as noted above.
+
+Rechecked after the repair: 824 passed and 14 opt-in browser tests skipped;
+with browser tests enabled, 838 passed in Chrome 156 and WebKit build 2370.
+Both Ruff checks pass. The rerun matrix ([results](M11_BLOCK9_REPAIR_REFLOW.json))
+has 96 checks with no overflow, clipping, or unnamed sideways scrolling, and
+records the sheet's body text at 15 px normally and 30 px at 200%. 16 sheet
+scans found no violations ([results](M11_BLOCK9_REPAIR_AXE.json)). App CSS
+and JavaScript are unchanged at 79,117 bytes. Screenshots of the enlarged sheet
+are in [2026-11-04-m11-block9-repair](screenshots/2026-11-04-m11-block9-repair/);
+the block 9 capture named `sheet-recount-text-200-320` shows the sheet before
+it could enlarge.

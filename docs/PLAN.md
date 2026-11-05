@@ -7,6 +7,8 @@
   observe hosted CI and the live pages; run the fictional walkthrough with an
   unfamiliar participant; or plan the separately gated M12 local-records
   milestone. R06 and R07 stay deferred. See the [M11 checklist](M11_CHECKLIST.md).
+  The block 9 repair (CI runs every web test) needs a push and an observed CI
+  run before it is claimed.
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
   closing walkthrough, field mapping, expected answers, task script, and
   observation sheet are in [M11_BLOCK1.md](M11_BLOCK1.md), with the
@@ -47,6 +49,8 @@
   large text on narrow screens; readable times on the closing sheet. See
   [block 9 evidence](M11_BLOCK9.md) and the [M11 checklist](M11_CHECKLIST.md).
   Participant, screen-reader, real zoom, hosted CI, and live checks remain open.
+  A same-day repair runs every web test in CI, commits the large-text browser
+  test, and makes the closing sheet follow text size.
 - **Delivered:** M0 through M8 block 7, including the command-line core, web
   request layer, four website views, public hosting, and documentation wrap-up.
   The public learning demo is at
@@ -455,6 +459,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 96. **Export the checked closing snapshot (M11 block 8, authorized 2026-11-04).** The user's "Go for block 8" authorizes the HTML download and print styles. `reports/closing_sheet.py` renders the same formatted Python response that Review displays, with no second calculation or rule pass. Shared escaped tables and inline CSS keep the existing full-run HTML unchanged. The file retains both counts, unavailable checks, supplied unverified reviewer details, generation time, and example settings. Review reuses the existing Blob download helper and hides the action with stale results. The export is a snapshot, not saved history; later edits require checking and downloading again. Offline browser tests, hostile-text tests, and A4 page inspection cover the new output. No CSV format, persistence, dependency, or limit changes.
 
 97. **Finish M11 with end-to-end verification (M11 block 9, authorized 2026-11-04).** After reviewing block 8, the user asked for its two small follow-ups and then block 9. The closing sheet now shows opened and closed as date words plus a 24-hour time, built from Python's date labels; the sample was regenerated and a test now fails if it drifts from the generator. A committed end-to-end browser test covers keyboard use (WebKit reaches links with Option+Tab, as Safari does), refresh, Cancel on both pages, network and server failures with retry, markup-like IDs shown as text, and the 20-drop limit. The first text-size matrix passed while the entry count sheet was in fact 478 px wide in a 240 px space at 200% text in a 320 px window, because the check only treated hidden overflow as a failure. The sheet is now a size container that stacks each line below 12.5rem, a width that grows with text, so normal text keeps two columns; the matrix now also fails on unnamed sideways scrolling. A first performance comparison across days showed +45% to +71%; eight alternating rounds against the block 5 baseline code under the same load showed changes within a few percent, so no M11 slowdown is claimed and both results are kept. Participant, screen-reader, actual zoom, hosted CI, and live checks are recorded as unverified. M12 is not started.
+
+98. **Repair block 9's verification gaps (2026-11-04).** An outside review, relayed by the user, found that CI never ran the M11 web tests (the full suite ran before Flask was installed, then only three older files), that the large-text layout check lived only in a scratch script, and that the closing sheet's 200% text rows tested nothing because the sheet used the M4 report's fixed pixel sizes. CI's web step now runs the whole suite. `tests/browser/large_text.cjs` covers both count sheets and the sheet, failing on `039a135` and `19c27ff` respectively. The sheet sets on-screen text sizes in rem, equal to the old sizes at default settings, leaving print sizes and the full-run report unchanged; once text could grow, long rule codes were cut off by the report frame's hidden overflow, so the sheet's paragraphs and list items now wrap long words. The test opens the sheet on its own page because the site's style policy blocks its inline CSS on the site's page. Evidence corrections: all of M11 was already on GitHub, and performance was measured on the 78,617-byte build. Block 9 files are corrected in place with notes, and new evidence and screenshots sit beside them.
 
 ## Math and test commitments
 

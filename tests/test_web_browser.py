@@ -152,3 +152,9 @@ def test_one_drawer_end_to_end_keyboard_refresh_cancel_and_failures(
 ) -> None:
     """Keyboard use, refresh, Cancel, failures with retry, safe text, and the drop limit."""
     _run_page_script("drawer_end_to_end.cjs", browser)
+
+
+@pytest.mark.parametrize("browser", ["chrome", "webkit"])
+def test_count_sheets_and_closing_sheet_follow_enlarged_text(browser: str) -> None:
+    """At 200% text in 320 px, count boxes stay on screen and the sheet text doubles."""
+    _run_page_script("large_text.cjs", browser)

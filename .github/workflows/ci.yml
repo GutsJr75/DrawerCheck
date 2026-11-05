@@ -33,5 +33,7 @@ jobs:
         run: drawercheck --help
       - name: Install optional web packages
         run: python -m pip install -e ".[dev,web]"
-      - name: Test optional web requests
-        run: pytest -q tests/test_web.py tests/test_web_page.py tests/test_web_server.py
+      # The whole suite again, so every web test runs, including the one-drawer
+      # endpoint and closing sheet. Browser tests stay opt-in and skip here.
+      - name: Test everything with optional web packages
+        run: pytest -q

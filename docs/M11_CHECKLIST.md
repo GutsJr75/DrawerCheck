@@ -11,10 +11,10 @@ acceptance or accessibility certification.
 | Input and check contract | Reviewed and implemented | [Contract](M11_CONTRACT.md) |
 | One-drawer check matches the CSV path | PASS | Block 4 parity tests for every walkthrough case, with and without sign-off |
 | Close a drawer, Review a drawer, recount, closing sheet | PASS locally | [Block 5](M11_BLOCK5.md), [block 6](M11_BLOCK6.md), [block 7](M11_BLOCK7.md), [block 8](M11_BLOCK8.md) |
-| Python, web, and lint checks | PASS | 824 passed and 12 opt-in skipped; 836 with browser tests; both Ruff checks |
-| Chrome and WebKit flows | PASS locally | 12 committed browser cases, including keyboard, refresh, Cancel, failures, late replies, and safe text ([block 9](M11_BLOCK9.md)). WebKit build 2370 is an unofficial pairing with Playwright 1.65 |
+| Python, web, and lint checks | PASS locally | 824 passed and 14 opt-in skipped; 838 with browser tests; both Ruff checks. CI now runs every web test after installing Flask; not yet observed on GitHub |
+| Chrome and WebKit flows | PASS locally | 14 committed browser cases, including enlarged text, including keyboard, refresh, Cancel, failures, late replies, and safe text ([block 9](M11_BLOCK9.md)). WebKit build 2370 is an unofficial pairing with Playwright 1.65 |
 | Accessibility scans | PASS within tested scope | 128 axe-core 4.14.0 scans, no violations; tape contrast incomplete as in M10 |
-| Text size, narrow screens, both themes | PASS within tested scope | 96 checks after one fix (stacking count lines at large text) |
+| Text size, narrow screens, both themes | PASS within tested scope | 96 checks after two fixes: count lines stack at large text, and the closing sheet follows text size ([repair](M11_BLOCK9.md#repair-after-review-2026-11-04)); a committed browser test covers both |
 | Unknown stays unknown; zero stays zero | PASS | Missing report, blank count lines, drop log, and times tests |
 | Check coverage disclosed | PASS | Review and the closing sheet say which checks ran and which could not |
 | Performance | No slowdown attributable to M11 | Eight alternating rounds within a few percent; first cross-day comparison retained |
@@ -22,9 +22,9 @@ acceptance or accessibility certification.
 | Participant usability | UNVERIFIED | No participant session; nobody contacted |
 | Real screen reader | UNVERIFIED | Not used |
 | Actual 400% browser zoom | UNVERIFIED | Not done |
-| Hosted CI and public site for M11 | UNVERIFIED | The user pushed up to `56a99b8` (blocks 1 to 5); blocks 6 to 9 are local. No M11 CI run or live check has been observed |
+| Hosted CI and public site for M11 | UNVERIFIED | The user pushed all of M11 (`19c27ff`); the CI fix and repair are local. No M11 CI run or live check has been observed |
 
 The public demo runs whatever was last deployed; that has not been checked
-for M11. After the user publishes the remaining M11 commits, a hosted
+for M11. After the user publishes the repair, a hosted
 follow-up should observe the CI run and the live Close a drawer, Review,
 recount, and closing sheet before claiming them.

@@ -1817,3 +1817,22 @@ Verification: 824 tests passed and 12 opt-in browser tests skipped; with
 browser tests enabled, 836 passed in Chrome and WebKit build 2370. Both Ruff
 checks passed. 128 axe scans found no violations; 96 text-size and reflow
 checks found no overflow, clipping, or unnamed sideways scrolling.
+
+## 2026-11-04: M11 block 9 repair, verification gaps
+
+- Built: CI now runs every web test after installing Flask; a committed
+  large-text browser test for both count sheets and the closing sheet; rem
+  text sizes and long-word wrapping on the closing sheet's screen view.
+- Learned: a check can test nothing. Enlarging root text cannot enlarge a
+  page sized in pixels, and loading the sheet on the site's page silently
+  dropped its styles under the site's policy. Each new check was run against
+  the old code to prove it fails there.
+- Interview question: How do you prove a regression test would have caught
+  the bug it was written for?
+
+Authorization: the user relayed an outside review of block 9. No push or
+deployment; the CI change needs a real run before it is claimed.
+
+Verification: 824 passed and 14 opt-in browser tests skipped; with browser
+tests enabled, 838 passed in Chrome and WebKit build 2370. Both Ruff checks
+passed. The rerun reflow matrix (96 checks) and 16 sheet scans were clean.

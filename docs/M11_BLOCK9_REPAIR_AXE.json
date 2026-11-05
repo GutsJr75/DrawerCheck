@@ -1,0 +1,132 @@
+{
+  "scans": [
+    {
+      "browser": "chrome",
+      "state": "sheet-recount",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-recount",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-recount",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-recount",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-missing",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-missing",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-missing",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "chrome",
+      "state": "sheet-missing",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-recount",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-recount",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-recount",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-recount",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-missing",
+      "theme": "light",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-missing",
+      "theme": "light",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-missing",
+      "theme": "dark",
+      "width": 320,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "browser": "webkit",
+      "state": "sheet-missing",
+      "theme": "dark",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    }
+  ]
+}

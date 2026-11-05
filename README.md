@@ -303,7 +303,7 @@ Install the optional packages and run the web tests:
 
 ```sh
 pip install -e ".[dev,web]"
-pytest -q tests/test_web.py tests/test_web_page.py tests/test_web_server.py
+pytest -q
 ```
 
 Optional browser checks drive Google Chrome and WebKit through Playwright.
@@ -445,8 +445,8 @@ inferred from a local run.
 - **Not yet verified:** actual 400% browser zoom, a real screen reader, and
   first-time-user testing. No accessibility certification is claimed. The
   [redesign checklist](docs/M10_CHECKLIST.md) separates passes and open checks.
-- **M11 closing workflow, verified locally only:** 836 tests with browser
-  checks enabled, 12 committed Chrome and WebKit browser cases, 128
+- **M11 closing workflow, verified locally only:** 838 tests with browser
+  checks enabled, 14 committed Chrome and WebKit browser cases, 128
   accessibility scans without violations, and 96 text-size and reflow checks.
   Participant testing, a real screen reader, actual 400% zoom, hosted CI, and
   the public site are not verified for M11. See the
