@@ -170,7 +170,6 @@ def test_field_problems_are_listed_together(client) -> None:
         (b"{}", "text/plain", errors.DRAWER_REQUEST),
         (b"{not json", "application/json", errors.DRAWER_REQUEST),
         (b"\xff\xfe", "application/json", errors.DRAWER_REQUEST),
-        (b"[" * 16_000 + b"]" * 16_000, "application/json", errors.DRAWER_REQUEST),
         (b'{"a": 1}', "application/json", errors.DRAWER_SHAPE),
         (b"[]", "application/json", errors.DRAWER_SHAPE),
     ],
@@ -178,10 +177,37 @@ def test_field_problems_are_listed_together(client) -> None:
 def test_unreadable_requests_get_one_plain_message(
     client, body: bytes, content_type: str, message: str
 ) -> None:
-    """Wrong type, broken JSON, deep nesting, and wrong shapes have no field list."""
+    """Wrong type, broken JSON, and wrong shapes have no field list."""
     response = _raw(client, body, content_type)
     assert response.status_code == 400
     assert response.get_json() == {"error": {"message": message}}
+
+
+def test_deeply_nested_json_is_refused(client) -> None:
+    """Reject deep arrays whether parsing stops or shape validation rejects them."""
+    response = _raw(client, b"[" * 16_000 + b"]" * 16_000)
+    assert response.status_code == 400
+    # Parser nesting limits vary across Python versions and platforms.
+    assert response.get_json() in (
+        {"error": {"message": errors.DRAWER_REQUEST}},
+        {"error": {"message": errors.DRAWER_SHAPE}},
+    )
+
+
+def test_parser_recursion_error_gets_one_plain_message(
+    client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A parser recursion error always becomes the friendly unreadable-JSON reply."""
+
+    def too_deep(*args, **kwargs):
+        raise RecursionError
+
+    with monkeypatch.context() as parser:
+        parser.setattr(web.json, "loads", too_deep)
+        response = _raw(client, b"{}")
+    # Restore the parser before Flask decodes the response JSON.
+    assert response.status_code == 400
+    assert response.get_json() == {"error": {"message": errors.DRAWER_REQUEST}}
 
 
 def test_json_numbers_and_repeated_keys_are_refused(client) -> None:

@@ -11,7 +11,7 @@ acceptance or accessibility certification.
 | Input and check contract | Reviewed and implemented | [Contract](M11_CONTRACT.md) |
 | One-drawer check matches the CSV path | PASS | Block 4 parity tests for every walkthrough case, with and without sign-off |
 | Close a drawer, Review a drawer, recount, closing sheet | PASS locally | [Block 5](M11_BLOCK5.md), [block 6](M11_BLOCK6.md), [block 7](M11_BLOCK7.md), [block 8](M11_BLOCK8.md) |
-| Python, web, and lint checks | PASS locally | 824 passed and 14 opt-in skipped; 838 with browser tests; both Ruff checks. CI now runs every web test after installing Flask; not yet observed on GitHub |
+| Python, web, and lint checks | PASS locally | After the [Python 3.14 test repair](M11_PY314_REPAIR.md): 825 passed and 14 opt-in browser cases skipped on Python 3.13.5; both Ruff checks. The earlier run with browser tests passed 838. The repaired CI matrix still needs verification |
 | Chrome and WebKit flows | PASS locally | 14 committed browser cases, including enlarged text, including keyboard, refresh, Cancel, failures, late replies, and safe text ([block 9](M11_BLOCK9.md)). WebKit build 2370 is an unofficial pairing with Playwright 1.65 |
 | Accessibility scans | PASS within tested scope | 128 axe-core 4.14.0 scans, no violations; tape contrast incomplete as in M10 |
 | Text size, narrow screens, both themes | PASS within tested scope | 96 checks after two fixes: count lines stack at large text, and the closing sheet follows text size ([repair](M11_BLOCK9.md#repair-after-review-2026-11-04)); a committed browser test covers both |
@@ -22,7 +22,7 @@ acceptance or accessibility certification.
 | Participant usability | UNVERIFIED | No participant session; nobody contacted |
 | Real screen reader | UNVERIFIED | Not used |
 | Actual 400% browser zoom | UNVERIFIED | Not done |
-| Hosted CI and public site for M11 | UNVERIFIED | The user pushed all of M11 (`19c27ff`); the CI fix and repair are local. No M11 CI run or live check has been observed |
+| Hosted CI and public site for the repaired build | UNVERIFIED | The expanded CI run for `9a20875` passed Python 3.12/3.13 but failed one Python 3.14 test-message assertion. Its [test repair](M11_PY314_REPAIR.md) needs publication and a passing matrix; live verification remains open |
 
 The public demo runs whatever was last deployed; that has not been checked
 for M11. After the user publishes the repair, a hosted

@@ -2,6 +2,12 @@
 
 ## Where things stand
 
+- **Python 3.14 test repair complete locally (authorized 2026-11-04):**
+  deep JSON still must return HTTP 400, allowing the two existing plain
+  rejection messages, and a controlled recursion-error test checks its exact
+  friendly reply. See [repair evidence](M11_PY314_REPAIR.md). Application code
+  is unchanged; the repaired GitHub matrix and live pages remain unverified.
+
 - **Brand refresh complete locally (authorized 2026-11-04):** the user
   requested a professional replacement for the drawer-and-tick icon. The
   shared header now uses an original DC monogram and a stronger wordmark,
@@ -9,13 +15,11 @@
   [brand evidence](BRAND_REFRESH.md). This visual block does not advance M12
   or repair the separately diagnosed Python 3.14 CI test.
 
-- **Next step, updated 2026-11-04:** M11 is complete locally. Nothing starts
-  without the user's choice. Options: publish the remaining M11 commits and
-  observe hosted CI and the live pages; run the fictional walkthrough with an
-  unfamiliar participant; or plan the separately gated M12 local-records
-  milestone. R06 and R07 stay deferred. See the [M11 checklist](M11_CHECKLIST.md).
-  The block 9 repair (CI runs every web test) needs a push and an observed CI
-  run before it is claimed.
+- **Next step, updated 2026-11-04:** publish the Python 3.14 test repair,
+  observe passing CI on all three Python versions, then verify the live
+  closing workflow. Stop before M12. Participant, screen-reader, and actual
+  zoom checks remain open. R06 and R07 stay deferred. See the
+  [M11 checklist](M11_CHECKLIST.md).
 - **M11 block 1 complete locally (authorized 2026-11-04):** the fictional
   closing walkthrough, field mapping, expected answers, task script, and
   observation sheet are in [M11_BLOCK1.md](M11_BLOCK1.md), with the
@@ -470,6 +474,8 @@ These choices resolve gaps in the brief without adding a larger product. Revisit
 98. **Repair block 9's verification gaps (2026-11-04).** An outside review, relayed by the user, found that CI never ran the M11 web tests (the full suite ran before Flask was installed, then only three older files), that the large-text layout check lived only in a scratch script, and that the closing sheet's 200% text rows tested nothing because the sheet used the M4 report's fixed pixel sizes. CI's web step now runs the whole suite. `tests/browser/large_text.cjs` covers both count sheets and the sheet, failing on `039a135` and `19c27ff` respectively. The sheet sets on-screen text sizes in rem, equal to the old sizes at default settings, leaving print sizes and the full-run report unchanged; once text could grow, long rule codes were cut off by the report frame's hidden overflow, so the sheet's paragraphs and list items now wrap long words. The test opens the sheet on its own page because the site's style policy blocks its inline CSS on the site's page. Evidence corrections: all of M11 was already on GitHub, and performance was measured on the 78,617-byte build. Block 9 files are corrected in place with notes, and new evidence and screenshots sit beside them.
 
 99. **Give DrawerCheck a distinct brand mark (authorized 2026-11-04).** The user asked to create and place a business-style logo. Use an original geometric DC monogram with filled, joined letterforms instead of a generic drawer-and-tick pictogram. Keep the established pine/green palette and local Atkinson wordmark, with light/dark SVG exports selected by `picture` and a padded favicon variant. Fixed fill attributes avoid inline SVG styles under the existing security policy. Header size/gap follow its text size, and the adjacent visible name supplies the link's accessible label. No external asset license, dependency, calculation, or navigation change. Preserve the user's existing uncommitted WEB_PLAN.md edit.
+
+100. **Make the deep-JSON test portable (authorized 2026-11-04).** The user explicitly said "go fix" on the proposed contained repair. A 16,000-level array can either hit the parser's recursion guard or parse and then fail the drawer's object-shape validation. Keep HTTP 400 and allow only the two existing complete plain-error replies for that case. Other unreadable and wrong-shape cases keep exact-message assertions. A separate test forces `RecursionError` during parsing and requires the exact friendly reply, restoring the parser before decoding the response. Reproduce the old CI failure with a controlled parser-success probe, then verify the repaired test with both parser outcomes. No application code, input limit, Python-version matrix, or browser behavior change. Commit locally and stop before publication and hosted verification.
 
 ## Math and test commitments
 

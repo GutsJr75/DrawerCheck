@@ -1857,3 +1857,24 @@ Verification: 824 tests passed and 14 opt-in browser cases skipped; both
 Ruff checks passed. Custom Chrome/WebKit header checks, existing example and
 Drawer flows, and eight header accessibility scans passed. Sixteen dated
 captures are indexed. See [brand evidence](BRAND_REFRESH.md).
+
+## 2026-11-04: Python 3.14 deep-JSON test repair
+
+- Built: a portable deep-array rejection test requiring HTTP 400 and only
+  the two existing plain-error replies, plus a separate controlled parser
+  recursion-error test requiring the exact friendly message.
+- Learned: valid JSON can be invalid drawer input. Different parser limits
+  can reject the same request at different stages, so a test must separate
+  the rejection guarantee from the parser's implementation limit.
+- Interview question: How do you test a parser-error handler without
+  depending on one Python version's nesting limit?
+
+Authorization: the user's "go fix" on the proposed contained repair.
+Application code and the existing WEB_PLAN.md edit are unchanged. No push
+or deployment; stop before hosted verification and M12.
+
+Verification: the old test failed under a controlled parser-success probe;
+the repaired cases pass with that probe and the normal parser. All 18
+drawer endpoint tests passed. The full Python 3.13.5 suite passed 825 tests
+with 14 opt-in browser cases skipped, and both Ruff checks passed. See
+[repair evidence](M11_PY314_REPAIR.md) for the Python 3.14 verification limit.
