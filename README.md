@@ -72,10 +72,11 @@ below gives examples.
 
 ## Why I am building it
 
-I worked two POS registers at a busy convenience store and counted cash at close.
-I compared the cash in my register with transaction records.
-This project lets me practice those careful checks in code and explain the work
-in a job interview.
+I worked two POS registers at a busy convenience store, where I saw firsthand
+how much cash-handling accuracy and clear register records matter during
+high-volume shifts. This project lets me model end-of-shift cash drawer
+reconciliation in clean, tested Python code and explain the design in a job
+interview.
 
 ## Project status
 

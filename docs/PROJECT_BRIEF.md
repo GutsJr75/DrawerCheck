@@ -13,6 +13,12 @@ DrawerCheck is a local, offline command-line tool that reconciles end-of-shift c
 
 It reads CSV files (shifts, POS totals, safe drops, cash counts by denomination, bank deposits), stores them in SQLite, calculates the expected cash for each shift, compares it with the counted cash, flags unusual results for human review, and produces a report in three formats: terminal text, a single-file HTML page, and a CSV of flags.
 
+> **Correction (2026-11-24).** The original paragraph below incorrectly
+> describes drawer reconciliation as one of my store duties. I operated two
+> POS registers at a busy convenience store. That experience inspired me to
+> model end-of-shift cash reconciliation in Python. See the
+> [updated README](../README.md#why-i-am-building-it).
+
 Why this project: I worked two POS registers at a busy convenience store, counted cash, and reconciled my register against transaction records. I want to show I can do the same careful checking with code. The people reading my GitHub will be recruiters and hiring managers for bank teller, service desk, and junior developer jobs.
 
 Out of scope (do not build): web UI, real POS or bank integrations, user accounts, cloud services, machine learning, anti-money-laundering or Bank Secrecy Act features, bank file formats (OFX, BAI2), multi-currency, tips, payroll.
